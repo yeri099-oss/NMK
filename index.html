@@ -497,6 +497,10 @@ nav.tabs button.center.on i{background:var(--ink)}
 .toast{background:var(--ink);border-radius:18px}
 .mitem{box-shadow:var(--lift);border-radius:22px}
 @media(max-width:699px){.deco{opacity:.45}}
+.tile.hero .hsplit{position:relative;z-index:1;margin-top:10px;padding-top:10px;border-top:1.5px dashed rgba(31,29,36,.15)}
+.tile.hero .hd{font-size:12px;font-weight:600;color:var(--warn);margin-left:4px}
+.tile.hero .v.v2{font-size:26px}
+@media(max-width:699px){.tile.hero .v.v2{font-size:clamp(18px,5.8vw,24px)}}
 .tile.c-card{background:var(--blue-soft)}
 .tile.c-qr{background:var(--t4)}
 .tile.c-card,.tile.c-qr{color:var(--ink)}
@@ -733,7 +737,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v31"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v32"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -1373,8 +1377,14 @@ function renderDash() {
 
   $("#dashBody").innerHTML = `
     <div class="tiles money">
-      <div class="tile hero"><div class="k">${dashDay === "all" ? "전체 매출" : dayOptions().find((o) => o.key === dashDay)?.label + " 매출"}</div><div class="v num">${won(r.total)}</div>
-        <div class="s">${r.discount ? `할인 전 ${won(r.subtotal)} · 할인 −${won(r.discount)}` : "할인 없음"}</div></div>
+      <div class="tile hero">${(() => {
+        const pre = dashDay === "all" ? "" : dayOptions().find((o) => o.key === dashDay)?.label + " ";
+        // 할인이 있으면 위: 총매출(할인 전) / 아래: 실매출(할인 제외), 없으면 총매출만
+        return r.discount
+          ? `<div class="k">${pre}총매출</div><div class="v num">${won(r.subtotal)}</div>
+             <div class="hsplit"><div class="k">실매출 <span class="hd num">할인 −${won(r.discount)} 제외</span></div><div class="v v2 num">${won(r.total)}</div></div>`
+          : `<div class="k">${pre}총매출</div><div class="v num">${won(r.total)}</div>`;
+      })()}</div>
       <div class="tile c-peach"><div class="k">판매 건수</div><div class="v num">${fmt(r.count)}건</div></div>
       <div class="tile c-sage"><div class="k">객단가</div><div class="v num">${won(avg)}</div></div>
     </div>
