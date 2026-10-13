@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>규칙 복사 도우미</title>
+<style>
+:root{--bg:#f6f1ea;--surface:#fff;--ink:#2b2118;--ink2:#5f5144;--line:#e7ddd0;--brand:#b5452b;--ok:#2f6b4f;--ok-soft:#e1efe7}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif}
+main{max-width:860px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:22px;margin:0 0 6px}
+p.sub{margin:0 0 20px;color:var(--ink2)}
+.card{background:var(--surface);border-radius:14px;box-shadow:0 1px 2px rgba(60,40,20,.06),0 4px 14px rgba(60,40,20,.06);padding:18px}
+ol{margin:0;padding-left:22px;line-height:1.9}
+kbd{background:#f1ebe3;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 6px;font-size:13px}
+.btns{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:15px 20px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);font:inherit;font-weight:800;font-size:17px;cursor:pointer;text-decoration:none;color:inherit}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff;flex:1;min-width:240px}
+.btn.done{background:var(--ok);border-color:var(--ok)}
+.msg{min-height:24px;font-weight:700;color:var(--ok)}
+textarea{width:100%;height:340px;border:1.5px solid var(--line);border-radius:12px;padding:12px;font:12.5px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#fbf8f3;color:var(--ink);resize:vertical}
+.small{font-size:13px;color:var(--ink2)}
+</style>
+</head>
+<body>
+<main>
+  <h1>🔐 파이어베이스 규칙 복사 도우미</h1>
+  <p class="sub">기존 앱 규칙 전체 + 한식페스타 매출 앱 규칙이 합쳐진 <b>전체 규칙</b>이에요. 통째로 바꿔 넣으면 돼요.</p>
+
+  <div class="card">
+    <ol>
+      <li>아래 <b>복사하고 규칙 화면 열기</b>를 누르세요. (규칙이 복사되고, 파이어베이스 규칙 화면이 새 탭으로 열려요)</li>
+      <li>규칙 편집창을 한 번 클릭하고 <kbd>Ctrl</kbd>+<kbd>A</kbd> (맥은 <kbd>⌘</kbd>+<kbd>A</kbd>)로 기존 내용을 전부 선택</li>
+      <li><kbd>Ctrl</kbd>+<kbd>V</kbd> (맥은 <kbd>⌘</kbd>+<kbd>V</kbd>)로 붙여넣기</li>
+      <li>오른쪽 위 <b>게시</b> 버튼 클릭 → 끝!</li>
+    </ol>
+    <div class="btns">
+      <button class="btn primary" id="go">📋 복사하고 규칙 화면 열기</button>
+      <button class="btn" id="copy">복사만 하기</button>
+    </div>
+    <div class="msg" id="msg"></div>
+    <p class="small">파이어베이스 보안상 붙여넣기(3번)와 게시(4번)는 직접 눌러야 해요. 다른 곳에서 규칙을 따로 고친 적이 있다면 이 내용으로 덮어쓰기 전에 알려주세요.</p>
+  </div>
+
+  <h2 style="font-size:16px;margin:24px 0 10px">전체 규칙 내용</h2>
+  <textarea id="rules" readonly spellcheck="false">{{RULES}}</textarea>
+</main>
+<script>
+const CONSOLE_URL = "https://console.firebase.google.com/project/trip-84bd3/firestore/rules";
+const ta = document.getElementById("rules");
+const msg = document.getElementById("msg");
+async function copyRules() {
+  try {
+    await navigator.clipboard.writeText(ta.value);
+  } catch (e) {
+    ta.focus(); ta.select();
+    if (!document.execCommand("copy")) throw e;
+  }
+}
+function done(btn, text) {
+  msg.textContent = text;
+  btn.classList.add("done");
+  setTimeout(() => btn.classList.remove("done"), 2500);
+}
+document.getElementById("go").onclick = async (e) => {
+  const btn = e.currentTarget;
+  // 팝업 차단을 피하려고 새 탭을 먼저 연 뒤 복사합니다
+  const win = window.open(CONSOLE_URL, "_blank");
+  try {
+    await copyRules();
+    done(btn, "✅ 복사됐어요! 열린 파이어베이스 탭에서 Ctrl+A → Ctrl+V → 게시");
+  } catch {
+    msg.textContent = "자동 복사가 안 됐어요. 아래 내용을 길게 눌러 전체 선택 후 복사해 주세요.";
+  }
+  if (!win) msg.textContent += " (새 탭이 차단됐어요: " + CONSOLE_URL + ")";
+};
+document.getElementById("copy").onclick = async (e) => {
+  const btn = e.currentTarget;
+  try { await copyRules(); done(btn, "✅ 복사됐어요!"); }
+  catch { msg.textContent = "자동 복사가 안 됐어요. 아래 내용을 직접 선택해 복사해 주세요."; }
+};
+</script>
+</body>
+</html>

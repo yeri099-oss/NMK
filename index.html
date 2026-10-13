@@ -378,6 +378,9 @@ table.h tbody tr:hover td{background:#fffaf4}
       </div>
       <div class="mlist" id="userList" style="margin-top:10px"></div>
 
+      <h2 class="sec">파이어베이스 규칙</h2>
+      <div class="card"><p class="small" style="margin-top:0">규칙을 다시 넣어야 할 때 쓰는 복사 도우미예요.</p><a class="btn sm" href="rules.html" target="_blank">규칙 복사 도우미 열기</a></div>
+
       <h2 class="sec">데이터 정리</h2>
       <div class="card">
         <p class="small" style="margin-top:0">행사 전에 연습으로 등록한 판매(10/23·10/24 이외 날짜)를 한 번에 지웁니다.</p>
@@ -571,7 +574,7 @@ onAuthStateChanged(auth, async (u) => {
     console.error(ex);
     show("login");
     $("#loginErr").textContent = ex.code === "permission-denied"
-      ? "권한 오류: 파이어베이스 규칙에 festaApp 부분이 추가됐는지 확인해 주세요."
+      ? "권한 오류: 파이어베이스 규칙이 아직 안 들어갔어요. 주소 끝에 rules.html 을 붙여 복사 도우미를 열어주세요."
       : "불러오기 실패: " + (ex.message || ex.code);
     signOut(auth);
   }

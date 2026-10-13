@@ -5,18 +5,13 @@
 
 ## 처음 한 번만 하는 설정
 
-### 1. 파이어베이스 규칙 추가
-1. [Firebase 콘솔](https://console.firebase.google.com/project/trip-84bd3/firestore/rules) → Firestore Database → **규칙** 탭
-2. `firestore-rules-festa.txt` 내용을 전부 복사
-3. 기존 규칙 맨 아래의 아래 부분 **바로 위**에 붙여넣기
-   ```
-       match /{document=**} {
-         allow read, write: if false;
-       }
-   ```
-4. **게시** 클릭
+### 1. 파이어베이스 규칙 넣기 (복사 도우미)
+1. `https://yeri099-oss.github.io/NMK/rules.html` 접속 (앱 [관리] 탭에도 버튼 있음)
+2. **📋 복사하고 규칙 화면 열기** 클릭 → 전체 규칙이 복사되고 파이어베이스 규칙 화면이 열림
+3. 규칙 편집창 클릭 → `Ctrl+A` → `Ctrl+V` → **게시**
 
-> 기존 앱(업무일지·매출현황·추석예약 등)의 규칙은 건드리지 않고, `festaApp_*` 컬렉션만 새로 열어줍니다.
+> `firestore.rules` = 기존 앱 규칙 전체 + 한식페스타(`festaApp_*`) 규칙. 기존 앱 규칙은 그대로예요.
+> 규칙을 고치면 `python3 build-rules-page.py` 로 `rules.html` 을 다시 만들어 주세요.
 
 ### 2. 깃허브 페이지로 공개
 1. 이 저장소 → **Settings → Pages**

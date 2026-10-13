@@ -1,0 +1,354 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function notAnon() {
+      return isSignedIn() && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+    function hasProfile() {
+      return exists(/databases/$(database)/documents/workLogApp_profiles/$(request.auth.uid));
+    }
+    function myProfile() {
+      return get(/databases/$(database)/documents/workLogApp_profiles/$(request.auth.uid)).data;
+    }
+    function isAdmin() {
+      return isSignedIn() && hasProfile() && myProfile().role == 'admin';
+    }
+    function isApproved() {
+      return isSignedIn() && hasProfile() &&
+        (!('approved' in myProfile()) || myProfile().approved == true);
+    }
+    // 구 발주 앱 컬렉션(accounts/orderers/orders/logs)은 계속 미사용 → 전면 잠금 유지.
+    // 새 발주리스트 앱은 아래쪽의 vendorApp_vendors / vendorApp_staff / vendorApp_meta 를 사용합니다.
+    match /vendorApp_accounts/{docId} {
+      allow read, write: if false;
+    }
+    match /vendorApp_orderers/{docId} {
+      allow read, write: if false;
+    }
+    match /vendorApp_orders/{docId} {
+      allow read, write: if false;
+    }
+    match /vendorApp_logs/{docId} {
+      allow read, write: if false;
+    }
+    // 로그인용 아이디→이메일 조회 컬렉션 (로그인 전 비인증 조회가 필요해 공개).
+    // 이메일 매핑만 담고, 이름·권한·승인상태 같은 개인정보는 담지 않습니다.
+    match /workLogApp_login/{loginId} {
+      allow read: if true;
+      allow create: if notAnon();          // 익명 계정은 매핑 생성 불가
+      allow update, delete: if isAdmin();  // 기존 매핑 변경·삭제는 관리자만 (도용 방지)
+    }
+    match /workLogApp_profiles/{uid} {
+      // read: 이메일 로그인 사용자만 (익명 접속자의 직원 프로필 열람 차단)
+      allow read: if notAnon();
+      // create: 관리자가 만드는 계정은 허용(관리자 계정에서 프로필을 씀).
+      //          일반 회원가입은 "본인 것 + 일반권한 + 미승인"으로만 만들 수 있어
+      //          스스로 관리자/승인 상태가 될 수 없음. 익명 계정은 가입 불가.
+      allow create: if isAdmin() ||
+        (notAnon() && request.auth.uid == uid
+          && request.resource.data.role == 'user'
+          && request.resource.data.approved == false);
+      // update: 관리자거나, 본인이 자기 표시이름(displayName)만 바꿀 때만 허용.
+      allow update: if isAdmin() ||
+        (isSignedIn() && request.auth.uid == uid &&
+         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['displayName']));
+      allow delete: if isAdmin();
+    }
+    match /workLogApp_entries/{docId} {
+      allow read, update, delete: if isApproved() &&
+        (isAdmin() || resource.data.ownerUid == request.auth.uid);
+      allow create: if isApproved() &&
+        (isAdmin() || request.resource.data.ownerUid == request.auth.uid);
+    }
+    match /workLogApp_meta/{docId} {
+      allow read, write: if isApproved();
+    }
+    match /workLogApp_recurring_tasks/{uid} {
+      allow read, write: if isApproved() && (isAdmin() || request.auth.uid == uid);
+    }
+    match /workLogApp_daily_checklist/{docId} {
+      allow read, update, delete: if isApproved() &&
+        (isAdmin() || resource.data.ownerUid == request.auth.uid);
+      allow create: if isApproved() && (isAdmin() || request.resource.data.ownerUid == request.auth.uid);
+    }
+    match /workLogApp_monthly_checklist/{docId} {
+      allow read, update, delete: if isApproved() &&
+        (isAdmin() || resource.data.ownerUid == request.auth.uid);
+      allow create: if isApproved() && request.resource.data.ownerUid == request.auth.uid;
+    }
+    match /workLogApp_checklist_templates/{docId} {
+      allow read, update, delete: if isApproved() &&
+        (isAdmin() || resource.data.ownerUid == request.auth.uid);
+      allow create: if isApproved() && request.resource.data.ownerUid == request.auth.uid;
+    }
+    match /workLogApp_dashboard_events/{docId} {
+      allow read, update, delete: if isApproved() &&
+        (isAdmin() || resource.data.ownerUid == request.auth.uid);
+      allow create: if isApproved() && (isAdmin() || request.resource.data.ownerUid == request.auth.uid);
+    }
+    match /workLogApp_todos/{docId} {
+      allow read, update, delete: if isApproved() &&
+        (isAdmin() || resource.data.ownerUid == request.auth.uid);
+      allow create: if isApproved() && (isAdmin() || request.resource.data.ownerUid == request.auth.uid);
+    }
+    match /workLogApp_logs/{docId} {
+      // 로그는 승인 사용자가 남길(추가) 수는 있지만, 고치거나 지우는 건 관리자만 → 위·변조 방지
+      allow read: if isApproved();
+      allow create: if isApproved();
+      allow update, delete: if isAdmin();
+    }
+    match /workLogApp_accounts/{docId} {
+      allow read, write: if false;
+    }
+    // ===================================================================
+    // 매출현황 앱 (salesApp_*) — 업무일지 앱과 완전히 분리된 컬렉션을 사용합니다.
+    // 계정도 별도(salesApp_users)라서 업무일지 계정으로는 매출 데이터에 접근할 수 없습니다.
+    // ===================================================================
+    // 최초 1회 초기 설정(setup.html)이 끝나기 전까지만 열리는 부트스트랩 통로.
+    // 설정 완료 시 salesApp_config/setupDone 문서가 생기면서 자동으로 닫힙니다.
+    function salesBootstrapping() {
+      return !exists(/databases/$(database)/documents/salesApp_config/setupDone);
+    }
+    function salesActive() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/salesApp_users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/salesApp_users/$(request.auth.uid)).data.active == true;
+    }
+    function salesAdmin() {
+      return salesActive()
+        && get(/databases/$(database)/documents/salesApp_users/$(request.auth.uid)).data.role == 'admin';
+    }
+    // 아이디→이메일 매핑 (로그인 전 비인증 조회 필요 → 공개 읽기, workLogApp_login과 같은 방식)
+    match /salesApp_usernames/{name} {
+      allow read: if true;
+      allow write: if salesBootstrapping() || salesAdmin();
+    }
+    match /salesApp_users/{uid} {
+      allow read: if salesBootstrapping() || salesActive();
+      allow write: if salesBootstrapping() || salesAdmin();
+    }
+    // 나머지 salesApp_* 컬렉션 (매출·목표·품목·이력): 조회는 활성 계정, 쓰기는 관리자만
+    match /{col}/{docId} {
+      allow read: if col.matches('salesApp_.*') && (salesBootstrapping() || salesActive());
+      allow write: if col.matches('salesApp_.*') && (salesBootstrapping() || salesAdmin());
+    }
+    // ===================================================================
+    // 매출관리 앱 (salesStatus_months) — 매출현황·확정 직접입력 앱.
+    // 예리의 업무일지 계정 또는 매출보고 앱 계정으로 접근합니다.
+    // ===================================================================
+    function isYeri() {
+      return request.auth != null
+        && (request.auth.token.email == "yeriberry@worklog-app.local"
+            || request.auth.token.email == "yeri@sales.local");
+    }
+    match /salesStatus_months/{ym} {
+      allow read: if isYeri() || salesActive();
+      allow write: if isYeri() || salesAdmin();
+    }
+    // ===================================================================
+    // 발주리스트 앱 (vendorApp_vendors / vendorApp_staff / vendorApp_meta)
+    // 업무일지 승인 계정으로 로그인해서 사용합니다.
+    // 예전 발주 앱 컬렉션(vendorApp_accounts 등)은 위에서 계속 잠겨 있습니다.
+    // ===================================================================
+    match /vendorApp_vendors/{docId} {
+      allow read, write: if isApproved() || isYeri();
+    }
+    match /vendorApp_staff/{docId} {
+      allow read, write: if isApproved() || isYeri();
+    }
+    match /vendorApp_meta/{docId} {
+      allow read, write: if isApproved() || isYeri();
+    }
+    // ===================================================================
+    // 전통장 테이스팅 앱 (jangApp_*) — 참석자는 익명 로그인으로 참여합니다.
+    // 관리자 인증은 goodbab@jang-tasting.app 계정(앱에서 자동 생성)을 사용합니다.
+    // ===================================================================
+    function isJangAdmin() {
+      return request.auth != null
+        && request.auth.token.email == "goodbab@jang-tasting.app";
+    }
+    // 설문 응답: 참석자(익명 포함) 누구나 읽고 쓸 수 있음 (실시간 집계용)
+    match /jangApp_responses/{pid} {
+      allow read, create, update: if isSignedIn();
+      allow delete: if isJangAdmin();
+    }
+    // 전화번호: 쓰기만 가능하고 읽기는 관리자만 (참석자에게 번호 비공개)
+    match /jangApp_phones/{pid} {
+      allow create, update: if isSignedIn();
+      allow read, delete: if isJangAdmin();
+    }
+    // 앱 설정(장 항목명): 읽기는 누구나, 수정은 관리자만
+    match /jangApp_meta/{doc} {
+      allow read: if isSignedIn();
+      allow write: if isJangAdmin();
+    }
+    // ===================================================================
+    // 안동 헤리티지 미식트립 앱 (andongApp_*) — 참가자는 이름+전화번호로 익명 로그인.
+    // 일정표·트립의 흐름·미식리스트는 참가자 누구나 수정/추가/삭제(앱에서 확인창 거침).
+    // 관리자(취합·CSV)는 goodbab@andong-trip.app 계정(앱에서 자동 생성)을 사용합니다.
+    // ===================================================================
+    function isAndongAdmin() {
+      return request.auth != null
+        && request.auth.token.email == "goodbab@andong-trip.app";
+    }
+    match /andongApp_schedule/{docId} {
+      allow read, write: if isSignedIn();
+    }
+    match /andongApp_flow/{docId} {
+      allow read, write: if isSignedIn();
+    }
+    match /andongApp_places/{docId} {
+      allow read, write: if isSignedIn();
+    }
+    // R&D 관점 기록 대상 장소 (일정과 별개로 참가자 누구나 추가·삭제)
+    match /andongApp_rndPlaces/{docId} {
+      allow read, write: if isSignedIn();
+    }
+    // 참가자 기록(R&D 관점·소감·흐름 답·장소별 메모): 이름은 마스킹된 형태(최**)만 저장됨.
+    // 모두가 열람(기록 화면), 본인 기록은 쓰기 가능, 삭제는 예리 계정만.
+    match /andongApp_notes/{pid} {
+      allow read, create, update: if isSignedIn();
+      allow delete: if isYeri() || isAndongAdmin();
+    }
+    // 전화번호+실명: 쓰기만 가능, 읽기는 관리자·예리 계정만 (참가자에게 비공개)
+    match /andongApp_phones/{pid} {
+      allow create, update: if isSignedIn();
+      allow read, delete: if isYeri() || isAndongAdmin();
+    }
+    // ===================================================================
+    // 추석 명절음식 예약 앱 (holidayApp_*) — 고객은 핸드폰번호+비밀번호(이메일 계정으로 변환)로 가입.
+    // 비밀번호 초기화는 관리자가 앱에서 같은 번호의 새 계정(번호.2@…)을 임시 비밀번호로 만들어 예약을 옮기는 방식.
+    // 관리자 인증은 goodbab@chuseok.goodbab.app 계정(앱에서 최초 관리자 로그인 시 자동 생성)을 사용합니다.
+    // ===================================================================
+    function isHolidayAdmin() {
+      return request.auth != null
+        && request.auth.token.email == "goodbab@chuseok.goodbab.app";
+    }
+    // 전화예약 입력 계정(staff@…): 예약 조회·추가·수정과 회원 조회만 가능 (품목·설정·삭제·회원 쓰기는 관리자만)
+    function isHolidayStaff() {
+      return request.auth != null
+        && request.auth.token.email == "staff@chuseok.goodbab.app";
+    }
+    // 회원 프로필(성명·핸드폰·가입/로그인 시각): 본인과 관리자만 읽기, 본인만 만들기·수정
+    match /holidayApp_users/{uid} {
+      allow read: if isHolidayAdmin() || isHolidayStaff() || (notAnon() && request.auth.uid == uid);
+      allow create, update: if isHolidayAdmin() || (notAnon() && request.auth.uid == uid);
+      allow delete: if isHolidayAdmin();
+    }
+    // 예약(주문): 본인 것만 읽기, 고객이 만들 때는 반드시 미입금(paid=false) 상태. 관리자는 전화 예약을 직접 추가·수정.
+    // 고객은 입금확인 전까지만 수정(취소)할 수 있고, 입금여부(paid)는 관리자만 바꿀 수 있습니다.
+    match /holidayApp_orders/{docId} {
+      allow read: if isHolidayAdmin() || isHolidayStaff() || (notAnon() && resource.data.uid == request.auth.uid);
+      allow create: if isHolidayAdmin() || isHolidayStaff() ||
+        (notAnon()
+          && request.resource.data.uid == request.auth.uid
+          && request.resource.data.paid == false);
+      allow update: if isHolidayAdmin() || isHolidayStaff() ||
+        (notAnon() && resource.data.uid == request.auth.uid
+          && resource.data.paid == false
+          && request.resource.data.uid == request.auth.uid
+          && request.resource.data.paid == false) ||
+        // 고객 본인이 픽업 날짜·시간만 바꾸는 경우 (입금 확인 후에도 허용, 기간 제한은 앱 설정으로)
+        (notAnon() && resource.data.uid == request.auth.uid
+          && resource.data.status == 'active'
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['pickupDate','pickupTime','updatedAt'])) ||
+        // 관리자 설정에서 '입금확인 후에도 취소 가능'을 켠 경우: 본인 예약을 취소 상태로만 바꿀 수 있음
+        (notAnon() && resource.data.uid == request.auth.uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','cancelledAt','updatedAt'])
+          && request.resource.data.status == 'cancelled'
+          && get(/databases/$(database)/documents/holidayApp_meta/settings).data.cancelPaid == true);
+      allow delete: if isHolidayAdmin();
+    }
+    // 품목(이름·금액·설명·사진)과 설정(계좌·마감·안내문): 로그인 없이 누구나 볼 수 있음(둘러보기), 관리자만 수정
+    match /holidayApp_menu/{docId} {
+      allow read: if true;
+      allow write: if isHolidayAdmin();
+    }
+    match /holidayApp_meta/{docId} {
+      allow read: if true;
+      // stock 문서(품목별 예약 수량 합계)는 고객이 예약·취소할 때 증감만 하므로 로그인 고객도 쓸 수 있게 허용
+      // visits 문서(날짜별 접속 수)는 로그인 전 방문자도 올려야 하므로 누구나 쓸 수 있게 허용 (숫자 카운트만 담김)
+      allow write: if isHolidayAdmin() ||
+        (docId == 'stock' && notAnon()
+          && request.resource.data.keys().hasOnly(['reserved','updatedAt'])) ||
+        docId == 'visits';
+    }
+    // 기록(가입·로그인·예약·입금확인 등): 누구나 남길 수 있고, 보기·고치기·지우기는 관리자만
+    match /holidayApp_logs/{docId} {
+      allow create: if notAnon();
+      allow read, update, delete: if isHolidayAdmin();
+    }
+    // 선입금 기록(예약 전에 먼저 입금한 분의 입금자명·금액): 관리자만 (전화예약 계정은 볼 수 없음)
+    match /holidayApp_prepay/{docId} {
+      allow read, write: if isHolidayAdmin();
+    }
+    // 번호별 로그인 계정 버전(비밀번호 초기화 시 증가) — 로그인 전 조회가 필요해 공개 읽기.
+    // 버전 숫자와 초기화 시각만 담고 이름 등 개인정보는 담지 않습니다. 쓰기는 관리자만.
+    match /holidayApp_login/{phone} {
+      allow read: if true;
+      allow write: if isHolidayAdmin();
+    }
+    // 비밀번호 초기화 요청: 로그인 전 고객이 성명·번호만 남김(정해진 4개 필드만 허용), 보기·처리·삭제는 관리자만
+    match /holidayApp_resets/{phone} {
+      allow create, update: if isHolidayAdmin() ||
+        (request.resource.data.keys().hasOnly(['name','phone','status','requestedAt'])
+          && request.resource.data.status == 'requested'
+          && request.resource.data.phone == phone);
+      allow read, delete: if isHolidayAdmin();
+    }
+    // ===================================================================
+    // 국중박 한식페스타 매출 앱 (festaApp_*) — 2026.10.23~24
+    // 로그인: 아이디@festa.goodbab.app 이메일 계정 (최초 관리자 goodbab 은 앱에서 자동 생성).
+    // 계정 프로필(festaApp_users)이 있고 active == true 인 사람만 사용할 수 있습니다.
+    // ===================================================================
+    function isFestaMaster() {
+      return request.auth != null
+        && request.auth.token.email == "goodbab@festa.goodbab.app";
+    }
+    function festaHasProfile() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/festaApp_users/$(request.auth.uid));
+    }
+    function festaProfile() {
+      return get(/databases/$(database)/documents/festaApp_users/$(request.auth.uid)).data;
+    }
+    function festaActive() {
+      return isFestaMaster() || (festaHasProfile() && festaProfile().active == true);
+    }
+    function festaAdmin() {
+      return isFestaMaster() ||
+        (festaHasProfile() && festaProfile().active == true && festaProfile().role == 'admin');
+    }
+    // 계정 프로필: 본인 것은 읽기 가능(로그인 확인용), 목록 열람·생성·수정은 관리자만
+    match /festaApp_users/{uid} {
+      allow read: if festaAdmin() || (request.auth != null && request.auth.uid == uid);
+      allow write: if festaAdmin();
+    }
+    // 상품(이름·가격·설명·사진): 사용 계정 누구나 보기, 추가·수정·삭제는 관리자만
+    match /festaApp_products/{docId} {
+      allow read: if festaActive();
+      allow write: if festaAdmin();
+    }
+    // 판매내역: 사용 계정 누구나 보기·등록(본인 이름으로만).
+    // 수정·삭제는 관리자, 또는 본인이 등록한 판매만.
+    match /festaApp_sales/{docId} {
+      allow read: if festaActive();
+      allow create: if festaActive() && request.resource.data.sellerUid == request.auth.uid;
+      allow update: if festaAdmin() ||
+        (festaActive() && resource.data.sellerUid == request.auth.uid
+          && request.resource.data.sellerUid == request.auth.uid);
+      allow delete: if festaAdmin() || (festaActive() && resource.data.sellerUid == request.auth.uid);
+    }
+    // 앱 설정(초기 상품 등록 여부 등)
+    match /festaApp_meta/{docId} {
+      allow read: if festaActive();
+      allow write: if festaAdmin();
+    }
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
