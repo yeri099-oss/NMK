@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 420" fill="none">
+  <!-- 라벤더 줄기 -->
+  <path d="M70 420 C72 330 78 250 96 150" stroke="#8fae94" stroke-width="3" stroke-linecap="round"/>
+  <path d="M40 420 C44 350 40 300 30 230" stroke="#9cb9a0" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M78 300 C60 290 48 276 42 258 C60 262 74 276 78 300Z" fill="#b9d1bb"/>
+  <path d="M84 250 C102 244 116 230 122 212 C104 214 90 228 84 250Z" fill="#c6dcc7"/>
+  <g fill="#b7a6dc">
+    <ellipse cx="96" cy="150" rx="7" ry="10" transform="rotate(-20 96 150)"/>
+    <ellipse cx="104" cy="134" rx="7" ry="10" transform="rotate(25 104 134)"/>
+    <ellipse cx="94" cy="122" rx="6.5" ry="9" transform="rotate(-25 94 122)"/>
+    <ellipse cx="103" cy="106" rx="6.5" ry="9" transform="rotate(20 103 106)"/>
+    <ellipse cx="96" cy="94" rx="6" ry="8" transform="rotate(-20 96 94)"/>
+    <ellipse cx="103" cy="80" rx="5.5" ry="7.5" transform="rotate(20 103 80)"/>
+    <ellipse cx="98" cy="68" rx="5" ry="6.5"/>
+    <ellipse cx="30" cy="230" rx="6" ry="9" transform="rotate(-15 30 230)"/>
+    <ellipse cx="37" cy="215" rx="6" ry="8.5" transform="rotate(20 37 215)"/>
+    <ellipse cx="29" cy="202" rx="5.5" ry="8" transform="rotate(-20 29 202)"/>
+    <ellipse cx="35" cy="188" rx="5" ry="7" transform="rotate(15 35 188)"/>
+    <ellipse cx="30" cy="176" rx="4.5" ry="6"/>
+  </g>
+  <g fill="#cdbfea">
+    <ellipse cx="88" cy="140" rx="5" ry="7" transform="rotate(-35 88 140)"/>
+    <ellipse cx="110" cy="118" rx="5" ry="7" transform="rotate(35 110 118)"/>
+    <ellipse cx="89" cy="108" rx="4.5" ry="6.5" transform="rotate(-35 89 108)"/>
+    <ellipse cx="22" cy="216" rx="4.5" ry="6.5" transform="rotate(-35 22 216)"/>
+  </g>
+</svg>

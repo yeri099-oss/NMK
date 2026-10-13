@@ -22,6 +22,9 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2.0.3/fonts/variable/woff2/SUIT-Variable.css">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap">
 <style>
 /* 밝은 흰 바탕 + 흰 둥근 카드(옅은 그림자) + 노랑·모브·세이지·코랄 4색 */
 :root{
@@ -375,6 +378,123 @@ table.h tbody tr:hover td{background:var(--soft)}
 .toast{border-radius:16px}
 .toast.ok{background:var(--ok-d)}
 .mitem{border-radius:18px}
+
+/* ================= v10 파스텔 · 입체 디자인 ================= */
+:root{
+  --bg:#fbf9f6; --surface:#ffffff; --soft:#f5f2ee; --ink:#1f1d24; --ink2:#5d5a63; --muted:#9f9ba4; --line:#ece8e2;
+  --t0:#fbe3e3; --t1:#dcefe6; --t2:#e9e3f6; --t3:#fde6d6; --t4:#eff3d6;
+  --t0d:#e7a9ad; --t1d:#7fb79c; --t2d:#a796d6; --t3d:#eba57a; --t4d:#b7c46a;
+  --brand:#f0a979; --brand-d:#c06f3a; --brand-soft:#fde6d6;
+  --ok:#7fb79c; --ok-d:#4f8f71; --ok-soft:#dcefe6; --coral:#ee8a84; --mauve:#a796d6; --mauve-d:#6f5fae; --mauve-soft:#e9e3f6;
+  --blue:#86a6d8; --blue-soft:#e2ebf8;
+  --lift:0 1px 0 rgba(255,255,255,.9) inset,0 -2px 0 rgba(31,29,36,.04) inset,0 14px 28px -14px rgba(60,40,30,.28),0 3px 8px -2px rgba(60,40,30,.08);
+  --press:inset 0 -4px 0 rgba(0,0,0,.12),0 8px 16px -8px rgba(60,40,30,.45);
+  --shadow:var(--lift);
+}
+html,body{font-family:"Outfit","SUIT Variable","SUIT","Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo",sans-serif;letter-spacing:-.1px}
+html{background:linear-gradient(180deg,#fdfbf8 0%,#f7f4ef 60%,#f1f5f0 100%) fixed;min-height:100%}
+body{background:transparent}
+.deco{position:fixed;bottom:0;width:min(26vw,220px);height:min(50vw,420px);background:no-repeat bottom/contain;pointer-events:none;z-index:0;opacity:.85}
+.deco-l{left:-18px;background-image:url(botanical-l.svg)}
+.deco-r{right:-18px;background-image:url(botanical-r.svg)}
+#appView,#loginView{position:relative;z-index:1}
+h1,h2,h3,.big,.v,.pname,.btn,nav.tabs button{font-family:inherit}
+h2.sec{font-weight:700;font-size:17px}
+.card{background:var(--surface);border:0;box-shadow:var(--lift);border-radius:26px}
+/* 헤더 */
+header.top{background:rgba(251,249,246,.86);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.top-row h1#pageTitle{font-size:34px;font-weight:800;letter-spacing:-1px;color:var(--ink)}
+.eyebrow{color:var(--ink2);font-weight:500}
+.ver{background:var(--t2);border:0;color:var(--mauve-d)}
+.net{background:var(--t1);color:var(--ok-d)}
+#logoutBtn{border:0;background:var(--surface);box-shadow:var(--lift);border-radius:14px}
+/* 탭바 */
+nav.tabs{border-radius:30px;box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 18px 40px -16px rgba(60,40,30,.35),0 4px 10px rgba(60,40,30,.06)}
+nav.tabs button.on{color:var(--ink)}
+nav.tabs button.center i{background:var(--ink);box-shadow:inset 0 -4px 0 rgba(255,255,255,.08),0 10px 20px -6px rgba(31,29,36,.55)}
+nav.tabs button.center.on i{background:var(--ink)}
+/* 공통 버튼·입력 */
+.btn{border:0;background:var(--surface);box-shadow:var(--lift);border-radius:16px;font-weight:700}
+.btn:active{transform:translateY(2px);box-shadow:0 4px 10px -6px rgba(60,40,30,.3)}
+.btn.sm{border-radius:12px}
+.btn.primary{background:var(--ink);color:#fff;box-shadow:var(--press)}
+.input{background:var(--soft);border:1.5px solid transparent;border-radius:16px;box-shadow:inset 0 2px 4px rgba(60,40,30,.06)}
+.input:focus{background:#fff;border-color:var(--ink)}
+.chip,.seg button{border:0!important;background:var(--soft);color:var(--ink2);box-shadow:inset 0 -3px 0 rgba(31,29,36,.05);border-radius:16px}
+.chip.on,.seg button.on{background:var(--ink);color:#fff;box-shadow:var(--press)}
+#payType button.on[data-v="card"]{background:var(--blue);color:#fff}
+#payType button.on[data-v="cash"]{background:var(--ok);color:#fff}
+#payType button.on[data-v="zeropay"]{background:var(--mauve);color:#fff}
+.chips.cust4 .chip{padding:13px 4px}
+.daychips{background:var(--soft);box-shadow:inset 0 2px 5px rgba(60,40,30,.07);border-radius:18px}
+.daychips .chip{background:none;box-shadow:none}
+.daychips .chip.on{background:var(--surface);color:var(--ink);box-shadow:var(--lift)}
+/* 판매: 파스텔 상품 카드 */
+.prow{border:0;border-radius:24px;padding:10px 12px 10px 18px;box-shadow:var(--lift);transition:transform .12s,box-shadow .12s}
+.prow.t0{background:var(--t0)}.prow.t1{background:var(--t1)}.prow.t2{background:var(--t2)}.prow.t3{background:var(--t3)}.prow.t4{background:var(--t4)}
+.prow.sel{outline:2.5px solid var(--ink);outline-offset:-2.5px;transform:translateY(-1px)}
+.pname{font-weight:700;font-size:19px;color:var(--ink)}
+.pprice{color:var(--ink2);font-weight:600}
+.qty button{background:rgba(255,255,255,.75);border:0;border-radius:16px;box-shadow:inset 0 -3px 0 rgba(31,29,36,.06),0 2px 4px rgba(60,40,30,.06)}
+.qty button.plus{background:var(--ink);color:#fff;border-radius:16px;box-shadow:var(--press)}
+.qty input{font-weight:800;color:var(--ink)}
+.infobtn{background:rgba(255,255,255,.75);border:0}
+.btn.reset{background:var(--ok);color:#fff;box-shadow:var(--press);border-radius:18px}
+#sellBtn{background:var(--coral);color:#fff;box-shadow:var(--press);border-radius:18px;font-size:19px}
+.total-box{background:var(--t3);border-radius:22px;box-shadow:inset 0 2px 6px rgba(255,255,255,.7)}
+.total-box .big{color:var(--ink);font-weight:800}
+.change-box{background:var(--t1);border-radius:22px}
+.change-box.short{background:var(--t0)}
+.change-box .big{color:var(--ok-d);font-weight:800}
+.cashq .btn{background:var(--soft);box-shadow:inset 0 -3px 0 rgba(31,29,36,.05)}
+/* 대시보드: 파스텔 카드 + 아치 */
+.tile{border-radius:24px;box-shadow:var(--lift);color:var(--ink)}
+.tile.hero,.tile.c-peach,.tile.c-sage,.tile.c-coral{color:var(--ink)}
+.tile.hero{background:var(--t0)}
+.tile.c-peach{background:var(--t3)}
+.tile.c-sage{background:var(--t1)}
+.tile.c-coral{background:var(--t2)}
+.tile.hero .k,.tile.c-peach .k,.tile.c-sage .k,.tile.c-coral .k,.tile.hero .s,.tile.c-peach .s,.tile.c-sage .s,.tile.c-coral .s{color:var(--ink2)}
+.tile.hero::before,.tile.c-peach::before,.tile.c-sage::before,.tile.c-coral::before{width:150px;height:150px;right:-40px;bottom:-90px;background:rgba(255,255,255,.55)}
+.tile.hero::after,.tile.c-peach::after,.tile.c-sage::after,.tile.c-coral::after{background:rgba(255,255,255,.4)}
+.tile .v{font-weight:800;letter-spacing:-.8px}
+.tile.hero .v{font-size:34px}
+.tile.pq{background:var(--surface)}
+.tile.pq.t0{--c:var(--t0d)}.tile.pq.t1{--c:var(--t1d)}.tile.pq.t2{--c:var(--t2d)}.tile.pq.t3{--c:var(--t3d)}.tile.pq.t4{--c:var(--t4d)}
+.fill,.hcol .hb{background:var(--t3d)}
+.bartrack{background:var(--soft)}
+.note{background:var(--t4);color:var(--ink2)}
+/* 판매내역 */
+.fcard{border:0;background:var(--surface);box-shadow:var(--lift);border-radius:18px}
+.fcard.on{background:var(--ink);color:#fff}
+.tablewrap{box-shadow:var(--lift);border-radius:24px}
+.tag{border-radius:10px;font-weight:700}
+.tag.card{background:var(--blue-soft);color:#4a6aa0}
+.tag.cash{background:var(--t1);color:var(--ok-d)}
+.tag.zeropay{background:var(--t2);color:var(--mauve-d)}
+/* 상품정보 */
+.icard{box-shadow:var(--lift);border-radius:26px}
+.icard.t0 .thumb{background:var(--t0)}.icard.t1 .thumb{background:var(--t1)}.icard.t2 .thumb{background:var(--t2)}.icard.t3 .thumb{background:var(--t3)}.icard.t4 .thumb{background:var(--t4)}
+.icard h3{font-weight:700}
+.icard .price{color:var(--ink)}
+.lang{background:var(--soft);box-shadow:inset 0 2px 5px rgba(60,40,30,.07)}
+.lang button.on{background:var(--surface);color:var(--ink);box-shadow:var(--lift)}
+.present{background:linear-gradient(180deg,#fdf6f3,#f3f0f8)}
+.present,.present .pd{color:var(--ink)}
+.present .sub2{color:var(--ink2)}
+.present .pimg{background:var(--t0);box-shadow:var(--lift)}
+.present .pp{color:var(--brand-d)}
+.present .x{background:var(--surface);color:var(--ink);box-shadow:var(--lift)}
+.present .bar .lang{background:var(--soft)}
+.present .bar .lang button{color:var(--muted)}
+.present .bar .lang button.on{background:var(--surface);color:var(--ink)}
+/* 로그인·모달·토스트 */
+.login-card{box-shadow:var(--lift);border-radius:30px}
+.modal{border-radius:30px 30px 0 0}
+@media(min-width:600px){.modal{border-radius:30px}}
+.toast{background:var(--ink);border-radius:18px}
+.mitem{box-shadow:var(--lift);border-radius:22px}
+@media(max-width:699px){.deco{opacity:.45}}
 </style>
 </head>
 <body>
@@ -395,6 +515,7 @@ table.h tbody tr:hover td{background:var(--soft)}
 <div id="bootView" class="loading">불러오는 중…</div>
 
 <!-- ================= 앱 ================= -->
+<div class="deco deco-l" aria-hidden="true"></div><div class="deco deco-r" aria-hidden="true"></div>
 <div id="appView" class="hidden">
   <header class="top">
     <div class="top-row">
@@ -572,7 +693,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v9"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v10"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -867,9 +988,9 @@ function renderPos() {
   if (!list.length) {
     grid.innerHTML = `<div class="empty">판매중인 상품이 없어요.${isAdmin() ? " [관리] 탭에서 추가하세요." : ""}</div>`;
   } else {
-    grid.innerHTML = list.map((p) => {
+    grid.innerHTML = list.map((p, i) => {
       const q = cart[p.id] || 0;
-      return `<div class="prow ${q ? "sel" : ""}" data-id="${p.id}">
+      return `<div class="prow t${i % 5} ${q ? "sel" : ""}" data-id="${p.id}">
         <button class="tap" data-act="plus" type="button"><span class="pname">${esc(p.nameKo)}</span><span class="pprice num">${won(p.price)}</span></button>
         <button class="infobtn" data-act="info" type="button" aria-label="상품 설명">i</button>
         <div class="qty">
@@ -1004,7 +1125,7 @@ function renderInfo() {
   $$("#infoLang button").forEach((b) => b.classList.toggle("on", b.dataset.l === infoLang));
   const list = sellable();
   $("#infoGrid").innerHTML = list.length ? list.map((p, i) => `
-    <button class="icard" data-i="${i}" type="button">
+    <button class="icard t${i % 5}" data-i="${i}" type="button">
       <div class="thumb">${prodVisual(p)}</div>
       <div class="body">
         <h3>${esc(pName(p, infoLang))}</h3>
@@ -1144,8 +1265,8 @@ function renderDash() {
       <div class="tile c-coral"><div class="k">현금 매출</div><div class="v num">${won((r.byPay.cash || {}).amount || 0)}</div><div class="s">시재 확인용</div></div>
     </div>
     <div class="tiles prod" style="--n:${Math.max(1, prodRows.length)}">
-      ${prodRows.map((x, i) => { const pct = r.qty ? Math.round(x.qty / r.qty * 100) : 0; return `<div class="tile pq">
-        <div class="ring" style="--p:${pct};--c:var(${["--brand", "--mauve", "--ok", "--coral", "--blue"][i % 5]})"><span class="num">${pct}%</span></div>
+      ${prodRows.map((x, i) => { const pct = r.qty ? Math.round(x.qty / r.qty * 100) : 0; return `<div class="tile pq t${i % 5}">
+        <div class="ring" style="--p:${pct}"><span class="num">${pct}%</span></div>
         <div class="k">${esc(x.name)}</div><div class="v num">${fmt(x.qty)}개</div><div class="s num">${won(x.amount)}</div></div>`; }).join("")}
     </div>
     ${dashDay === "all" && otherCnt ? `<div class="note">⚠️ 행사일(10/23·24) 외 판매 ${otherCnt}건이 전체 합계에 포함돼 있어요. 연습 데이터라면 [관리] 탭에서 정리할 수 있어요.</div>` : ""}

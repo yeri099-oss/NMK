@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 420" fill="none">
+  <!-- 분홍 꽃 + 잎 -->
+  <path d="M150 420 C146 340 140 270 128 190" stroke="#8fae94" stroke-width="3" stroke-linecap="round"/>
+  <path d="M142 330 C116 322 98 300 92 276 C118 282 136 302 142 330Z" fill="#b9d1bb"/>
+  <path d="M138 280 C162 270 178 250 184 226 C160 232 144 252 138 280Z" fill="#c6dcc7"/>
+  <path d="M128 190 C98 186 80 160 84 128 C104 142 118 160 128 190Z" fill="#f4c6c8"/>
+  <path d="M128 190 C156 184 174 158 170 126 C150 140 136 160 128 190Z" fill="#f4c6c8"/>
+  <path d="M128 192 C108 168 106 132 126 104 C146 132 146 168 128 192Z" fill="#f7d6d6"/>
+  <path d="M128 190 C116 176 114 156 122 140" stroke="#e7a9ad" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M128 190 C140 176 142 156 134 140" stroke="#e7a9ad" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M200 420 C204 370 210 330 222 290" stroke="#9cb9a0" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M222 290 C206 282 200 262 206 246 C222 256 228 274 222 290Z" fill="#f7d6d6"/>
+  <path d="M222 290 C236 280 240 262 232 248 C222 260 218 276 222 290Z" fill="#f4c6c8"/>
+</svg>
