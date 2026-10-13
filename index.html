@@ -693,7 +693,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v13"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v14"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -706,9 +706,9 @@ const PAY = { card: "카드", cash: "현금", zeropay: "QR" }; // zeropay 키는
 const NATION = { KR: "한국인", FG: "외국인" };
 const GENDER = { F: "여", M: "남" };
 const SEED_PRODUCTS = [
-  { nameKo: "귤당근쥬스", nameEn: "Tangerine Carrot Juice", price: 4800, emoji: "🍊",
-    descKo: "상큼한 귤과 달큰한 당근을 함께 담은 주스예요.\n새콤달콤하고 산뜻해서 남녀노소 누구나 부담 없이 즐길 수 있어요.",
-    descEn: "A refreshing juice made with tangerine and carrot.\nSweet, tangy and light — easy for anyone to enjoy." },
+  { nameKo: "귤당근쥬스", nameEn: "Organic Tangerine Carrot Juice", price: 4800, emoji: "🍊", image: "img/gyul-carrot-juice.jpg",
+    descKo: "물 한 방울, 첨가물 하나 넣지 않은 100% 유기농 착즙 주스예요.\n제주에서 자란 유기농 귤 85% + 유기농 당근 15% · 500ml\n\n· 피니셔 착즙: 좋은 부분만 빠르게 짜서 열·마찰을 줄이고 영양 손실을 최소화, 펄프가 많아 진하고 깊은 맛\n· 유기농 감귤: 비타민C의 보고, 면역력·피로회복에 좋아요\n· 유기농 당근 (제주 김형표 농부님): 베타카로틴이 풍부하고 달고 크리미한 풍미\n\n일반 주스에서는 따라오기 힘든 맛, 언제 먹어도 좋아요.",
+    descEn: "100% organic cold-pressed juice — no water, no additives. (500ml)\nOrganic Jeju tangerine 85% + organic carrot 15%\n\n· Finisher pressing: only the best parts, pressed fast to keep heat low and nutrients in; rich, pulpy and deep in flavor\n· Organic tangerine: packed with vitamin C\n· Organic carrot from farmer Kim Hyeong-pyo in Jeju: rich in beta-carotene, sweet and creamy\n\nA taste ordinary juice can't match — good any time." },
   { nameKo: "레몬즙", nameEn: "Lemon Juice", price: 14800, emoji: "🍋",
     descKo: "레몬을 짜서 담은 레몬즙이에요.\n물이나 탄산수에 타서 레모네이드로, 요리·드레싱에 넣어 상큼하게 즐겨보세요.",
     descEn: "Squeezed lemon juice in a bottle.\nMix with water or sparkling water for lemonade, or add to cooking and dressings." },
@@ -734,6 +734,9 @@ const PRODUCT_UPDATES = [
   { id: "gim-2026-10", match: "김부각", set: { image: "img/gim-bugak.jpg",
     descKo: "귀한 재료만 들어간 꽃밥에피다 김부각이에요.\n국내 단 1% 생산되는 지주식 김에, 가마솥에 끓인 유기농 찹쌀죽을 발라 전통방식으로 만들었어요.\n\n· 지주식 김 (갯벌에 세운 지주에 발을 매달아 키운 자연친화 김, 미네랄·비타민·식이섬유가 풍부한 알칼리 식품)\n· 유기농 찹쌀죽 (가마솥에 불을 때어)\n· Non-GMO 현미유\n· 국산 참깨와 국내산 천일염\n\n화학첨가물 없이 바삭해요. 밥 반찬·간식·안주로 누구나 맛있게 즐겨요.",
     descEn: "Premium gim bugak (crispy seaweed chips) by Kkotbap.\nMade the traditional way with pole-cultivated laver — only about 1% of Korean seaweed — and organic glutinous rice porridge cooked in an iron pot.\n\n· Pole-cultivated Korean laver, rich in minerals, vitamins and fiber\n· Organic glutinous rice porridge (wood-fired iron pot)\n· Non-GMO rice bran oil\n· Korean sesame and sea salt\n\nNo chemical additives. Great as a snack, side dish or with drinks." } },
+  { id: "gyul-2026-10", match: "귤당근쥬스", set: { image: "img/gyul-carrot-juice.jpg", nameEn: "Organic Tangerine Carrot Juice",
+    descKo: "물 한 방울, 첨가물 하나 넣지 않은 100% 유기농 착즙 주스예요.\n제주에서 자란 유기농 귤 85% + 유기농 당근 15% · 500ml\n\n· 피니셔 착즙: 좋은 부분만 빠르게 짜서 열·마찰을 줄이고 영양 손실을 최소화, 펄프가 많아 진하고 깊은 맛\n· 유기농 감귤: 비타민C의 보고, 면역력·피로회복에 좋아요\n· 유기농 당근 (제주 김형표 농부님): 베타카로틴이 풍부하고 달고 크리미한 풍미\n\n일반 주스에서는 따라오기 힘든 맛, 언제 먹어도 좋아요.",
+    descEn: "100% organic cold-pressed juice — no water, no additives. (500ml)\nOrganic Jeju tangerine 85% + organic carrot 15%\n\n· Finisher pressing: only the best parts, pressed fast to keep heat low and nutrients in; rich, pulpy and deep in flavor\n· Organic tangerine: packed with vitamin C\n· Organic carrot from farmer Kim Hyeong-pyo in Jeju: rich in beta-carotene, sweet and creamy\n\nA taste ordinary juice can't match — good any time." } },
 ];
 
 const app = initializeApp(firebaseConfig);
