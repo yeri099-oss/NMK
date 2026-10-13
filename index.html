@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#b5452b">
+<meta name="theme-color" content="#ededf3">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -12,14 +12,18 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>한식페스타 매출</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍚</text></svg>">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
+/* 라벤더 회색 바탕 + 흰 둥근 카드 + 모브·피치·세이지·코랄 4색 */
 :root{
-  --bg:#f6f1ea; --surface:#ffffff; --soft:#fbf6ef; --ink:#2b2118; --ink2:#5f5144; --muted:#94857a;
-  --line:#e7ddd0; --brand:#b5452b; --brand-d:#923520; --brand-soft:#f6e3dc; --ok:#2f6b4f; --ok-soft:#e1efe7;
-  --warn:#c0392b; --blue:#2c5d8a; --blue-soft:#e2ecf5; --radius:14px; --shadow:0 1px 2px rgba(60,40,20,.06),0 4px 14px rgba(60,40,20,.06);
+  --bg:#ededf3; --surface:#ffffff; --soft:#f5f4f9; --ink:#2e2c3b; --ink2:#6c6981; --muted:#a3a0b4;
+  --line:#e7e5ef; --brand:#a47f94; --brand-d:#86627a; --brand-soft:#f3ebf0;
+  --peach:#e4a87c; --peach-soft:#fbefe5; --ok:#8db27a; --ok-d:#6a9157; --ok-soft:#ecf3e7;
+  --coral:#e2736c; --warn:#d65e57; --blue:#7c8fb5; --blue-soft:#eaeef6;
+  --radius:20px; --shadow:0 6px 22px rgba(70,64,110,.07);
 }
 *{box-sizing:border-box}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Noto Sans KR","Malgun Gothic",sans-serif;-webkit-text-size-adjust:100%}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;-webkit-text-size-adjust:100%}
 body{min-height:100vh}
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -247,6 +251,120 @@ table.h tbody tr:hover td{background:#fffaf4}
 .imgpick .prev img{width:100%;height:100%;object-fit:cover}
 .empty{padding:30px 10px;text-align:center;color:var(--muted)}
 .loading{padding:60px 16px;text-align:center;color:var(--ink2)}
+
+/* ================= v5 디자인 ================= */
+h1,h2,h3{letter-spacing:-.3px}
+.btn{border-radius:14px;border-color:var(--line)}
+.btn.sm{border-radius:10px}
+.input{border-radius:14px;background:var(--soft);border-color:transparent}
+.input:focus{background:var(--surface);border-color:var(--brand)}
+.card{border-radius:var(--radius)}
+/* 헤더: 작은 날짜줄 + 큰 화면 제목 */
+header.top{background:var(--bg);border-bottom:0}
+.top-row{padding:14px 20px 8px;align-items:flex-end}
+.ttl{flex:1;min-width:0}
+.eyebrow{font-size:13px;color:var(--ink2);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top-row h1#pageTitle{font-size:28px;font-weight:800;margin:2px 0 0;flex:none}
+.ver{background:var(--surface);border-color:var(--line);color:var(--brand-d)}
+.net{background:var(--ok-soft);color:var(--ok-d)}
+.who{display:none}
+@media(min-width:700px){.who{display:inline}}
+main{padding:8px 20px 120px}
+/* 아래 탭바: 가운데 동그란 판매 버튼 */
+nav.tabs{position:fixed;z-index:40;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom));width:min(560px,calc(100% - 24px));display:flex;justify-content:space-around;align-items:center;gap:0;padding:8px 10px;background:var(--surface);border-radius:26px;box-shadow:0 10px 30px rgba(70,64,110,.16);overflow:visible}
+nav.tabs button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;border:0;background:none;padding:6px 4px;color:var(--muted);font-size:11px;font-weight:700;border-bottom:0}
+nav.tabs svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+nav.tabs button.on{color:var(--brand-d);border-bottom:0}
+nav.tabs button.center i{display:flex;width:56px;height:56px;margin-top:-30px;border-radius:99px;background:var(--brand);color:#fff;align-items:center;justify-content:center;box-shadow:0 8px 18px rgba(164,127,148,.45);border:4px solid var(--bg)}
+nav.tabs button.center i svg{stroke-width:2.6}
+nav.tabs button.center.on i{background:var(--brand-d)}
+.mobibar{bottom:calc(88px + env(safe-area-inset-bottom));left:12px;right:12px;border-radius:18px;background:var(--ink)}
+.mobibar .btn{background:var(--coral);border-color:var(--coral)}
+body.has-mobibar main{padding-bottom:180px}
+/* 날짜 선택: 흰 바탕 안의 알약 */
+.daychips{display:inline-flex;background:var(--surface);border-radius:16px;padding:5px;box-shadow:var(--shadow);gap:2px;max-width:100%;overflow-x:auto}
+.daychips .chip{border:0;background:none;color:var(--muted);padding:8px 16px;border-radius:12px}
+.daychips .chip.on{background:var(--brand);color:#fff}
+/* 칩·세그먼트 */
+.chip{border-color:var(--line);background:var(--soft);color:var(--ink2)}
+.chip.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.chips.cust4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.chips.cust4 .chip{border-radius:14px;padding:12px 4px;text-align:center}
+.seg button{border-radius:14px;background:var(--soft);border-color:transparent;color:var(--ink2)}
+.seg button.on{background:var(--brand);border-color:var(--brand);color:#fff}
+#payType button.on[data-v="card"]{background:var(--blue);border-color:var(--blue)}
+#payType button.on[data-v="cash"]{background:var(--ok);border-color:var(--ok)}
+#payType button.on[data-v="zeropay"]{background:var(--peach);border-color:var(--peach)}
+/* 판매: 상품 줄 */
+.prow{border-radius:18px;border-color:transparent;box-shadow:var(--shadow)}
+.prow.sel{background:var(--brand-soft);border-color:var(--brand)}
+.pprice{color:var(--brand-d)}
+.qty button{border-radius:14px;background:var(--soft);border-color:transparent}
+.qty button.plus{background:var(--brand);border-color:var(--brand);border-radius:99px}
+.infobtn{background:var(--soft);border-color:transparent}
+.btn.reset{background:var(--ok);border-color:var(--ok);border-radius:16px}
+#sellBtn{background:var(--coral);border-color:var(--coral);border-radius:16px}
+.total-box{background:var(--brand-soft);border-radius:18px}
+.total-box .big{color:var(--brand-d)}
+.change-box{border-radius:18px}
+.change-box .big{color:var(--ok-d)}
+/* 선택한 상품 표 */
+table.itbl{width:100%;border-collapse:collapse;font-size:15px}
+table.itbl th{font-size:12px;color:var(--muted);font-weight:700;text-align:left;padding:6px 8px;border-bottom:1.5px solid var(--line)}
+table.itbl td{padding:9px 8px;border-bottom:1px solid var(--line)}
+table.itbl tr:last-child td{border-bottom:0}
+table.itbl .r{text-align:right;white-space:nowrap}
+.modal table.itbl{margin-bottom:6px}
+.pcol .lines,#cartLines{border:0;padding:0}
+/* 대시보드: 색 카드 + 원형 비중 */
+.tile{border-radius:20px;position:relative;overflow:hidden}
+.tile.hero,.tile.c-peach,.tile.c-sage,.tile.c-coral{color:#fff}
+.tile.hero{background:var(--brand)}
+.tile.c-peach{background:var(--peach)}
+.tile.c-sage{background:var(--ok)}
+.tile.c-coral{background:var(--coral)}
+.tile.hero .k,.tile.c-peach .k,.tile.c-sage .k,.tile.c-coral .k,.tile.hero .s,.tile.c-peach .s,.tile.c-sage .s,.tile.c-coral .s{color:rgba(255,255,255,.88)}
+.tile.hero::before,.tile.c-peach::before,.tile.c-sage::before,.tile.c-coral::before{content:"";position:absolute;width:90px;height:90px;border-radius:99px;background:rgba(255,255,255,.16);right:-24px;bottom:-34px}
+.tile.hero::after,.tile.c-peach::after,.tile.c-sage::after,.tile.c-coral::after{content:"";position:absolute;width:38px;height:38px;border-radius:99px;background:rgba(255,255,255,.14);left:-12px;top:-12px}
+.tile.pq{padding-right:74px;min-height:96px}
+.tile.pq .v{color:var(--ink)}
+.ring{position:absolute;right:12px;top:50%;transform:translateY(-50%);width:54px;height:54px;border-radius:99px;background:conic-gradient(var(--c) calc(var(--p)*1%),var(--line) 0);display:flex;align-items:center;justify-content:center}
+.ring::before{content:"";position:absolute;inset:6px;border-radius:99px;background:var(--surface)}
+.ring span{position:relative;font-size:12px;font-weight:800;color:var(--ink2)}
+@media(min-width:700px) and (max-width:1100px){.tile.pq{padding-right:14px;padding-top:70px}.tile.pq .ring{top:14px;left:14px;right:auto;transform:none}}
+.fill,.hcol .hb{background:var(--brand)}
+.bartrack{background:var(--soft)}
+.note{border-radius:14px}
+/* 판매내역 */
+.fcard{border-radius:16px;border-color:transparent}
+.fcard.on{background:var(--brand);border-color:var(--brand)}
+.fcard.on span{color:rgba(255,255,255,.85)}
+.tablewrap{border-radius:20px}
+table.h th{background:var(--surface)}
+table.h tbody tr:hover td{background:var(--soft)}
+.tag{border-radius:8px;padding:3px 9px}
+.tag.card{background:var(--blue-soft);color:#4f6390}
+.tag.cash{background:var(--ok-soft);color:var(--ok-d)}
+.tag.zeropay{background:var(--peach-soft);color:#b5703f}
+/* 상품정보 */
+.icard{border-radius:20px}
+.icard .price{color:var(--brand-d)}
+.lang{border:0;background:var(--surface);box-shadow:var(--shadow);padding:4px}
+.lang button{border-radius:99px}
+.lang button.on{background:var(--brand)}
+.present{background:#2e2c3b}
+.present .pimg{background:#3b3849}
+.present .pp{color:#f2c3a2}
+.present .x{background:#45425a}
+.present .bar .lang{background:#3b3849;box-shadow:none}
+.present .bar .lang button.on{background:#fff;color:#2e2c3b}
+/* 로그인·모달·토스트 */
+.login-card{border-radius:26px}
+.modal{border-radius:26px 26px 0 0}
+@media(min-width:600px){.modal{border-radius:26px}}
+.toast{border-radius:16px}
+.toast.ok{background:var(--ok-d)}
+.mitem{border-radius:18px}
 </style>
 </head>
 <body>
@@ -270,20 +388,23 @@ table.h tbody tr:hover td{background:#fffaf4}
 <div id="appView" class="hidden">
   <header class="top">
     <div class="top-row">
-      <h1>🍚 한식페스타 매출 <span class="ver app-ver"></span></h1>
+      <div class="ttl">
+        <div class="eyebrow">🍚 한식페스타 매출 <span class="ver app-ver"></span> · <span id="todayLbl"></span></div>
+        <h1 id="pageTitle">판매</h1>
+      </div>
       <button class="upd" id="updBtn" type="button"></button>
       <span class="net" id="netState">온라인</span>
       <span class="who" id="whoAmI"></span>
-      <button class="btn sm ghost" id="logoutBtn">로그아웃</button>
+      <button class="btn sm" id="logoutBtn">로그아웃</button>
     </div>
-    <nav class="tabs" id="tabs">
-      <button data-tab="pos" class="on">판매</button>
-      <button data-tab="info">상품정보</button>
-      <button data-tab="dash">대시보드</button>
-      <button data-tab="hist">판매내역</button>
-      <button data-tab="admin" class="admin-only">관리</button>
-    </nav>
   </header>
+  <nav class="tabs" id="tabs">
+    <button data-tab="info"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span>상품정보</span></button>
+    <button data-tab="dash"><svg viewBox="0 0 24 24"><path d="M5 20V11M12 20V5M19 20v-7"/></svg><span>대시보드</span></button>
+    <button data-tab="pos" class="on center"><i><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></i><span>판매</span></button>
+    <button data-tab="hist"><svg viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1.2"/><circle cx="4.5" cy="12" r="1.2"/><circle cx="4.5" cy="18" r="1.2"/></svg><span>판매내역</span></button>
+    <button data-tab="admin" class="admin-only"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span>관리</span></button>
+  </nav>
 
   <main>
     <!-- 판매 -->
@@ -305,7 +426,7 @@ table.h tbody tr:hover td{background:#fffaf4}
 
           <div>
             <div class="grp-title">고객 정보 <span class="muted small">(선택 · 안 해도 판매 가능)</span></div>
-            <div class="chips">
+            <div class="chips cust4">
               <button class="chip" data-cust="nation" data-val="KR">🇰🇷 한국인</button>
               <button class="chip" data-cust="nation" data-val="FG">🌏 외국인</button>
               <button class="chip" data-cust="gender" data-val="F">여성</button>
@@ -441,7 +562,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v4"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v5"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -672,8 +793,10 @@ function numberSales() {
 }
 
 // ---- 탭 ----
+const TAB_TITLE = { pos: "판매", info: "상품정보", dash: "대시보드", hist: "판매내역", admin: "관리" };
 function switchTab(t) {
   $$("#tabs button").forEach((b) => b.classList.toggle("on", b.dataset.tab === t));
+  $("#pageTitle").textContent = TAB_TITLE[t] || "";
   $$("section.view").forEach((s) => s.classList.toggle("on", s.id === "view-" + t));
   updateMobibar();
   window.scrollTo(0, 0);
@@ -691,6 +814,7 @@ addEventListener("online", updateNet); addEventListener("offline", updateNet); u
 
 // ---- 버전 표시 · 새 버전 알림 ----
 $$(".app-ver").forEach((el) => (el.textContent = APP_VERSION));
+$("#todayLbl").textContent = new Date().toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "short" });
 async function checkUpdate() {
   if (!navigator.onLine || location.protocol === "file:") return;
   try {
@@ -768,10 +892,17 @@ $("#posGrid").addEventListener("change", (e) => {
   renderPos();
 });
 
+// 상품 / 수량 / 금액 을 칸 맞춰 보여주는 표
+function itemsTable(items, withPrice) {
+  if (!items.length) return "";
+  return `<table class="itbl"><thead><tr><th>상품</th>${withPrice ? `<th class="r">단가</th>` : ""}<th class="r">수량</th><th class="r">금액</th></tr></thead><tbody>
+    ${items.map((i) => `<tr><td>${esc(i.nameKo)}</td>${withPrice ? `<td class="r num">${fmt(i.price)}</td>` : ""}<td class="r num"><b>${i.qty}</b></td><td class="r num">${won(i.amount)}</td></tr>`).join("")}
+  </tbody></table>`;
+}
 function renderCheckout() {
   const c = calc();
   $("#cartLines").innerHTML = c.items.length
-    ? c.items.map((i) => `<div class="line"><span>${esc(i.nameKo)} × <b>${i.qty}</b></span><span class="num">${won(i.amount)}</span></div>`).join("")
+    ? itemsTable(c.items, true)
     : `<div class="muted small" style="padding:4px 0">상품을 눌러 수량을 담아주세요</div>`;
   $("#cartQty").textContent = c.qty ? `(${c.qty}개)` : "";
   $("#subTotal").textContent = won(c.subtotal);
@@ -831,7 +962,7 @@ $("#sellBtn").onclick = async () => {
   if (st.pay === "cash" && st.cash && st.cash < c.total) { toast(`받은 현금이 ${won(c.total - st.cash)} 부족해요.`, "err"); return; }
   const memo = $("#memo").value.trim();
   const ok = await confirmBox("판매 등록", `
-    <div class="lines">${c.items.map((i) => `<div class="line"><span>${esc(i.nameKo)} × ${i.qty}</span><span class="num">${won(i.amount)}</span></div>`).join("")}</div>
+    ${itemsTable(c.items)}
     ${c.discount ? `<div class="row small" style="margin-top:6px"><span>할인</span><span class="num">−${won(c.discount)}</span></div>` : ""}
     <div class="row" style="margin-top:8px"><b>결제 금액</b><b class="num" style="font-size:22px;color:var(--brand-d)">${won(c.total)}</b></div>
     <div class="row small" style="margin-top:4px"><span>결제 방식</span><b>${PAY[st.pay]}</b></div>
@@ -998,12 +1129,14 @@ function renderDash() {
     <div class="tiles money">
       <div class="tile hero"><div class="k">${dashDay === "all" ? "전체 매출" : dayOptions().find((o) => o.key === dashDay)?.label + " 매출"}</div><div class="v num">${won(r.total)}</div>
         <div class="s">${r.discount ? `할인 전 ${won(r.subtotal)} · 할인 −${won(r.discount)}` : "할인 없음"}</div></div>
-      <div class="tile"><div class="k">판매 건수</div><div class="v num">${fmt(r.count)}건</div></div>
-      <div class="tile"><div class="k">객단가</div><div class="v num">${won(avg)}</div></div>
-      <div class="tile"><div class="k">현금 매출</div><div class="v num">${won((r.byPay.cash || {}).amount || 0)}</div><div class="s">시재 확인용</div></div>
+      <div class="tile c-peach"><div class="k">판매 건수</div><div class="v num">${fmt(r.count)}건</div></div>
+      <div class="tile c-sage"><div class="k">객단가</div><div class="v num">${won(avg)}</div></div>
+      <div class="tile c-coral"><div class="k">현금 매출</div><div class="v num">${won((r.byPay.cash || {}).amount || 0)}</div><div class="s">시재 확인용</div></div>
     </div>
     <div class="tiles prod" style="--n:${Math.max(1, prodRows.length)}">
-      ${prodRows.map((x) => `<div class="tile pq"><div class="k">${esc(x.name)}</div><div class="v num">${fmt(x.qty)}개</div><div class="s num">${won(x.amount)}</div></div>`).join("")}
+      ${prodRows.map((x, i) => { const pct = r.qty ? Math.round(x.qty / r.qty * 100) : 0; return `<div class="tile pq">
+        <div class="ring" style="--p:${pct};--c:var(${["--brand", "--peach", "--ok", "--coral", "--blue"][i % 5]})"><span class="num">${pct}%</span></div>
+        <div class="k">${esc(x.name)}</div><div class="v num">${fmt(x.qty)}개</div><div class="s num">${won(x.amount)}</div></div>`; }).join("")}
     </div>
     ${dashDay === "all" && otherCnt ? `<div class="note">⚠️ 행사일(10/23·24) 외 판매 ${otherCnt}건이 전체 합계에 포함돼 있어요. 연습 데이터라면 [관리] 탭에서 정리할 수 있어요.</div>` : ""}
     <div class="dgrid">
@@ -1125,7 +1258,7 @@ function openSale(id) {
   const e = { payment: s.payment, nation: s.customer?.nation || null, gender: s.customer?.gender || null };
   openModal(`
     <h3>${dayLabel(s.day)} ${timeStr(s.ts)} · #${s._no}</h3>
-    <div class="lines">${(s.items || []).map((i) => `<div class="line"><span>${esc(i.nameKo)} × ${i.qty} <span class="muted small">(${won(i.price)})</span></span><span class="num">${won(i.amount)}</span></div>`).join("")}</div>
+    ${itemsTable(s.items || [], true)}
     ${s.discount ? `<div class="row small" style="margin-top:6px"><span>할인 ${s.discountType === "percent" ? `(${s.discountValue}%)` : ""}</span><span class="num">−${won(s.discount)}</span></div>` : ""}
     <div class="row" style="margin:8px 0 12px"><b>결제 금액</b><b class="num" style="font-size:20px">${won(s.total)}</b></div>
     ${s.cashReceived ? `<div class="row small" style="margin-bottom:10px"><span>받은 현금 / 거스름돈</span><span class="num">${won(s.cashReceived)} / ${won(s.change)}</span></div>` : ""}
