@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#ededf3">
+<meta name="theme-color" content="#fcfbf9">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -23,13 +23,13 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
-/* 라벤더 회색 바탕 + 흰 둥근 카드 + 모브·피치·세이지·코랄 4색 */
+/* 밝은 흰 바탕 + 흰 둥근 카드(옅은 그림자) + 노랑·모브·세이지·코랄 4색 */
 :root{
-  --bg:#ededf3; --surface:#ffffff; --soft:#f5f4f9; --ink:#2e2c3b; --ink2:#6c6981; --muted:#a3a0b4;
-  --line:#e7e5ef; --brand:#e4a87c; --brand-d:#b5733f; --brand-soft:#fbefe5;
+  --bg:#fcfbf9; --surface:#ffffff; --soft:#f6f5f2; --ink:#2b2a28; --ink2:#6e6b66; --muted:#a8a49d;
+  --line:#ecebe7; --brand:#e4a87c; --brand-d:#b5733f; --brand-soft:#fbefe5;
   --mauve:#a47f94; --mauve-d:#86627a; --mauve-soft:#f3ebf0; --ok:#8db27a; --ok-d:#6a9157; --ok-soft:#ecf3e7;
   --coral:#e2736c; --warn:#d65e57; --blue:#7c8fb5; --blue-soft:#eaeef6;
-  --radius:20px; --shadow:0 6px 22px rgba(70,64,110,.07);
+  --radius:20px; --shadow:0 6px 22px rgba(60,50,40,.06),0 1px 3px rgba(60,50,40,.05);
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;-webkit-text-size-adjust:100%}
@@ -281,7 +281,7 @@ header.top{background:var(--bg);border-bottom:0}
 @media(min-width:700px){.who{display:inline}}
 main{padding:8px 20px 120px}
 /* 아래 탭바: 가운데 동그란 판매 버튼 */
-nav.tabs{position:fixed;z-index:40;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom));width:min(560px,calc(100% - 24px));display:flex;justify-content:space-around;align-items:center;gap:0;padding:8px 10px;background:var(--surface);border-radius:26px;box-shadow:0 10px 30px rgba(70,64,110,.16);overflow:visible}
+nav.tabs{position:fixed;z-index:40;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom));width:min(560px,calc(100% - 24px));display:flex;justify-content:space-around;align-items:center;gap:0;padding:8px 10px;background:var(--surface);border-radius:26px;box-shadow:0 10px 30px rgba(60,50,40,.14);overflow:visible}
 nav.tabs button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;border:0;background:none;padding:6px 4px;color:var(--muted);font-size:11px;font-weight:700;border-bottom:0}
 nav.tabs svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 nav.tabs button.on{color:var(--brand-d);border-bottom:0}
@@ -572,7 +572,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v8"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v9"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
