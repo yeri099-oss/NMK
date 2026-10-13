@@ -512,7 +512,12 @@ nav.tabs button.center.on i{background:var(--ink)}
   </form>
 </div>
 
-<div id="bootView" class="loading">불러오는 중…</div>
+<div id="bootView" class="loading">불러오는 중…
+  <div id="bootSlow" class="hidden" style="margin-top:18px;font-size:14px;line-height:1.7">
+    연결이 늦어지고 있어요.<br>다른 탭이나 홈 화면 앱에서 이 앱이 열려 있으면 닫고 다시 시도해 주세요.<br>
+    <button class="btn primary" id="bootRetry" type="button" style="margin-top:12px">다시 시도</button>
+  </div>
+</div>
 
 <!-- ================= 앱 ================= -->
 <div class="deco deco-l" aria-hidden="true"></div><div class="deco deco-r" aria-hidden="true"></div>
@@ -681,7 +686,7 @@ nav.tabs button.center.on i{background:var(--ink)}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, initializeAuth, inMemoryPersistence, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { initializeFirestore, persistentLocalCache, persistentSingleTabManager, terminate, collection, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCIvN2Y1a9ByNmz4UpgdmaTFrd5SAYZZGY",
@@ -693,7 +698,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v17"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v18"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -744,7 +749,9 @@ const PRODUCT_UPDATES = [
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = initializeFirestore(app, { localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) });
+// 여러 탭/홈 화면 앱이 동시에 열려 있을 때, 뒤에 숨은(멈춘) 화면이 저장소를 붙잡아 '불러오는 중'에서 멈추지 않도록
+// 가장 최근에 연 화면이 저장소를 가져옵니다
+const db = initializeFirestore(app, { localCache: persistentLocalCache({ tabManager: persistentSingleTabManager({ forceOwnership: true }) }) });
 let creatorAuth = null; // 관리자가 다른 계정을 만들 때 쓰는 보조 인증 (현재 로그인 유지용)
 
 // ---- 상태 ----
@@ -886,10 +893,22 @@ onAuthStateChanged(auth, async (u) => {
   }
 });
 
+let bootTimer = null;
 function show(which) {
   $("#loginView").classList.toggle("hidden", which !== "login");
   $("#bootView").classList.toggle("hidden", which !== "boot");
   $("#appView").classList.toggle("hidden", which !== "app");
+  clearTimeout(bootTimer);
+  $("#bootSlow").classList.add("hidden");
+  if (which === "boot") bootTimer = setTimeout(() => $("#bootSlow").classList.remove("hidden"), 8000);
+}
+// 처음 열 때도 8초 넘게 걸리면 안내 표시
+bootTimer = setTimeout(() => { if (!$("#bootView").classList.contains("hidden")) $("#bootSlow").classList.remove("hidden"); }, 8000);
+$("#bootRetry").onclick = () => reloadFresh();
+// 저장소 연결을 정리한 뒤 새로 불러오기 (업데이트·다시 시도 공통)
+async function reloadFresh(v) {
+  try { await Promise.race([terminate(db), new Promise((r) => setTimeout(r, 1500))]); } catch {}
+  location.replace(location.pathname + "?v=" + encodeURIComponent(v || Date.now()));
 }
 
 let updatesChecked = false;
@@ -995,7 +1014,7 @@ async function checkUpdate() {
     }
   } catch {}
 }
-$("#updBtn").onclick = (e) => { location.href = location.pathname + "?v=" + encodeURIComponent(e.currentTarget.dataset.v || Date.now()); };
+$("#updBtn").onclick = (e) => { e.currentTarget.textContent = "업데이트 중…"; reloadFresh(e.currentTarget.dataset.v); };
 document.addEventListener("visibilitychange", () => { if (!document.hidden) checkUpdate(); });
 setInterval(checkUpdate, 5 * 60 * 1000);
 setTimeout(checkUpdate, 3000);
