@@ -63,27 +63,26 @@ h2.sec:first-child{margin-top:4px}
 .small{font-size:13px}
 
 /* ---------- 판매(POS) ---------- */
-.pos{display:grid;grid-template-columns:1fr;gap:16px}
-@media(min-width:900px){.pos{grid-template-columns:minmax(0,1fr) 400px;align-items:start}.checkout{position:sticky;top:110px;max-height:calc(100vh - 126px);overflow:auto}}
-.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
-.pcard{position:relative;background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;border:2px solid transparent;display:flex;flex-direction:column;user-select:none}
-.pcard.sel{border-color:var(--brand)}
-.pcard .tap{border:0;background:none;padding:0;text-align:left;display:block;width:100%}
-.thumb{aspect-ratio:4/3;background:var(--soft);display:flex;align-items:center;justify-content:center;font-size:44px;overflow:hidden}
-.thumb img{width:100%;height:100%;object-fit:cover;display:block}
-.pinfo{padding:9px 11px 4px}
-.pname{font-weight:700;font-size:15px;line-height:1.3}
-.pprice{color:var(--brand);font-weight:800;font-size:15px;margin-top:2px}
-.qty{display:flex;align-items:center;justify-content:space-between;padding:6px 8px 9px;gap:6px}
-.qty button{width:40px;height:40px;border-radius:10px;border:1.5px solid var(--line);background:var(--soft);font-size:22px;font-weight:700;line-height:1}
+/* 아이패드(가로·세로) 기준: 왼쪽 상품+고객+결제방식, 오른쪽 합계·현금·비고·등록. 화면 전체가 한 번에 스크롤 */
+.pos{display:grid;grid-template-columns:1fr;gap:14px}
+@media(min-width:700px){.pos{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}}
+.pcol{display:flex;flex-direction:column;gap:12px;min-width:0}
+.plist{display:flex;flex-direction:column;gap:8px}
+.prow{display:flex;align-items:center;gap:10px;background:var(--surface);border-radius:12px;box-shadow:var(--shadow);padding:8px 10px 8px 14px;border:2px solid transparent;user-select:none}
+.prow.sel{border-color:var(--brand);background:#fffaf6}
+.prow .tap{flex:1;min-width:0;border:0;background:none;padding:6px 0;text-align:left;display:flex;align-items:baseline;gap:4px 12px;flex-wrap:wrap}
+.pname{font-weight:800;font-size:18px;line-height:1.3}
+.pprice{color:var(--brand);font-weight:800;font-size:16px}
+.qty{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.qty button{width:48px;height:48px;border-radius:10px;border:1.5px solid var(--line);background:var(--soft);font-size:24px;font-weight:700;line-height:1}
 .qty button.plus{background:var(--brand);border-color:var(--brand);color:#fff}
-.qty input{width:48px;text-align:center;border:0;background:none;font-size:20px;font-weight:800;padding:0}
-.badge{position:absolute;top:8px;right:8px;background:var(--brand);color:#fff;font-weight:800;border-radius:99px;min-width:30px;height:30px;padding:0 8px;display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 2px 6px rgba(0,0,0,.2)}
-.infobtn{position:absolute;top:8px;left:8px;width:30px;height:30px;border-radius:99px;border:0;background:rgba(255,255,255,.9);font-weight:800;color:var(--ink2);font-size:14px;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+.qty input{width:46px;text-align:center;border:0;background:none;font-size:22px;font-weight:900;padding:0}
+.infobtn{width:34px;height:34px;border-radius:99px;border:1.5px solid var(--line);background:var(--soft);font-weight:800;color:var(--ink2);font-size:14px;flex-shrink:0}
 .checkout{display:flex;flex-direction:column;gap:14px}
+.discgrp{border-top:1px dashed var(--line);padding-top:12px}
 .grp-title{font-size:13px;font-weight:700;color:var(--ink2);margin-bottom:7px;display:flex;justify-content:space-between;align-items:center}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{padding:9px 14px;border-radius:99px;border:1.5px solid var(--line);background:var(--surface);font-weight:700;font-size:14px}
+.chip{padding:10px 16px;border-radius:99px;border:1.5px solid var(--line);background:var(--surface);font-weight:700;font-size:14px}
 .chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
 .seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:6px}
 .seg button{padding:13px 6px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);font-weight:800;font-size:15px}
@@ -106,7 +105,7 @@ h2.sec:first-child{margin-top:4px}
 .mobibar{position:fixed;left:0;right:0;bottom:0;z-index:25;background:var(--ink);color:#fff;display:flex;align-items:center;gap:10px;padding:10px 16px calc(10px + env(safe-area-inset-bottom))}
 .mobibar .t{flex:1;font-weight:800;font-size:17px}
 .mobibar .btn{background:var(--brand);border-color:var(--brand);color:#fff;padding:10px 14px}
-@media(min-width:900px){.mobibar{display:none!important}}
+@media(min-width:700px){.mobibar{display:none!important}}
 body.has-mobibar main{padding-bottom:84px}
 
 /* ---------- 상품정보 ---------- */
@@ -115,6 +114,8 @@ body.has-mobibar main{padding-bottom:84px}
 .lang button.on{background:var(--ink);color:#fff}
 .igrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
 .icard{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;border:0;padding:0;text-align:left}
+.thumb{background:var(--soft);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
 .icard .thumb{aspect-ratio:16/10;font-size:64px}
 .icard .body{padding:14px 16px 16px}
 .icard h3{margin:0;font-size:19px}
@@ -127,16 +128,19 @@ body.has-mobibar main{padding-bottom:84px}
 .present .bar .lang button{color:#bfae9f}
 .present .bar .lang button.on{background:#fff;color:#1b1512}
 .present .x{border:0;background:#3a2f29;color:#fff;width:42px;height:42px;border-radius:99px;font-size:20px}
-.present .stage{flex:1;overflow:auto;display:flex;flex-direction:column;align-items:center;padding:0 16px 16px}
-.present .pimg{width:100%;max-width:720px;aspect-ratio:4/3;border-radius:18px;overflow:hidden;background:#2c231e;display:flex;align-items:center;justify-content:center;font-size:120px;flex-shrink:0}
+.present .stage{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:4px 20px 24px}
+.present .pimg{height:min(34vh,320px);aspect-ratio:4/3;max-width:100%;border-radius:18px;overflow:hidden;background:#2c231e;display:flex;align-items:center;justify-content:center;font-size:96px;flex-shrink:0}
 .present .pimg img{width:100%;height:100%;object-fit:cover}
-.present .ptext{width:100%;max-width:720px;padding:18px 4px}
-.present h2{font-size:32px;margin:0}
-.present .sub2{color:#bfae9f;font-size:17px;margin-top:2px}
-.present .pp{font-size:34px;font-weight:900;color:#ffb59c;margin:8px 0 12px}
-.present .pd{font-size:19px;line-height:1.7;white-space:pre-wrap;color:#f1e7de}
-.present .nav{display:flex;gap:10px;padding:10px 16px calc(12px + env(safe-area-inset-bottom));justify-content:center}
-.present .nav button{flex:1;max-width:240px;padding:14px;border-radius:12px;border:0;background:#3a2f29;color:#fff;font-weight:800;font-size:16px}
+.present .ptext{width:100%;max-width:760px;text-align:center}
+.present h2{font-size:38px;margin:0;line-height:1.25}
+.present .sub2{color:#d2c3b6;font-size:19px;margin-top:4px}
+.present .pp{font-size:36px;font-weight:900;color:#ffb59c;margin:8px 0 12px}
+.present .pd{font-size:23px;line-height:1.65;white-space:pre-wrap;color:#fbf4ee;text-align:left;display:inline-block}
+@media(orientation:landscape) and (min-width:700px){
+  .present .stage{flex-direction:row;gap:32px;padding:4px 32px 24px}
+  .present .pimg{height:auto;width:min(40vw,460px)}
+  .present .ptext{text-align:left;flex:1;min-width:0}
+}
 
 /* ---------- 대시보드 ---------- */
 .daychips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
@@ -144,9 +148,13 @@ body.has-mobibar main{padding-bottom:84px}
 .tile{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px 16px}
 .tile .k{font-size:13px;color:var(--ink2);font-weight:600}
 .tile .v{font-size:24px;font-weight:900;margin-top:4px;letter-spacing:-.5px}
-.tile.hero{grid-column:1/-1;background:var(--brand);color:#fff}
+.tiles.money{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(min-width:700px){.tiles.money{grid-template-columns:1.6fr 1fr 1fr 1fr}}
+.tiles.prod{margin-top:10px}
+.tile.hero{background:var(--brand);color:#fff}
 .tile.hero .k{color:#f8d9cf}
-.tile.hero .v{font-size:36px}
+.tile.hero .v{font-size:30px}
+.tile.pq .v{color:var(--brand-d)}
 .tile .s{font-size:12px;color:var(--muted);margin-top:2px}
 .tile.hero .s{color:#f8d9cf}
 .dgrid{display:grid;grid-template-columns:1fr;gap:16px;margin-top:16px}
@@ -171,6 +179,16 @@ table.t tfoot td{font-weight:800;border-bottom:0;border-top:1.5px solid var(--li
 /* ---------- 판매내역 ---------- */
 .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
 .toolbar .input{flex:1;min-width:200px}
+.fgroups{display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
+.fgrp{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.fgrp .fl{font-size:13px;font-weight:700;color:var(--ink2);width:58px;flex-shrink:0}
+.fcards{display:flex;gap:8px;flex-wrap:wrap;flex:1;min-width:0}
+.fcard{display:flex;flex-direction:column;align-items:flex-start;min-width:96px;padding:8px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);text-align:left;box-shadow:var(--shadow)}
+.fcard b{font-size:15px}
+.fcard span{font-size:12px;color:var(--muted)}
+.fcard.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.fcard.on span{color:#d9cfc6}
+.fbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
 .tablewrap{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);overflow:auto;max-height:calc(100vh - 230px)}
 table.h{width:100%;border-collapse:separate;border-spacing:0;font-size:14px}
 table.h th{position:sticky;top:0;background:var(--soft);z-index:2;text-align:left;padding:10px 10px;font-size:13px;color:var(--ink2);border-bottom:1.5px solid var(--line);white-space:nowrap;cursor:pointer;user-select:none}
@@ -256,47 +274,39 @@ table.h tbody tr:hover td{background:#fffaf4}
     <!-- 판매 -->
     <section class="view on" id="view-pos">
       <div class="pos">
-        <div>
-          <div class="pgrid" id="posGrid"></div>
-        </div>
-        <div class="card checkout" id="checkout">
-          <div>
-            <div class="grp-title">고객 정보 <span class="muted small">(선택 · 안 해도 판매 가능)</span></div>
-            <div class="chips" style="margin-bottom:6px">
-              <button class="chip" data-cust="nation" data-val="KR">🇰🇷 한국인</button>
-              <button class="chip" data-cust="nation" data-val="FG">🌏 외국인</button>
-              <button class="chip" data-cust="gender" data-val="F">여성</button>
-              <button class="chip" data-cust="gender" data-val="M">남성</button>
+        <div class="pcol">
+          <div class="plist" id="posGrid"></div>
+          <div class="card checkout" id="posLeft">
+            <div>
+              <div class="grp-title">결제 방식</div>
+              <div class="seg" id="payType">
+                <button data-v="card">💳 카드</button>
+                <button data-v="cash">💵 현금</button>
+                <button data-v="zeropay">📱 QR</button>
+              </div>
+            </div>
+            <div>
+              <div class="grp-title">고객 정보 <span class="muted small">(선택 · 안 해도 판매 가능)</span></div>
+              <div class="chips">
+                <button class="chip" data-cust="nation" data-val="KR">🇰🇷 한국인</button>
+                <button class="chip" data-cust="nation" data-val="FG">🌏 외국인</button>
+                <button class="chip" data-cust="gender" data-val="F">여성</button>
+                <button class="chip" data-cust="gender" data-val="M">남성</button>
+              </div>
             </div>
           </div>
+        </div>
 
+        <div class="card checkout" id="checkout">
           <div>
             <div class="grp-title">선택한 상품 <button class="btn sm ghost" id="clearItems" type="button">상품만 비우기</button></div>
             <div class="lines" id="cartLines"></div>
             <div class="row" style="margin-top:8px"><span>상품 합계 <span class="muted small" id="cartQty"></span></span><b class="num" id="subTotal">0원</b></div>
-          </div>
-
-          <div>
-            <div class="grp-title">할인 / 서비스</div>
-            <div class="disc">
-              <div class="seg" id="discType"><button data-v="amount" class="on">원</button><button data-v="percent">%</button></div>
-              <input class="input num" id="discVal" inputmode="numeric" placeholder="할인 없음">
-            </div>
-            <div class="row small" style="margin-top:6px;color:var(--warn)" id="discLine"></div>
+            <div class="row small" style="margin-top:4px;color:var(--warn)" id="discLine"></div>
           </div>
 
           <div class="total-box">
             <div class="row"><span style="font-weight:700">결제 금액</span><span class="big num" id="grandTotal">0원</span></div>
-          </div>
-
-          <div>
-            <div class="grp-title">결제 방식</div>
-            <div class="seg" id="payType">
-              <button data-v="card">💳 카드</button>
-              <button data-v="cash">💵 현금</button>
-              <button data-v="zeropay">📱 제로페이</button>
-            </div>
-            <div class="small muted" style="margin-top:5px">제로페이 = 서울페이 등 QR 결제</div>
           </div>
 
           <div id="cashBox" class="hidden">
@@ -317,12 +327,20 @@ table.h tbody tr:hover td{background:#fffaf4}
 
           <div>
             <div class="grp-title">비고</div>
-            <textarea class="input" id="memo" rows="2" placeholder="특이사항 (예: 대표님 서비스, 교환 등)"></textarea>
+            <input class="input" id="memo" placeholder="특이사항">
           </div>
 
           <div class="actions">
             <button class="btn" id="resetBtn" type="button">초기화</button>
             <button class="btn primary" id="sellBtn" type="button">판매 등록</button>
+          </div>
+
+          <div class="discgrp">
+            <div class="grp-title">할인 / 서비스 <span class="muted small">(필요할 때만)</span></div>
+            <div class="disc">
+              <div class="seg" id="discType"><button data-v="amount" class="on">원</button><button data-v="percent">%</button></div>
+              <input class="input num" id="discVal" inputmode="numeric" placeholder="할인 없음">
+            </div>
           </div>
         </div>
       </div>
@@ -336,7 +354,7 @@ table.h tbody tr:hover td{background:#fffaf4}
     <section class="view" id="view-info">
       <div class="toolbar">
         <div class="lang" id="infoLang"><button data-l="ko" class="on">한국어</button><button data-l="en">English</button></div>
-        <span class="small muted">카드를 누르면 고객에게 보여주는 큰 화면이 열려요</span>
+        <span class="small muted">상품을 누르면 사진과 설명을 크게 보여줘요</span>
       </div>
       <div class="igrid" id="infoGrid"></div>
     </section>
@@ -350,8 +368,10 @@ table.h tbody tr:hover td{background:#fffaf4}
     <!-- 판매내역 -->
     <section class="view" id="view-hist">
       <div class="daychips" id="histDays"></div>
-      <div class="toolbar">
-        <input class="input" id="histSearch" type="search" placeholder="검색 (상품, 금액, 결제방식, 비고, 판매자, 외국인…)">
+      <div class="fgroups" id="histFilters"></div>
+      <div class="fbar">
+        <span class="small muted" id="histFilterNote"></span>
+        <span style="flex:1"></span>
         <button class="btn sm" id="csvBtn">엑셀(CSV) 받기</button>
       </div>
       <div class="tablewrap"><table class="h" id="histTable"></table></div>
@@ -415,7 +435,7 @@ const FESTA_DAYS = [
   { key: "2026-10-24", label: "10.24 (토)" },
 ];
 const COL = { users: "festaApp_users", products: "festaApp_products", sales: "festaApp_sales", meta: "festaApp_meta" };
-const PAY = { card: "카드", cash: "현금", zeropay: "제로페이" };
+const PAY = { card: "카드", cash: "현금", zeropay: "QR" }; // zeropay 키는 기존 데이터 호환용 (화면 표시는 QR)
 const NATION = { KR: "한국인", FG: "외국인" };
 const GENDER = { F: "여", M: "남" };
 const SEED_PRODUCTS = [
@@ -609,7 +629,7 @@ function startApp() {
     products = qs.docs.map((d) => ({ id: d.id, ...d.data() }))
       .sort((a, b) => (a.order ?? 0) - (b.order ?? 0) || String(a.nameKo).localeCompare(String(b.nameKo)));
     for (const id of Object.keys(cart)) if (!products.find((p) => p.id === id && p.active !== false)) delete cart[id];
-    renderPos(); renderInfo(); renderProdAdmin(); renderDash();
+    renderPos(); renderInfo(); renderProdAdmin(); renderDash(); renderHist();
   }, (e) => { console.error(e); toast("상품을 불러오지 못했어요: " + e.code, "err", 4000); }));
 
   unsubs.push(onSnapshot(query(collection(db, COL.sales), orderBy("ts", "desc")), { includeMetadataChanges: true }, (qs) => {
@@ -680,13 +700,9 @@ function renderPos() {
   } else {
     grid.innerHTML = list.map((p) => {
       const q = cart[p.id] || 0;
-      return `<div class="pcard ${q ? "sel" : ""}" data-id="${p.id}">
-        <button class="tap" data-act="plus" type="button">
-          <div class="thumb">${prodVisual(p)}</div>
-          <div class="pinfo"><div class="pname">${esc(p.nameKo)}</div><div class="pprice num">${won(p.price)}</div></div>
-        </button>
+      return `<div class="prow ${q ? "sel" : ""}" data-id="${p.id}">
+        <button class="tap" data-act="plus" type="button"><span class="pname">${esc(p.nameKo)}</span><span class="pprice num">${won(p.price)}</span></button>
         <button class="infobtn" data-act="info" type="button" aria-label="상품 설명">i</button>
-        ${q ? `<span class="badge num">${q}</span>` : ""}
         <div class="qty">
           <button data-act="minus" type="button" aria-label="빼기">−</button>
           <input class="num" data-act="set" inputmode="numeric" value="${q}" aria-label="수량">
@@ -700,10 +716,10 @@ function renderPos() {
 
 $("#posGrid").addEventListener("click", (e) => {
   const b = e.target.closest("[data-act]"); if (!b) return;
-  const id = b.closest(".pcard").dataset.id;
+  const id = b.closest(".prow").dataset.id;
   if (b.dataset.act === "plus") cart[id] = (cart[id] || 0) + 1;
   else if (b.dataset.act === "minus") cart[id] = Math.max(0, (cart[id] || 0) - 1);
-  else if (b.dataset.act === "info") { openPresent(sellable().findIndex((p) => p.id === id), sellable()); return; }
+  else if (b.dataset.act === "info") { openPresent(sellable().find((p) => p.id === id)); return; }
   else return;
   if (!cart[id]) delete cart[id];
   renderPos();
@@ -711,7 +727,7 @@ $("#posGrid").addEventListener("click", (e) => {
 $("#posGrid").addEventListener("focusin", (e) => { if (e.target.dataset.act === "set") e.target.select(); });
 $("#posGrid").addEventListener("change", (e) => {
   if (e.target.dataset.act !== "set") return;
-  const id = e.target.closest(".pcard").dataset.id;
+  const id = e.target.closest(".prow").dataset.id;
   const v = Math.min(digits(e.target.value), 9999);
   if (v) cart[id] = v; else delete cart[id];
   renderPos();
@@ -744,7 +760,7 @@ function updateMobibar() {
 }
 $("#mobiGo").onclick = () => $("#checkout").scrollIntoView({ behavior: "smooth", block: "start" });
 
-$("#checkout").addEventListener("click", (e) => {
+$("#view-pos").addEventListener("click", (e) => {
   const cust = e.target.closest("[data-cust]");
   if (cust) { const k = cust.dataset.cust; st[k] = st[k] === cust.dataset.val ? null : cust.dataset.val; renderCheckout(); return; }
   const dt = e.target.closest("#discType button");
@@ -776,7 +792,7 @@ $("#resetBtn").onclick = resetPos;
 $("#sellBtn").onclick = async () => {
   const c = calc();
   if (!c.items.length) { toast("상품을 먼저 선택해 주세요.", "err"); return; }
-  if (!st.pay) { toast("결제 방식(카드/현금/제로페이)을 선택해 주세요.", "err"); $("#payType").scrollIntoView({ behavior: "smooth", block: "center" }); return; }
+  if (!st.pay) { toast("결제 방식(카드/현금/QR)을 선택해 주세요.", "err"); $("#payType").scrollIntoView({ behavior: "smooth", block: "center" }); return; }
   if (st.pay === "cash" && st.cash && st.cash < c.total) { toast(`받은 현금이 ${won(c.total - st.cash)} 부족해요.`, "err"); return; }
   const memo = $("#memo").value.trim();
   const ok = await confirmBox("판매 등록", `
@@ -827,22 +843,21 @@ $("#infoLang").addEventListener("click", (e) => {
   infoLang = b.dataset.l; lsSet("festaLang", infoLang); renderInfo();
 });
 $("#infoGrid").addEventListener("click", (e) => {
-  const c = e.target.closest(".icard"); if (c) openPresent(+c.dataset.i, sellable());
+  const c = e.target.closest(".icard"); if (c) openPresent(sellable()[+c.dataset.i]);
 });
 
-function openPresent(idx, list) {
-  if (idx < 0 || !list.length) return;
+function openPresent(p) {
+  if (!p) return;
   const el = document.createElement("div");
   el.className = "present";
   document.body.appendChild(el);
   document.body.style.overflow = "hidden";
   const close = () => { el.remove(); document.body.style.overflow = ""; document.removeEventListener("keydown", onKey); };
   const draw = () => {
-    const p = list[idx];
     el.innerHTML = `
       <div class="bar">
         <div class="lang"><button data-l="ko" class="${infoLang === "ko" ? "on" : ""}">한국어</button><button data-l="en" class="${infoLang === "en" ? "on" : ""}">English</button></div>
-        <span class="sp"></span><span class="small" style="color:#bfae9f">${idx + 1} / ${list.length}</span>
+        <span class="sp"></span>
         <button class="x" data-close aria-label="닫기">✕</button>
       </div>
       <div class="stage">
@@ -853,24 +868,15 @@ function openPresent(idx, list) {
           <div class="pp num">${pPrice(p, infoLang)}</div>
           <div class="pd">${esc(pDesc(p, infoLang))}</div>
         </div>
-      </div>
-      <div class="nav">
-        <button data-mv="-1">◀ ${infoLang === "en" ? "Prev" : "이전"}</button>
-        <button data-mv="1">${infoLang === "en" ? "Next" : "다음"} ▶</button>
       </div>`;
   };
-  const move = (d) => { idx = (idx + d + list.length) % list.length; draw(); };
-  const onKey = (e) => { if (e.key === "Escape") close(); if (e.key === "ArrowLeft") move(-1); if (e.key === "ArrowRight") move(1); };
+  const onKey = (e) => { if (e.key === "Escape") close(); };
   document.addEventListener("keydown", onKey);
   el.addEventListener("click", (e) => {
     if (e.target.closest("[data-close]")) return close();
     const l = e.target.closest("[data-l]");
-    if (l) { infoLang = l.dataset.l; lsSet("festaLang", infoLang); renderInfo(); draw(); return; }
-    const m = e.target.closest("[data-mv]"); if (m) move(+m.dataset.mv);
+    if (l) { infoLang = l.dataset.l; lsSet("festaLang", infoLang); renderInfo(); draw(); }
   });
-  let sx = null;
-  el.addEventListener("touchstart", (e) => { sx = e.touches[0].clientX; }, { passive: true });
-  el.addEventListener("touchend", (e) => { if (sx === null) return; const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 60) move(dx < 0 ? 1 : -1); sx = null; });
   draw();
 }
 
@@ -954,13 +960,15 @@ function renderDash() {
   const otherCnt = filterDay(sales, "other").length;
 
   $("#dashBody").innerHTML = `
-    <div class="tiles">
+    <div class="tiles money">
       <div class="tile hero"><div class="k">${dashDay === "all" ? "전체 매출" : dayOptions().find((o) => o.key === dashDay)?.label + " 매출"}</div><div class="v num">${won(r.total)}</div>
         <div class="s">${r.discount ? `할인 전 ${won(r.subtotal)} · 할인 −${won(r.discount)}` : "할인 없음"}</div></div>
       <div class="tile"><div class="k">판매 건수</div><div class="v num">${fmt(r.count)}건</div></div>
-      <div class="tile"><div class="k">판매 수량</div><div class="v num">${fmt(r.qty)}개</div></div>
       <div class="tile"><div class="k">객단가</div><div class="v num">${won(avg)}</div></div>
       <div class="tile"><div class="k">현금 매출</div><div class="v num">${won((r.byPay.cash || {}).amount || 0)}</div><div class="s">시재 확인용</div></div>
+    </div>
+    <div class="tiles prod">
+      ${prodRows.map((x) => `<div class="tile pq"><div class="k">${esc(x.name)}</div><div class="v num">${fmt(x.qty)}개</div><div class="s num">${won(x.amount)}</div></div>`).join("")}
     </div>
     ${dashDay === "all" && otherCnt ? `<div class="note">⚠️ 행사일(10/23·24) 외 판매 ${otherCnt}건이 전체 합계에 포함돼 있어요. 연습 데이터라면 [관리] 탭에서 정리할 수 있어요.</div>` : ""}
     <div class="dgrid">
@@ -982,66 +990,94 @@ $("#dashDays").addEventListener("click", (e) => { const b = e.target.closest("[d
 
 // ================= 판매내역 =================
 const HIST_COLS = [
-  { key: "ts", label: "시간", v: (s) => s.ts },
   { key: "no", label: "번호", v: (s) => s.day + String(s._no).padStart(5, "0") },
-  { key: "items", label: "상품", v: (s) => itemsText(s) },
-  { key: "qty", label: "수량", v: (s) => s.qty, r: true },
-  { key: "discount", label: "할인", v: (s) => s.discount || 0, r: true },
+  { key: "items", label: "판매상품", v: (s) => itemsText(s) },
   { key: "total", label: "결제금액", v: (s) => s.total, r: true },
-  { key: "payment", label: "결제", v: (s) => PAY[s.payment] || "" },
-  { key: "cash", label: "받은돈/거스름", v: (s) => s.cashReceived || 0, r: true },
-  { key: "cust", label: "고객", v: (s) => custLabel(s.customer) },
-  { key: "memo", label: "비고", v: (s) => s.memo || "" },
-  { key: "seller", label: "판매자", v: (s) => s.sellerName || "" },
+  { key: "payment", label: "결제방식", v: (s) => PAY[s.payment] || "" },
+  { key: "nation", label: "내·외국인", v: (s) => NATION[s.customer?.nation] || "" },
+  { key: "gender", label: "성별", v: (s) => GENDER[s.customer?.gender] || "" },
+  { key: "ts", label: "판매시간", v: (s) => s.ts },
 ];
 function itemsText(s) { return (s.items || []).map((i) => `${i.nameKo}×${i.qty}`).join(", "); }
-function searchText(s) {
-  return [dayLabel(s.day), s.day, timeStr(s.ts), "#" + s._no, itemsText(s), (s.items || []).map((i) => i.nameEn).join(" "),
-    s.qty + "개", s.total, fmt(s.total), won(s.total), s.subtotal, fmt(s.subtotal), s.discount ? "할인 " + fmt(s.discount) : "",
-    PAY[s.payment], s.cashReceived ? fmt(s.cashReceived) : "", s.change ? "거스름 " + fmt(s.change) : "",
-    custLabel(s.customer), NATION[s.customer?.nation], s.customer?.gender === "F" ? "여성 여자" : s.customer?.gender === "M" ? "남성 남자" : "",
-    s.memo, s.sellerName].join(" ").toLowerCase();
+
+// 필터 카드: 같은 줄 안에서는 "또는", 줄끼리는 "그리고"
+const histF = { prod: new Set(), pay: new Set(), nation: new Set(), gender: new Set() };
+const HIST_FILTERS = {
+  prod: { label: "상품", test: (s, k) => (s.items || []).some((i) => (i.productId || i.nameKo) === k) },
+  pay: { label: "결제방식", test: (s, k) => s.payment === k },
+  nation: { label: "내·외국인", test: (s, k) => (s.customer?.nation || "-") === k },
+  gender: { label: "성별", test: (s, k) => (s.customer?.gender || "-") === k },
+};
+function histFilterOptions() {
+  const prod = products.map((p) => [p.id, p.nameKo]);
+  for (const s of sales) for (const i of s.items || []) { const k = i.productId || i.nameKo; if (!prod.find(([x]) => x === k)) prod.push([k, i.nameKo + " (삭제됨)"]); }
+  return {
+    prod,
+    pay: Object.entries(PAY),
+    nation: [["KR", "한국인"], ["FG", "외국인"], ["-", "미입력"]],
+    gender: [["F", "여성"], ["M", "남성"], ["-", "미입력"]],
+  };
+}
+function applyHistFilters(list, skip) {
+  return list.filter((s) => Object.entries(histF).every(([g, set]) => g === skip || !set.size || [...set].some((k) => HIST_FILTERS[g].test(s, k))));
 }
 function histList() {
-  const q = $("#histSearch").value.trim().toLowerCase();
-  let list = filterDay(sales, histDay);
-  if (q) { const terms = q.split(/\s+/); list = list.filter((s) => { const t = searchText(s); return terms.every((w) => t.includes(w)); }); }
-  const col = HIST_COLS.find((c) => c.key === histSort.key);
+  const list = applyHistFilters(filterDay(sales, histDay));
+  const col = HIST_COLS.find((c) => c.key === histSort.key) || HIST_COLS[HIST_COLS.length - 1];
   return [...list].sort((a, b) => {
     const x = col.v(a), y = col.v(b);
     const d = typeof x === "number" && typeof y === "number" ? x - y : String(x).localeCompare(String(y), "ko");
     return d * histSort.dir || (b.ts - a.ts);
   });
 }
+function renderHistFilters() {
+  const dayList = filterDay(sales, histDay);
+  const opts = histFilterOptions();
+  $("#histFilters").innerHTML = Object.keys(HIST_FILTERS).map((g) => {
+    // 개수는 "이 줄을 뺀 나머지 필터"를 적용한 기준이라, 눌렀을 때 몇 건이 나올지 바로 보여요
+    const base = applyHistFilters(dayList, g);
+    const cards = opts[g].map(([k, name]) => {
+      const n = base.filter((s) => HIST_FILTERS[g].test(s, k)).length;
+      if (!n && !histF[g].has(k) && (k === "-" || g === "prod" && name.endsWith("(삭제됨)"))) return "";
+      return `<button class="fcard ${histF[g].has(k) ? "on" : ""}" data-g="${g}" data-k="${esc(k)}" type="button"><b>${esc(name)}</b><span class="num">${fmt(n)}건</span></button>`;
+    }).join("");
+    return `<div class="fgrp"><span class="fl">${HIST_FILTERS[g].label}</span><div class="fcards">${cards}</div></div>`;
+  }).join("");
+  const on = Object.values(histF).some((x) => x.size);
+  $("#histFilterNote").innerHTML = on ? `카드를 다시 누르면 선택이 풀려요 · <button class="btn sm ghost" id="histClear" type="button">선택 모두 해제</button>` : "카드를 눌러 원하는 내역만 골라 보세요";
+}
 function renderHist() {
   if (!me) return;
   renderDayChips($("#histDays"), histDay);
+  renderHistFilters();
   const list = histList();
   const head = `<thead><tr>${HIST_COLS.map((c) => `<th data-k="${c.key}" class="${c.r ? "r" : ""}">${c.label}${histSort.key === c.key ? `<span class="arr">${histSort.dir > 0 ? "▲" : "▼"}</span>` : ""}</th>`).join("")}</tr></thead>`;
   const body = list.length ? list.map((s) => `<tr data-id="${s.id}">
-      <td class="num">${histDay === "all" || histDay === "other" ? `<span class="muted small">${dayLabel(s.day)}</span> ` : ""}${timeStr(s.ts)}${s._pending ? ` <span class="pending">업로드 대기</span>` : ""}</td>
       <td class="num muted">#${s._no}</td>
-      <td class="items">${esc(itemsText(s))}</td>
-      <td class="r num">${fmt(s.qty)}</td>
-      <td class="r num">${s.discount ? "−" + fmt(s.discount) : ""}</td>
+      <td class="items">${esc(itemsText(s))}${s.discount ? ` <span class="small" style="color:var(--warn)">(할인 −${fmt(s.discount)})</span>` : ""}${s.memo ? `<div class="small muted">${esc(s.memo)}</div>` : ""}</td>
       <td class="r num"><b>${fmt(s.total)}</b></td>
       <td><span class="tag ${s.payment}">${PAY[s.payment] || "-"}</span></td>
-      <td class="r num small">${s.cashReceived ? `${fmt(s.cashReceived)} / ${fmt(s.change)}` : ""}</td>
-      <td>${esc(custLabel(s.customer))}</td>
-      <td class="memo">${esc(s.memo)}</td>
-      <td class="small">${esc(s.sellerName)}</td>
-    </tr>`).join("") : `<tr><td colspan="${HIST_COLS.length}" class="empty">${sales.length ? "검색 결과가 없어요" : "아직 판매내역이 없어요"}</td></tr>`;
+      <td>${NATION[s.customer?.nation] || `<span class="muted">-</span>`}</td>
+      <td>${GENDER[s.customer?.gender] ? (s.customer.gender === "F" ? "여성" : "남성") : `<span class="muted">-</span>`}</td>
+      <td class="num">${histDay === "all" || histDay === "other" ? `<span class="muted small">${dayLabel(s.day)}</span> ` : ""}${timeStr(s.ts)}${s._pending ? ` <span class="pending">업로드 대기</span>` : ""}</td>
+    </tr>`).join("") : `<tr><td colspan="${HIST_COLS.length}" class="empty">${sales.length ? "선택한 조건의 판매가 없어요" : "아직 판매내역이 없어요"}</td></tr>`;
   $("#histTable").innerHTML = head + "<tbody>" + body + "</tbody>";
   const r = stats(list);
   $("#histSum").innerHTML = `표시 중 <b>${fmt(list.length)}</b>건 · 수량 <b>${fmt(r.qty)}</b>개 · 매출 <b>${won(r.total)}</b>`;
 }
 $("#histDays").addEventListener("click", (e) => { const b = e.target.closest("[data-day]"); if (b) { histDay = b.dataset.day; renderHist(); } });
-$("#histSearch").addEventListener("input", renderHist);
+$("#view-hist").addEventListener("click", (e) => {
+  if (e.target.closest("#histClear")) { Object.values(histF).forEach((x) => x.clear()); renderHist(); return; }
+  const f = e.target.closest(".fcard"); if (!f) return;
+  const set = histF[f.dataset.g]; const k = f.dataset.k;
+  set.has(k) ? set.delete(k) : set.add(k);
+  renderHist();
+});
 $("#histTable").addEventListener("click", (e) => {
   const th = e.target.closest("th[data-k]");
   if (th) {
     const k = th.dataset.k;
-    histSort = histSort.key === k ? { key: k, dir: -histSort.dir } : { key: k, dir: ["ts", "no", "qty", "total", "discount", "cash"].includes(k) ? -1 : 1 };
+    histSort = histSort.key === k ? { key: k, dir: -histSort.dir } : { key: k, dir: ["ts", "no", "total"].includes(k) ? -1 : 1 };
     renderHist(); return;
   }
   const tr = e.target.closest("tr[data-id]");
