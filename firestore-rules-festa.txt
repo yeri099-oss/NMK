@@ -1,0 +1,48 @@
+    // ===================================================================
+    // 국중박 한식페스타 매출 앱 (festaApp_*) — 2026.10.23~24
+    // 로그인: 아이디@festa.goodbab.app 이메일 계정 (최초 관리자 goodbab 은 앱에서 자동 생성).
+    // 계정 프로필(festaApp_users)이 있고 active == true 인 사람만 사용할 수 있습니다.
+    // ===================================================================
+    function isFestaMaster() {
+      return request.auth != null
+        && request.auth.token.email == "goodbab@festa.goodbab.app";
+    }
+    function festaHasProfile() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/festaApp_users/$(request.auth.uid));
+    }
+    function festaProfile() {
+      return get(/databases/$(database)/documents/festaApp_users/$(request.auth.uid)).data;
+    }
+    function festaActive() {
+      return isFestaMaster() || (festaHasProfile() && festaProfile().active == true);
+    }
+    function festaAdmin() {
+      return isFestaMaster() ||
+        (festaHasProfile() && festaProfile().active == true && festaProfile().role == 'admin');
+    }
+    // 계정 프로필: 본인 것은 읽기 가능(로그인 확인용), 목록 열람·생성·수정은 관리자만
+    match /festaApp_users/{uid} {
+      allow read: if festaAdmin() || (request.auth != null && request.auth.uid == uid);
+      allow write: if festaAdmin();
+    }
+    // 상품(이름·가격·설명·사진): 사용 계정 누구나 보기, 추가·수정·삭제는 관리자만
+    match /festaApp_products/{docId} {
+      allow read: if festaActive();
+      allow write: if festaAdmin();
+    }
+    // 판매내역: 사용 계정 누구나 보기·등록(본인 이름으로만).
+    // 수정·삭제는 관리자, 또는 본인이 등록한 판매만.
+    match /festaApp_sales/{docId} {
+      allow read: if festaActive();
+      allow create: if festaActive() && request.resource.data.sellerUid == request.auth.uid;
+      allow update: if festaAdmin() ||
+        (festaActive() && resource.data.sellerUid == request.auth.uid
+          && request.resource.data.sellerUid == request.auth.uid);
+      allow delete: if festaAdmin() || (festaActive() && resource.data.sellerUid == request.auth.uid);
+    }
+    // 앱 설정(초기 상품 등록 여부 등)
+    match /festaApp_meta/{docId} {
+      allow read: if festaActive();
+      allow write: if festaAdmin();
+    }
