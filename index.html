@@ -177,7 +177,9 @@ body.has-mobibar main{padding-bottom:84px}
 .tile .k{font-size:13px;color:var(--ink2);font-weight:600}
 .tile .v{font-size:24px;font-weight:900;margin-top:4px;letter-spacing:-.5px}
 .tiles.money{grid-template-columns:repeat(2,minmax(0,1fr))}
-@media(min-width:700px){.tiles.money{grid-template-columns:1.6fr 1fr 1fr 1fr}}
+.tiles.money .tile.hero{grid-column:1/-1}
+@media(min-width:700px){.tiles.money{grid-template-columns:1.6fr 1fr 1fr}.tiles.money .tile.hero{grid-column:auto}}
+.tiles.pay{margin-top:10px;grid-template-columns:repeat(3,minmax(0,1fr))}
 .tiles.prod{margin-top:10px;grid-template-columns:repeat(auto-fill,minmax(110px,1fr))}
 @media(min-width:700px){.tiles.prod{grid-template-columns:repeat(var(--n),minmax(0,1fr))}}
 .tile .k{overflow-wrap:anywhere}
@@ -495,6 +497,12 @@ nav.tabs button.center.on i{background:var(--ink)}
 .toast{background:var(--ink);border-radius:18px}
 .mitem{box-shadow:var(--lift);border-radius:22px}
 @media(max-width:699px){.deco{opacity:.45}}
+.tile.c-card{background:var(--blue-soft)}
+.tile.c-qr{background:var(--t4)}
+.tile.c-card,.tile.c-qr{color:var(--ink)}
+.tile.c-card .k,.tile.c-qr .k,.tile.c-card .s,.tile.c-qr .s{color:var(--ink2)}
+.tile.c-card::before,.tile.c-qr::before{content:"";position:absolute;width:150px;height:150px;border-radius:99px;right:-40px;bottom:-90px;background:rgba(255,255,255,.55)}
+@media(max-width:699px){.tiles.pay{gap:8px}.tiles.pay .tile{padding:10px 10px}.tiles.pay .tile .v{font-size:clamp(14px,4.2vw,18px)}.tiles.pay .tile .k{font-size:12px}.tiles.pay .tile .s{font-size:11px}}
 /* 대시보드 숫자: 줄바꿈 없이 한 줄 */
 .tile .v{white-space:nowrap}
 .daychips{flex-wrap:nowrap}
@@ -725,7 +733,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v29"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v30"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -1369,7 +1377,12 @@ function renderDash() {
         <div class="s">${r.discount ? `할인 전 ${won(r.subtotal)} · 할인 −${won(r.discount)}` : "할인 없음"}</div></div>
       <div class="tile c-peach"><div class="k">판매 건수</div><div class="v num">${fmt(r.count)}건</div></div>
       <div class="tile c-sage"><div class="k">객단가</div><div class="v num">${won(avg)}</div></div>
-      <div class="tile c-coral"><div class="k">현금 매출</div><div class="v num">${won((r.byPay.cash || {}).amount || 0)}</div><div class="s">시재 확인용</div></div>
+    </div>
+    <div class="tiles pay">
+      ${[["card", "카드 매출", "c-card", ""], ["cash", "현금 매출", "c-coral", " · 시재 확인용"], ["zeropay", "QR 매출", "c-qr", ""]].map(([k, label, cls, note]) => {
+        const v = r.byPay[k] || { count: 0, amount: 0 };
+        return `<div class="tile ${cls}"><div class="k">${label}</div><div class="v num">${won(v.amount)}</div><div class="s num">${fmt(v.count)}건${note}</div></div>`;
+      }).join("")}
     </div>
     <div class="tiles prod" style="--n:${Math.max(1, prodRows.length)}">
       ${prodRows.map((x, i) => { const pct = r.qty ? Math.round(x.qty / r.qty * 100) : 0; return `<div class="tile pq t${i % 5}">
