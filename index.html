@@ -623,7 +623,7 @@ nav.tabs button.center.on i{background:var(--ink)}
       </div>
       <div class="mobibar hidden" id="mobibar">
         <span class="t num" id="mobiTotal">0원</span>
-        <button class="btn" id="mobiGo">결제하기 ↓</button>
+        <button class="btn" id="mobiGo" type="button">판매 등록</button>
       </div>
     </section>
 
@@ -704,7 +704,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v27"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v28"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -1125,7 +1125,13 @@ function updateMobibar() {
   $("#mobibar").classList.toggle("hidden", !on);
   document.body.classList.toggle("has-mobibar", on);
 }
-$("#mobiGo").onclick = () => $("#checkout").scrollIntoView({ behavior: "smooth", block: "start" });
+// 화면 위치로 스크롤 (아이폰 사파리에서도 확실히 움직이도록 직접 계산)
+function scrollToEl(el, offset = 120) {
+  const y = el.getBoundingClientRect().top + window.scrollY - offset;
+  try { window.scrollTo({ top: y, behavior: "smooth" }); } catch { window.scrollTo(0, y); }
+}
+// 모바일 아래 막대의 '판매 등록' = 화면의 판매 등록 버튼과 똑같이 동작
+$("#mobiGo").onclick = () => $("#sellBtn").click();
 
 $("#view-pos").addEventListener("click", (e) => {
   const cust = e.target.closest("[data-cust]");
@@ -1159,7 +1165,7 @@ $("#resetBtn").onclick = resetPos;
 $("#sellBtn").onclick = async () => {
   const c = calc();
   if (!c.items.length) { toast("상품을 먼저 선택해 주세요.", "err"); return; }
-  if (!st.pay) { toast("결제 방식(카드/현금/QR)을 선택해 주세요.", "err"); $("#payType").scrollIntoView({ behavior: "smooth", block: "center" }); return; }
+  if (!st.pay) { toast("결제 방식(카드/현금/QR)을 선택해 주세요.", "err"); scrollToEl($("#payType"), 200); return; }
   if (st.pay === "cash" && st.cash && st.cash < c.total) { toast(`받은 현금이 ${won(c.total - st.cash)} 부족해요.`, "err"); return; }
   const memo = $("#memo").value.trim();
   const ok = await confirmBox("판매 등록", `
