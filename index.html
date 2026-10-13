@@ -495,6 +495,12 @@ nav.tabs button.center.on i{background:var(--ink)}
 .toast{background:var(--ink);border-radius:18px}
 .mitem{box-shadow:var(--lift);border-radius:22px}
 @media(max-width:699px){.deco{opacity:.45}}
+.present .pimg{aspect-ratio:auto;width:auto;max-width:100%;background:none!important;box-shadow:none!important;overflow:visible}
+.present .pimg img{display:block;height:100%;width:auto;max-width:100%;object-fit:contain;border-radius:22px;box-shadow:var(--lift)}
+@media(orientation:landscape) and (min-width:700px){
+  .present .pimg{height:auto;width:min(40vw,460px);display:flex;justify-content:center}
+  .present .pimg img{width:100%;height:auto;max-height:calc(100vh - 140px)}
+}
 </style>
 </head>
 <body>
@@ -698,7 +704,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v20"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v21"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -711,10 +717,10 @@ const PAY = { card: "카드", cash: "현금", zeropay: "QR" }; // zeropay 키는
 const NATION = { KR: "한국인", FG: "외국인" };
 const GENDER = { F: "여", M: "남" };
 const SEED_PRODUCTS = [
-  { nameKo: "귤당근쥬스", nameEn: "Organic Tangerine Carrot Juice", price: 4800, emoji: "🍊", image: "img/gyul-carrot-juice-bottle.jpg",
+  { nameKo: "귤당근쥬스", nameEn: "Organic Tangerine Carrot Juice", price: 4800, emoji: "🍊", image: "img/gyul-carrot-juice-styled.jpg",
     descKo: "꽃,밥에피다 유기농 귤당근 주스 — 물 한 방울 넣지 않은 100% 유기농 착즙 (500ml)\n귤(유기농·국산) 85% + 당근(유기농·국산) 15%, 첨가물 무첨가\n\n· 피니셔 착즙 — 좋은 부분만 착즙, 과즙과 섬유 분리로 맛의 퀄리티↑, 빠른 작업으로 열·마찰 최소화 → 영양 손실 최소화. 퓨레 기계 방식이라 스크류 착즙보다 펄프·유효성분 함량이 높음\n· 100% 착즙 — 진하고 깊은 식감, 일반 주스와 다른 맛\n· 유기농 감귤 — 제주의 비옥한 환경에서 재배, 비타민C의 보고·천연 피로회복제, 면역력 증진·무기염류·섬유질 풍부\n· 유기농 당근 — 제주 김형표 농부님 재배, '비타민A의 황제' 베타카로틴 최다 함유, 눈·혈관 건강, 뛰어난 당도와 크리미한 풍미\n\n언제 먹어도 좋은 주스",
     descEn: "100% organic pressed juice — not a drop of water, no additives. (500ml)\nOrganic Korean tangerine 85% + organic Korean carrot 15%\n\n· Finisher pressing: only the best parts, juice separated from fiber, pressed fast to minimize heat and nutrient loss — more pulp and nutrients than screw pressing\n· Organic tangerines grown in Jeju: rich in vitamin C, minerals and fiber\n· Organic carrots from farmer Kim Hyeong-pyo in Jeju: rich in beta-carotene, sweet and creamy\n\nRich and deep — good any time." },
-  { nameKo: "레몬즙", nameEn: "Jeju Organic Lemon Juice 100%", price: 14800, emoji: "🍋", image: "img/lemon-juice.jpg",
+  { nameKo: "레몬즙", nameEn: "Jeju Organic Lemon Juice 100%", price: 14800, emoji: "🍋", image: "img/lemon-juice-styled.jpg",
     descKo: "꽃,밥에피다 제주 유기농 레몬즙 100% — 300ml (101.1kcal)\n제주산 유기농 레몬을 껍질째 단 한 번만 압착한 100% 원액\n\n· 레몬(제주산 유기농) 100%, 첨가물 무첨가\n· 수입 레몬이 아닌 제주 유기농 땅에서 재배, 짧은 운송 거리로 더욱 신선\n· 유기가공식품 인증 · HACCP\n\n갓 짜낸 원액이라 반드시 물에 희석해서 음용 (Dilute Before Drinking)\n눈에 잘 띄는 빨간 띠지 — '꼭 희석해서 드세요' 안내\n물·탄산수에 타서 레모네이드, 요리·드레싱에도 활용",
     descEn: "Kkotbap Jeju organic lemon juice 100% — 300ml (101.1kcal)\nOrganic Jeju lemons pressed whole, just once — 100% pure juice.\n\n· 100% organic Jeju lemon, no additives\n· Grown on organic farmland in Jeju, not imported — short travel, extra fresh\n· Certified organic · HACCP\n\nPure concentrate — please dilute with water before drinking.\nGreat as lemonade with water or sparkling water, or in cooking and dressings." },
   { nameKo: "김부각", nameEn: "Gim Bugak (Crispy Seaweed Chips)", price: 4500, emoji: "🌿", image: "img/gim-bugak.jpg",
@@ -739,13 +745,15 @@ const PRODUCT_UPDATES = [
   { id: "gim-desc-3", match: "김부각", set: { image: "img/gim-bugak.jpg", nameEn: "Gim Bugak (Crispy Seaweed Chips)",
     descKo: "꽃,밥에피다 귀한 김부각 — 들어가는 재료가 모두 '귀한' 김부각\n\n· 지주식 김 — 국내 단 1% 생산\n· 유기농 찹쌀죽 — 가마솥으로 끓여 만듦\n· Non-GMO 현미유 — GMO 기름 사용 안 함\n· 참깨·천일염 — 국산 참깨와 국내산 천일염\n\n지주식 김: 갯벌에 세운 나무·대나무 지주(기둥)에 발을 연결해 키우는 전통 자연친화 방식, 미네랄·비타민·식이섬유·칼슘·철분·인이 풍부한 알칼리 식품\n가마솥에 불을 때어 유기농 인증 찹쌀로 쑨 찹쌀죽을 김에 발라 발효, 전통방식 그대로\n지렁이도 벌레도 함께 사는 건강한 땅에서 자란 유기농·무농약 식재료만 사용, 화학적합성첨가물 무첨가\n자연이 주는 바삭함 — 밥 반찬·간식·안주용",
     descEn: "Kkotbap's premium gim bugak — every ingredient is a precious one.\n\n· Pole-cultivated laver — only about 1% of Korean seaweed; a traditional, eco-friendly method; rich in minerals, vitamins, fiber, calcium and iron\n· Organic glutinous rice porridge cooked in a wood-fired iron pot, brushed on and fermented\n· Non-GMO rice bran oil\n· Korean sesame and sea salt\n\nOrganic, pesticide-free ingredients only; no chemical additives. Naturally crispy — a side dish, snack or bar snack." } },
-  { id: "gyul-desc-3", match: "귤당근쥬스", set: { image: "img/gyul-carrot-juice-bottle.jpg", nameEn: "Organic Tangerine Carrot Juice",
+  { id: "gyul-desc-3", match: "귤당근쥬스", set: { image: "img/gyul-carrot-juice-styled.jpg", nameEn: "Organic Tangerine Carrot Juice",
     descKo: "꽃,밥에피다 유기농 귤당근 주스 — 물 한 방울 넣지 않은 100% 유기농 착즙 (500ml)\n귤(유기농·국산) 85% + 당근(유기농·국산) 15%, 첨가물 무첨가\n\n· 피니셔 착즙 — 좋은 부분만 착즙, 과즙과 섬유 분리로 맛의 퀄리티↑, 빠른 작업으로 열·마찰 최소화 → 영양 손실 최소화. 퓨레 기계 방식이라 스크류 착즙보다 펄프·유효성분 함량이 높음\n· 100% 착즙 — 진하고 깊은 식감, 일반 주스와 다른 맛\n· 유기농 감귤 — 제주의 비옥한 환경에서 재배, 비타민C의 보고·천연 피로회복제, 면역력 증진·무기염류·섬유질 풍부\n· 유기농 당근 — 제주 김형표 농부님 재배, '비타민A의 황제' 베타카로틴 최다 함유, 눈·혈관 건강, 뛰어난 당도와 크리미한 풍미\n\n언제 먹어도 좋은 주스",
     descEn: "100% organic pressed juice — not a drop of water, no additives. (500ml)\nOrganic Korean tangerine 85% + organic Korean carrot 15%\n\n· Finisher pressing: only the best parts, juice separated from fiber, pressed fast to minimize heat and nutrient loss — more pulp and nutrients than screw pressing\n· Organic tangerines grown in Jeju: rich in vitamin C, minerals and fiber\n· Organic carrots from farmer Kim Hyeong-pyo in Jeju: rich in beta-carotene, sweet and creamy\n\nRich and deep — good any time." } },
-  { id: "lemon-desc-3", match: "레몬즙", set: { image: "img/lemon-juice.jpg", nameEn: "Jeju Organic Lemon Juice 100%",
+  { id: "lemon-desc-3", match: "레몬즙", set: { image: "img/lemon-juice-styled.jpg", nameEn: "Jeju Organic Lemon Juice 100%",
     descKo: "꽃,밥에피다 제주 유기농 레몬즙 100% — 300ml (101.1kcal)\n제주산 유기농 레몬을 껍질째 단 한 번만 압착한 100% 원액\n\n· 레몬(제주산 유기농) 100%, 첨가물 무첨가\n· 수입 레몬이 아닌 제주 유기농 땅에서 재배, 짧은 운송 거리로 더욱 신선\n· 유기가공식품 인증 · HACCP\n\n갓 짜낸 원액이라 반드시 물에 희석해서 음용 (Dilute Before Drinking)\n눈에 잘 띄는 빨간 띠지 — '꼭 희석해서 드세요' 안내\n물·탄산수에 타서 레모네이드, 요리·드레싱에도 활용",
     descEn: "Kkotbap Jeju organic lemon juice 100% — 300ml (101.1kcal)\nOrganic Jeju lemons pressed whole, just once — 100% pure juice.\n\n· 100% organic Jeju lemon, no additives\n· Grown on organic farmland in Jeju, not imported — short travel, extra fresh\n· Certified organic · HACCP\n\nPure concentrate — please dilute with water before drinking.\nGreat as lemonade with water or sparkling water, or in cooking and dressings." } },
-  { id: "gyul-photo-2", match: "귤당근쥬스", set: { image: "img/gyul-carrot-juice-bottle.jpg" } },
+  { id: "gyul-photo-2", match: "귤당근쥬스", set: { image: "img/gyul-carrot-juice-styled.jpg" } },
+  { id: "lemon-photo-3", match: "레몬즙", set: { image: "img/lemon-juice-styled.jpg" } },
+  { id: "gyul-photo-3", match: "귤당근쥬스", set: { image: "img/gyul-carrot-juice-styled.jpg" } },
 ];
 
 const app = initializeApp(firebaseConfig);
