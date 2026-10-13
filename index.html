@@ -497,6 +497,14 @@ nav.tabs button.center.on i{background:var(--ink)}
 .toast{background:var(--ink);border-radius:18px}
 .mitem{box-shadow:var(--lift);border-radius:22px}
 @media(max-width:699px){.deco{opacity:.45}}
+/* 휴대폰 판매내역 필터: 제목은 위에, 카드는 한 줄에 3개씩 */
+@media(max-width:699px){
+  .fgrp{flex-direction:column;align-items:stretch;gap:6px}
+  .fgrp .fl{width:auto}
+  .fcards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .fcard{min-width:0;padding:8px 10px;border-radius:14px}
+  .fcard b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+}
 .tile.hero .hsplit{position:relative;z-index:1;margin-top:10px;padding-top:10px;border-top:1.5px dashed rgba(31,29,36,.15)}
 .tile.hero .hd{font-size:12px;font-weight:600;color:var(--warn);margin-left:4px}
 .tile.hero .v.v2{font-size:26px}
@@ -737,7 +745,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v32"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v33"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -1438,7 +1446,9 @@ const HIST_FILTERS = {
   gender: { label: "성별", test: (s, k) => (s.customer?.gender || "-") === k },
 };
 function histFilterOptions() {
-  const prod = products.map((p) => [p.id, p.nameKo]);
+  // 필터 카드는 좁은 칸에 들어가도록 짧은 이름 사용
+  const short = (n) => (n === "보자기카스테라" ? "보자기" : n);
+  const prod = products.map((p) => [p.id, short(p.nameKo)]);
   for (const s of sales) for (const i of s.items || []) { const k = i.productId || i.nameKo; if (!prod.find(([x]) => x === k)) prod.push([k, i.nameKo + " (삭제됨)"]); }
   return {
     prod,
