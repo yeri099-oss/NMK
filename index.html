@@ -693,7 +693,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v11"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v12"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -715,9 +715,9 @@ const SEED_PRODUCTS = [
   { nameKo: "김부각", nameEn: "Gim Bugak (Crispy Seaweed Chips)", price: 4500, emoji: "🌿",
     descKo: "김에 찹쌀풀을 발라 말린 뒤 바삭하게 튀겨낸 한국 전통 부각이에요.\n고소하고 바삭해서 간식이나 술안주로 좋아요.",
     descEn: "A traditional Korean snack: seaweed coated with glutinous rice paste, dried, then fried until crispy.\nSavory and crunchy — great as a snack or with drinks." },
-  { nameKo: "새송이부각", nameEn: "King Oyster Mushroom Bugak", price: 4500, emoji: "🍄",
-    descKo: "새송이버섯을 얇게 썰어 찹쌀옷을 입혀 바삭하게 만든 부각이에요.\n버섯의 쫄깃한 향과 바삭한 식감을 함께 느낄 수 있어요.",
-    descEn: "Thinly sliced king oyster mushrooms coated in glutinous rice and made crispy.\nEnjoy the mushroom's savory aroma with a light crunch." },
+  { nameKo: "새송이부각", nameEn: "King Oyster Mushroom Bugak", price: 4500, emoji: "🍄", image: "img/saesongi-bugak.jpg",
+    descKo: "귀한 재료만 사용한 꽃밥에피다 새송이부각이에요.\n무농약 새송이버섯을 얇게 썰어, 가마솥에 끓인 유기농 찹쌀죽을 최대한 얇게 발라 원재료 맛을 살렸어요.\n\n· 국내 무농약 새송이버섯\n· 유기농 찹쌀죽 (가마솥에 불을 때어 전통방식으로)\n· Non-GMO 현미유 (200℃에서 바삭하게)\n· 국산 참깨와 천일염\n\n18시간 건조 후 8개월 정도 숙성해 버섯의 고소한 맛과 부각의 깊은 맛을 끌어올렸어요.",
+    descEn: "Premium king oyster mushroom bugak (crispy chips) by Kkotbap.\nPesticide-free mushrooms, thinly sliced and lightly coated with organic glutinous rice porridge cooked in a traditional iron pot.\n\n· Pesticide-free Korean king oyster mushrooms\n· Organic glutinous rice porridge (wood-fired iron pot)\n· Non-GMO rice bran oil, fried crisp at 200℃\n· Korean sesame and sea salt\n\nDried for 18 hours and aged about 8 months for a deep, nutty flavor." },
   { nameKo: "보자기카스테라", nameEn: "Bojagi Castella (Soy Sauce Castella)", price: 19800, emoji: "🎁", image: "img/bojagi-castella.jpg",
     descKo: "국내 최초 간장 카스테라 — 간장 맛이 아니라 '감칠맛'이에요.\n당도를 확 낮추고, 거창 덕유산 자락에서 담근 2년 숙성 유기농 전통간장으로 맛의 균형을 맞췄어요.\n\n· 유기농 우리밀 (형제기업 (주)네니아에서 매년 수매)\n· 동물복지 무항생제 유정란\n· 자연숙성 생꿀 (무주 구천동, 비가열)\n· 천비향 약주 (평택 우리쌀로 명인이 빚은 청주)\n\n주스 등 음료와 함께 드시면 촉촉하고 더 맛있어요.\n보관: 냉동 → 실온 30분~1시간 자연해동, 해동 후 실온 1주일",
     descEn: "Korea's first soy sauce castella — not salty, just rich umami.\nLess sugar, balanced with organic traditional soy sauce aged 2 years at the foot of Mt. Deogyusan.\n\n· Organic Korean wheat\n· Antibiotic-free, free-range eggs\n· Raw honey, naturally crystallized (unheated)\n· Cheonbihyang — master-brewed rice wine from Pyeongtaek rice\n\nBest with juice or a drink — soft and moist.\nStorage: keep frozen; thaw 30–60 min at room temp; keeps 1 week once thawed." },
@@ -728,6 +728,9 @@ const PRODUCT_UPDATES = [
   { id: "bojagi-2026-10", match: "보자기카스테라", set: { image: "img/bojagi-castella.jpg", nameEn: "Bojagi Castella (Soy Sauce Castella)",
     descKo: "국내 최초 간장 카스테라 — 간장 맛이 아니라 '감칠맛'이에요.\n당도를 확 낮추고, 거창 덕유산 자락에서 담근 2년 숙성 유기농 전통간장으로 맛의 균형을 맞췄어요.\n\n· 유기농 우리밀 (형제기업 (주)네니아에서 매년 수매)\n· 동물복지 무항생제 유정란\n· 자연숙성 생꿀 (무주 구천동, 비가열)\n· 천비향 약주 (평택 우리쌀로 명인이 빚은 청주)\n\n주스 등 음료와 함께 드시면 촉촉하고 더 맛있어요.\n보관: 냉동 → 실온 30분~1시간 자연해동, 해동 후 실온 1주일",
     descEn: "Korea's first soy sauce castella — not salty, just rich umami.\nLess sugar, balanced with organic traditional soy sauce aged 2 years at the foot of Mt. Deogyusan.\n\n· Organic Korean wheat\n· Antibiotic-free, free-range eggs\n· Raw honey, naturally crystallized (unheated)\n· Cheonbihyang — master-brewed rice wine from Pyeongtaek rice\n\nBest with juice or a drink — soft and moist.\nStorage: keep frozen; thaw 30–60 min at room temp; keeps 1 week once thawed." } },
+  { id: "saesongi-2026-10", match: "새송이부각", set: { image: "img/saesongi-bugak.jpg",
+    descKo: "귀한 재료만 사용한 꽃밥에피다 새송이부각이에요.\n무농약 새송이버섯을 얇게 썰어, 가마솥에 끓인 유기농 찹쌀죽을 최대한 얇게 발라 원재료 맛을 살렸어요.\n\n· 국내 무농약 새송이버섯\n· 유기농 찹쌀죽 (가마솥에 불을 때어 전통방식으로)\n· Non-GMO 현미유 (200℃에서 바삭하게)\n· 국산 참깨와 천일염\n\n18시간 건조 후 8개월 정도 숙성해 버섯의 고소한 맛과 부각의 깊은 맛을 끌어올렸어요.",
+    descEn: "Premium king oyster mushroom bugak (crispy chips) by Kkotbap.\nPesticide-free mushrooms, thinly sliced and lightly coated with organic glutinous rice porridge cooked in a traditional iron pot.\n\n· Pesticide-free Korean king oyster mushrooms\n· Organic glutinous rice porridge (wood-fired iron pot)\n· Non-GMO rice bran oil, fried crisp at 200℃\n· Korean sesame and sea salt\n\nDried for 18 hours and aged about 8 months for a deep, nutty flavor." } },
 ];
 
 const app = initializeApp(firebaseConfig);
