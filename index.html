@@ -693,7 +693,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v10"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v11"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -718,9 +718,16 @@ const SEED_PRODUCTS = [
   { nameKo: "새송이부각", nameEn: "King Oyster Mushroom Bugak", price: 4500, emoji: "🍄",
     descKo: "새송이버섯을 얇게 썰어 찹쌀옷을 입혀 바삭하게 만든 부각이에요.\n버섯의 쫄깃한 향과 바삭한 식감을 함께 느낄 수 있어요.",
     descEn: "Thinly sliced king oyster mushrooms coated in glutinous rice and made crispy.\nEnjoy the mushroom's savory aroma with a light crunch." },
-  { nameKo: "보자기카스테라", nameEn: "Bojagi Castella", price: 19800, emoji: "🎁",
-    descKo: "부드럽고 촉촉한 카스테라를 한국 전통 보자기로 곱게 감싼 선물용 상품이에요.\n명절·감사 선물로 좋아요.",
-    descEn: "Soft, moist castella sponge cake wrapped in a traditional Korean bojagi cloth.\nA lovely gift for holidays or to say thank you." },
+  { nameKo: "보자기카스테라", nameEn: "Bojagi Castella (Soy Sauce Castella)", price: 19800, emoji: "🎁", image: "img/bojagi-castella.jpg",
+    descKo: "국내 최초 간장 카스테라 — 간장 맛이 아니라 '감칠맛'이에요.\n당도를 확 낮추고, 거창 덕유산 자락에서 담근 2년 숙성 유기농 전통간장으로 맛의 균형을 맞췄어요.\n\n· 유기농 우리밀 (형제기업 (주)네니아에서 매년 수매)\n· 동물복지 무항생제 유정란\n· 자연숙성 생꿀 (무주 구천동, 비가열)\n· 천비향 약주 (평택 우리쌀로 명인이 빚은 청주)\n\n주스 등 음료와 함께 드시면 촉촉하고 더 맛있어요.\n보관: 냉동 → 실온 30분~1시간 자연해동, 해동 후 실온 1주일",
+    descEn: "Korea's first soy sauce castella — not salty, just rich umami.\nLess sugar, balanced with organic traditional soy sauce aged 2 years at the foot of Mt. Deogyusan.\n\n· Organic Korean wheat\n· Antibiotic-free, free-range eggs\n· Raw honey, naturally crystallized (unheated)\n· Cheonbihyang — master-brewed rice wine from Pyeongtaek rice\n\nBest with juice or a drink — soft and moist.\nStorage: keep frozen; thaw 30–60 min at room temp; keeps 1 week once thawed." },
+];
+
+// 이미 등록된 상품의 사진·설명을 한 번만 바꿔주는 목록 (관리자 로그인 시 자동 적용, id 는 바꾸지 마세요)
+const PRODUCT_UPDATES = [
+  { id: "bojagi-2026-10", match: "보자기카스테라", set: { image: "img/bojagi-castella.jpg", nameEn: "Bojagi Castella (Soy Sauce Castella)",
+    descKo: "국내 최초 간장 카스테라 — 간장 맛이 아니라 '감칠맛'이에요.\n당도를 확 낮추고, 거창 덕유산 자락에서 담근 2년 숙성 유기농 전통간장으로 맛의 균형을 맞췄어요.\n\n· 유기농 우리밀 (형제기업 (주)네니아에서 매년 수매)\n· 동물복지 무항생제 유정란\n· 자연숙성 생꿀 (무주 구천동, 비가열)\n· 천비향 약주 (평택 우리쌀로 명인이 빚은 청주)\n\n주스 등 음료와 함께 드시면 촉촉하고 더 맛있어요.\n보관: 냉동 → 실온 30분~1시간 자연해동, 해동 후 실온 1주일",
+    descEn: "Korea's first soy sauce castella — not salty, just rich umami.\nLess sugar, balanced with organic traditional soy sauce aged 2 years at the foot of Mt. Deogyusan.\n\n· Organic Korean wheat\n· Antibiotic-free, free-range eggs\n· Raw honey, naturally crystallized (unheated)\n· Cheonbihyang — master-brewed rice wine from Pyeongtaek rice\n\nBest with juice or a drink — soft and moist.\nStorage: keep frozen; thaw 30–60 min at room temp; keeps 1 week once thawed." } },
 ];
 
 const app = initializeApp(firebaseConfig);
@@ -873,13 +880,29 @@ function show(which) {
   $("#appView").classList.toggle("hidden", which !== "app");
 }
 
+let updatesChecked = false;
+async function applyProductUpdates() {
+  if (updatesChecked || !isAdmin() || !products.length) return;
+  updatesChecked = true;
+  try {
+    const ref = doc(db, COL.meta, "productUpdates");
+    const snap = await getDoc(ref);
+    const done = snap.exists() ? snap.data() : {};
+    for (const u of PRODUCT_UPDATES) {
+      if (done[u.id]) continue;
+      const p = products.find((x) => x.nameKo === u.match);
+      if (p) await updateDoc(doc(db, COL.products, p.id), { ...u.set, updatedAt: serverTimestamp() });
+      await setDoc(ref, { [u.id]: true }, { merge: true });
+    }
+  } catch (e) { console.error(e); updatesChecked = false; }
+}
 async function seedIfNeeded() {
   const ref = doc(db, COL.meta, "seed");
   const s = await getDoc(ref);
   if (s.exists()) return;
   const b = writeBatch(db);
   SEED_PRODUCTS.forEach((p, i) => {
-    b.set(doc(collection(db, COL.products)), { ...p, image: "", order: (i + 1) * 10, active: true, createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
+    b.set(doc(collection(db, COL.products)), { image: "", ...p, order: (i + 1) * 10, active: true, createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
   });
   b.set(ref, { done: true, at: serverTimestamp() });
   await b.commit();
@@ -897,6 +920,7 @@ function startApp() {
       .sort((a, b) => (a.order ?? 0) - (b.order ?? 0) || String(a.nameKo).localeCompare(String(b.nameKo)));
     for (const id of Object.keys(cart)) if (!products.find((p) => p.id === id && p.active !== false)) delete cart[id];
     renderPos(); renderInfo(); renderProdAdmin(); renderDash(); renderHist();
+    applyProductUpdates();
   }, (e) => { console.error(e); toast("상품을 불러오지 못했어요: " + e.code, "err", 4000); }));
 
   unsubs.push(onSnapshot(query(collection(db, COL.sales), orderBy("ts", "desc")), { includeMetadataChanges: true }, (qs) => {
