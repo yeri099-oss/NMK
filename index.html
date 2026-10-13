@@ -495,6 +495,27 @@ nav.tabs button.center.on i{background:var(--ink)}
 .toast{background:var(--ink);border-radius:18px}
 .mitem{box-shadow:var(--lift);border-radius:22px}
 @media(max-width:699px){.deco{opacity:.45}}
+/* 대시보드 숫자: 줄바꿈 없이 한 줄 */
+.tile .v{white-space:nowrap}
+.daychips{flex-wrap:nowrap}
+.daychips .chip{white-space:nowrap}
+/* 휴대폰: 매출 카드 글씨 크기 맞춤, 상품별 판매량은 한 줄에 하나씩 가로로 얇게 */
+@media(max-width:699px){
+  .daychips .chip{padding:8px 11px;font-size:14px}
+  .tiles.money{gap:8px}
+  .tile{padding:12px 14px}
+  .tile .v{font-size:clamp(17px,5.4vw,22px)}
+  .tile.hero .v{font-size:clamp(20px,6.6vw,28px)}
+  .tile.hero::before,.tile.c-peach::before,.tile.c-sage::before,.tile.c-coral::before{width:110px;height:110px;bottom:-70px}
+  .tiles.prod{grid-template-columns:1fr;gap:8px}
+  .tile.pq{display:flex;align-items:center;gap:10px;min-height:0;padding:10px 12px 10px 16px}
+  .tile.pq .k{flex:1;min-width:0;font-size:15px;font-weight:700;color:var(--ink);overflow-wrap:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tile.pq .v{font-size:19px;margin:0}
+  .tile.pq .s{margin:0;min-width:74px;text-align:right;font-size:13px}
+  .tile.pq .ring{position:relative;order:4;right:auto;top:auto;transform:none;width:42px;height:42px;flex-shrink:0}
+  .tile.pq .ring::before{inset:5px}
+  .tile.pq .ring span{font-size:10px}
+}
 .present .pimg{aspect-ratio:auto;width:auto;max-width:100%;background:none!important;box-shadow:none!important;overflow:visible}
 .present .pimg img{display:block;height:100%;width:auto;max-width:100%;object-fit:contain;border-radius:22px;box-shadow:var(--lift)}
 @media(orientation:landscape) and (min-width:700px){
@@ -704,7 +725,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v28"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v29"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
