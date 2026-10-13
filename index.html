@@ -693,7 +693,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v15"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v16"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -718,14 +718,14 @@ const SEED_PRODUCTS = [
   { nameKo: "새송이부각", nameEn: "King Oyster Mushroom Bugak", price: 4500, emoji: "🍄", image: "img/saesongi-bugak.jpg",
     descKo: "귀한 재료만 사용한 꽃밥에피다 새송이부각이에요.\n무농약 새송이버섯을 얇게 썰어, 가마솥에 끓인 유기농 찹쌀죽을 최대한 얇게 발라 원재료 맛을 살렸어요.\n\n· 국내 무농약 새송이버섯\n· 유기농 찹쌀죽 (가마솥에 불을 때어 전통방식으로)\n· Non-GMO 현미유 (200℃에서 바삭하게)\n· 국산 참깨와 천일염\n\n18시간 건조 후 8개월 정도 숙성해 버섯의 고소한 맛과 부각의 깊은 맛을 끌어올렸어요.",
     descEn: "Premium king oyster mushroom bugak (crispy chips) by Kkotbap.\nPesticide-free mushrooms, thinly sliced and lightly coated with organic glutinous rice porridge cooked in a traditional iron pot.\n\n· Pesticide-free Korean king oyster mushrooms\n· Organic glutinous rice porridge (wood-fired iron pot)\n· Non-GMO rice bran oil, fried crisp at 200℃\n· Korean sesame and sea salt\n\nDried for 18 hours and aged about 8 months for a deep, nutty flavor." },
-  { nameKo: "보자기카스테라", nameEn: "Bojagi Castella (Soy Sauce Castella)", price: 19800, emoji: "🎁", image: "img/bojagi-castella.jpg",
+  { nameKo: "보자기카스테라", nameEn: "Bojagi Castella (Soy Sauce Castella)", price: 19800, emoji: "🎁", image: "img/bojagi-castella-box.jpg",
     descKo: "국내 최초 간장 카스테라 — 간장 맛이 아니라 '감칠맛'이에요.\n당도를 확 낮추고, 거창 덕유산 자락에서 담근 2년 숙성 유기농 전통간장으로 맛의 균형을 맞췄어요.\n\n· 유기농 우리밀 (형제기업 (주)네니아에서 매년 수매)\n· 동물복지 무항생제 유정란\n· 자연숙성 생꿀 (무주 구천동, 비가열)\n· 천비향 약주 (평택 우리쌀로 명인이 빚은 청주)\n\n주스 등 음료와 함께 드시면 촉촉하고 더 맛있어요.\n보관: 냉동 → 실온 30분~1시간 자연해동, 해동 후 실온 1주일",
     descEn: "Korea's first soy sauce castella — not salty, just rich umami.\nLess sugar, balanced with organic traditional soy sauce aged 2 years at the foot of Mt. Deogyusan.\n\n· Organic Korean wheat\n· Antibiotic-free, free-range eggs\n· Raw honey, naturally crystallized (unheated)\n· Cheonbihyang — master-brewed rice wine from Pyeongtaek rice\n\nBest with juice or a drink — soft and moist.\nStorage: keep frozen; thaw 30–60 min at room temp; keeps 1 week once thawed." },
 ];
 
 // 이미 등록된 상품의 사진·설명을 한 번만 바꿔주는 목록 (관리자 로그인 시 자동 적용, id 는 바꾸지 마세요)
 const PRODUCT_UPDATES = [
-  { id: "bojagi-2026-10", match: "보자기카스테라", set: { image: "img/bojagi-castella.jpg", nameEn: "Bojagi Castella (Soy Sauce Castella)",
+  { id: "bojagi-2026-10", match: "보자기카스테라", set: { image: "img/bojagi-castella-box.jpg", nameEn: "Bojagi Castella (Soy Sauce Castella)",
     descKo: "국내 최초 간장 카스테라 — 간장 맛이 아니라 '감칠맛'이에요.\n당도를 확 낮추고, 거창 덕유산 자락에서 담근 2년 숙성 유기농 전통간장으로 맛의 균형을 맞췄어요.\n\n· 유기농 우리밀 (형제기업 (주)네니아에서 매년 수매)\n· 동물복지 무항생제 유정란\n· 자연숙성 생꿀 (무주 구천동, 비가열)\n· 천비향 약주 (평택 우리쌀로 명인이 빚은 청주)\n\n주스 등 음료와 함께 드시면 촉촉하고 더 맛있어요.\n보관: 냉동 → 실온 30분~1시간 자연해동, 해동 후 실온 1주일",
     descEn: "Korea's first soy sauce castella — not salty, just rich umami.\nLess sugar, balanced with organic traditional soy sauce aged 2 years at the foot of Mt. Deogyusan.\n\n· Organic Korean wheat\n· Antibiotic-free, free-range eggs\n· Raw honey, naturally crystallized (unheated)\n· Cheonbihyang — master-brewed rice wine from Pyeongtaek rice\n\nBest with juice or a drink — soft and moist.\nStorage: keep frozen; thaw 30–60 min at room temp; keeps 1 week once thawed." } },
   { id: "saesongi-2026-10", match: "새송이부각", set: { image: "img/saesongi-bugak.jpg",
@@ -740,6 +740,7 @@ const PRODUCT_UPDATES = [
   { id: "lemon-2026-10", match: "레몬즙", set: { image: "img/lemon-juice.jpg", nameEn: "Jeju Organic Lemon Juice 100%",
     descKo: "제주산 유기농 레몬을 껍질째 단 한 번만 짜서 300ml 병에 담은 100% 원액 레몬즙이에요.\n수입 레몬이 아니라 제주도 유기농 땅에서 키워, 운송 거리가 짧아 더욱 신선해요.\n\n· 레몬(제주산 유기농) 100%, 첨가물 없음\n· 유기가공식품 인증 · HACCP\n· 300ml (101.1kcal)\n\n갓 짜낸 원액이라 꼭 물에 희석해서 드세요.\n물·탄산수에 타서 레모네이드로, 요리·드레싱에도 좋아요.",
     descEn: "100% pure lemon juice — organic Jeju lemons pressed whole, just once, into a 300ml bottle.\nGrown on organic farmland in Jeju, not imported, so it travels a short way and stays fresh.\n\n· 100% organic Jeju lemon, no additives\n· Certified organic · HACCP\n· 300ml (101.1kcal)\n\nIt's pure concentrate — please dilute before drinking.\nGreat with water or sparkling water as lemonade, or in cooking and dressings." } },
+  { id: "bojagi-photo-2", match: "보자기카스테라", set: { image: "img/bojagi-castella-box.jpg" } },
 ];
 
 const app = initializeApp(firebaseConfig);
