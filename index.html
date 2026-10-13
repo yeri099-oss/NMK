@@ -693,7 +693,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v12"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v13"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -712,9 +712,9 @@ const SEED_PRODUCTS = [
   { nameKo: "레몬즙", nameEn: "Lemon Juice", price: 14800, emoji: "🍋",
     descKo: "레몬을 짜서 담은 레몬즙이에요.\n물이나 탄산수에 타서 레모네이드로, 요리·드레싱에 넣어 상큼하게 즐겨보세요.",
     descEn: "Squeezed lemon juice in a bottle.\nMix with water or sparkling water for lemonade, or add to cooking and dressings." },
-  { nameKo: "김부각", nameEn: "Gim Bugak (Crispy Seaweed Chips)", price: 4500, emoji: "🌿",
-    descKo: "김에 찹쌀풀을 발라 말린 뒤 바삭하게 튀겨낸 한국 전통 부각이에요.\n고소하고 바삭해서 간식이나 술안주로 좋아요.",
-    descEn: "A traditional Korean snack: seaweed coated with glutinous rice paste, dried, then fried until crispy.\nSavory and crunchy — great as a snack or with drinks." },
+  { nameKo: "김부각", nameEn: "Gim Bugak (Crispy Seaweed Chips)", price: 4500, emoji: "🌿", image: "img/gim-bugak.jpg",
+    descKo: "귀한 재료만 들어간 꽃밥에피다 김부각이에요.\n국내 단 1% 생산되는 지주식 김에, 가마솥에 끓인 유기농 찹쌀죽을 발라 전통방식으로 만들었어요.\n\n· 지주식 김 (갯벌에 세운 지주에 발을 매달아 키운 자연친화 김, 미네랄·비타민·식이섬유가 풍부한 알칼리 식품)\n· 유기농 찹쌀죽 (가마솥에 불을 때어)\n· Non-GMO 현미유\n· 국산 참깨와 국내산 천일염\n\n화학첨가물 없이 바삭해요. 밥 반찬·간식·안주로 누구나 맛있게 즐겨요.",
+    descEn: "Premium gim bugak (crispy seaweed chips) by Kkotbap.\nMade the traditional way with pole-cultivated laver — only about 1% of Korean seaweed — and organic glutinous rice porridge cooked in an iron pot.\n\n· Pole-cultivated Korean laver, rich in minerals, vitamins and fiber\n· Organic glutinous rice porridge (wood-fired iron pot)\n· Non-GMO rice bran oil\n· Korean sesame and sea salt\n\nNo chemical additives. Great as a snack, side dish or with drinks." },
   { nameKo: "새송이부각", nameEn: "King Oyster Mushroom Bugak", price: 4500, emoji: "🍄", image: "img/saesongi-bugak.jpg",
     descKo: "귀한 재료만 사용한 꽃밥에피다 새송이부각이에요.\n무농약 새송이버섯을 얇게 썰어, 가마솥에 끓인 유기농 찹쌀죽을 최대한 얇게 발라 원재료 맛을 살렸어요.\n\n· 국내 무농약 새송이버섯\n· 유기농 찹쌀죽 (가마솥에 불을 때어 전통방식으로)\n· Non-GMO 현미유 (200℃에서 바삭하게)\n· 국산 참깨와 천일염\n\n18시간 건조 후 8개월 정도 숙성해 버섯의 고소한 맛과 부각의 깊은 맛을 끌어올렸어요.",
     descEn: "Premium king oyster mushroom bugak (crispy chips) by Kkotbap.\nPesticide-free mushrooms, thinly sliced and lightly coated with organic glutinous rice porridge cooked in a traditional iron pot.\n\n· Pesticide-free Korean king oyster mushrooms\n· Organic glutinous rice porridge (wood-fired iron pot)\n· Non-GMO rice bran oil, fried crisp at 200℃\n· Korean sesame and sea salt\n\nDried for 18 hours and aged about 8 months for a deep, nutty flavor." },
@@ -731,6 +731,9 @@ const PRODUCT_UPDATES = [
   { id: "saesongi-2026-10", match: "새송이부각", set: { image: "img/saesongi-bugak.jpg",
     descKo: "귀한 재료만 사용한 꽃밥에피다 새송이부각이에요.\n무농약 새송이버섯을 얇게 썰어, 가마솥에 끓인 유기농 찹쌀죽을 최대한 얇게 발라 원재료 맛을 살렸어요.\n\n· 국내 무농약 새송이버섯\n· 유기농 찹쌀죽 (가마솥에 불을 때어 전통방식으로)\n· Non-GMO 현미유 (200℃에서 바삭하게)\n· 국산 참깨와 천일염\n\n18시간 건조 후 8개월 정도 숙성해 버섯의 고소한 맛과 부각의 깊은 맛을 끌어올렸어요.",
     descEn: "Premium king oyster mushroom bugak (crispy chips) by Kkotbap.\nPesticide-free mushrooms, thinly sliced and lightly coated with organic glutinous rice porridge cooked in a traditional iron pot.\n\n· Pesticide-free Korean king oyster mushrooms\n· Organic glutinous rice porridge (wood-fired iron pot)\n· Non-GMO rice bran oil, fried crisp at 200℃\n· Korean sesame and sea salt\n\nDried for 18 hours and aged about 8 months for a deep, nutty flavor." } },
+  { id: "gim-2026-10", match: "김부각", set: { image: "img/gim-bugak.jpg",
+    descKo: "귀한 재료만 들어간 꽃밥에피다 김부각이에요.\n국내 단 1% 생산되는 지주식 김에, 가마솥에 끓인 유기농 찹쌀죽을 발라 전통방식으로 만들었어요.\n\n· 지주식 김 (갯벌에 세운 지주에 발을 매달아 키운 자연친화 김, 미네랄·비타민·식이섬유가 풍부한 알칼리 식품)\n· 유기농 찹쌀죽 (가마솥에 불을 때어)\n· Non-GMO 현미유\n· 국산 참깨와 국내산 천일염\n\n화학첨가물 없이 바삭해요. 밥 반찬·간식·안주로 누구나 맛있게 즐겨요.",
+    descEn: "Premium gim bugak (crispy seaweed chips) by Kkotbap.\nMade the traditional way with pole-cultivated laver — only about 1% of Korean seaweed — and organic glutinous rice porridge cooked in an iron pot.\n\n· Pole-cultivated Korean laver, rich in minerals, vitamins and fiber\n· Organic glutinous rice porridge (wood-fired iron pot)\n· Non-GMO rice bran oil\n· Korean sesame and sea salt\n\nNo chemical additives. Great as a snack, side dish or with drinks." } },
 ];
 
 const app = initializeApp(firebaseConfig);
