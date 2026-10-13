@@ -17,8 +17,8 @@
 /* 라벤더 회색 바탕 + 흰 둥근 카드 + 모브·피치·세이지·코랄 4색 */
 :root{
   --bg:#ededf3; --surface:#ffffff; --soft:#f5f4f9; --ink:#2e2c3b; --ink2:#6c6981; --muted:#a3a0b4;
-  --line:#e7e5ef; --brand:#a47f94; --brand-d:#86627a; --brand-soft:#f3ebf0;
-  --peach:#e4a87c; --peach-soft:#fbefe5; --ok:#8db27a; --ok-d:#6a9157; --ok-soft:#ecf3e7;
+  --line:#e7e5ef; --brand:#e4a87c; --brand-d:#b5733f; --brand-soft:#fbefe5;
+  --mauve:#a47f94; --mauve-d:#86627a; --mauve-soft:#f3ebf0; --ok:#8db27a; --ok-d:#6a9157; --ok-soft:#ecf3e7;
   --coral:#e2736c; --warn:#d65e57; --blue:#7c8fb5; --blue-soft:#eaeef6;
   --radius:20px; --shadow:0 6px 22px rgba(70,64,110,.07);
 }
@@ -275,7 +275,7 @@ nav.tabs{position:fixed;z-index:40;left:50%;transform:translateX(-50%);bottom:ca
 nav.tabs button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;border:0;background:none;padding:6px 4px;color:var(--muted);font-size:11px;font-weight:700;border-bottom:0}
 nav.tabs svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 nav.tabs button.on{color:var(--brand-d);border-bottom:0}
-nav.tabs button.center i{display:flex;width:56px;height:56px;margin-top:-30px;border-radius:99px;background:var(--brand);color:#fff;align-items:center;justify-content:center;box-shadow:0 8px 18px rgba(164,127,148,.45);border:4px solid var(--bg)}
+nav.tabs button.center i{display:flex;width:56px;height:56px;margin-top:-30px;border-radius:99px;background:var(--brand);color:#fff;align-items:center;justify-content:center;box-shadow:0 8px 18px rgba(228,168,124,.5);border:4px solid var(--bg)}
 nav.tabs button.center i svg{stroke-width:2.6}
 nav.tabs button.center.on i{background:var(--brand-d)}
 .mobibar{bottom:calc(88px + env(safe-area-inset-bottom));left:12px;right:12px;border-radius:18px;background:var(--ink)}
@@ -294,7 +294,7 @@ body.has-mobibar main{padding-bottom:180px}
 .seg button.on{background:var(--brand);border-color:var(--brand);color:#fff}
 #payType button.on[data-v="card"]{background:var(--blue);border-color:var(--blue)}
 #payType button.on[data-v="cash"]{background:var(--ok);border-color:var(--ok)}
-#payType button.on[data-v="zeropay"]{background:var(--peach);border-color:var(--peach)}
+#payType button.on[data-v="zeropay"]{background:var(--mauve);border-color:var(--mauve)}
 /* 판매: 상품 줄 */
 .prow{border-radius:18px;border-color:transparent;box-shadow:var(--shadow)}
 .prow.sel{background:var(--brand-soft);border-color:var(--brand)}
@@ -319,10 +319,10 @@ table.itbl .r{text-align:right;white-space:nowrap}
 /* 대시보드: 색 카드 + 원형 비중 */
 .tile{border-radius:20px;position:relative;overflow:hidden}
 .tile.hero,.tile.c-peach,.tile.c-sage,.tile.c-coral{color:#fff}
-.tile.hero{background:var(--brand)}
-.tile.c-peach{background:var(--peach)}
+.tile.hero{background:var(--coral)}
+.tile.c-peach{background:var(--brand)}
 .tile.c-sage{background:var(--ok)}
-.tile.c-coral{background:var(--coral)}
+.tile.c-coral{background:var(--mauve)}
 .tile.hero .k,.tile.c-peach .k,.tile.c-sage .k,.tile.c-coral .k,.tile.hero .s,.tile.c-peach .s,.tile.c-sage .s,.tile.c-coral .s{color:rgba(255,255,255,.88)}
 .tile.hero::before,.tile.c-peach::before,.tile.c-sage::before,.tile.c-coral::before{content:"";position:absolute;width:90px;height:90px;border-radius:99px;background:rgba(255,255,255,.16);right:-24px;bottom:-34px}
 .tile.hero::after,.tile.c-peach::after,.tile.c-sage::after,.tile.c-coral::after{content:"";position:absolute;width:38px;height:38px;border-radius:99px;background:rgba(255,255,255,.14);left:-12px;top:-12px}
@@ -345,7 +345,7 @@ table.h tbody tr:hover td{background:var(--soft)}
 .tag{border-radius:8px;padding:3px 9px}
 .tag.card{background:var(--blue-soft);color:#4f6390}
 .tag.cash{background:var(--ok-soft);color:var(--ok-d)}
-.tag.zeropay{background:var(--peach-soft);color:#b5703f}
+.tag.zeropay{background:var(--mauve-soft);color:var(--mauve-d)}
 /* 상품정보 */
 .icard{border-radius:20px}
 .icard .price{color:var(--brand-d)}
@@ -562,7 +562,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v5"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v6"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -1135,7 +1135,7 @@ function renderDash() {
     </div>
     <div class="tiles prod" style="--n:${Math.max(1, prodRows.length)}">
       ${prodRows.map((x, i) => { const pct = r.qty ? Math.round(x.qty / r.qty * 100) : 0; return `<div class="tile pq">
-        <div class="ring" style="--p:${pct};--c:var(${["--brand", "--peach", "--ok", "--coral", "--blue"][i % 5]})"><span class="num">${pct}%</span></div>
+        <div class="ring" style="--p:${pct};--c:var(${["--brand", "--mauve", "--ok", "--coral", "--blue"][i % 5]})"><span class="num">${pct}%</span></div>
         <div class="k">${esc(x.name)}</div><div class="v num">${fmt(x.qty)}개</div><div class="s num">${won(x.amount)}</div></div>`; }).join("")}
     </div>
     ${dashDay === "all" && otherCnt ? `<div class="note">⚠️ 행사일(10/23·24) 외 판매 ${otherCnt}건이 전체 합계에 포함돼 있어요. 연습 데이터라면 [관리] 탭에서 정리할 수 있어요.</div>` : ""}
