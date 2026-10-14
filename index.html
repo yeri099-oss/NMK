@@ -733,7 +733,7 @@ nav.tabs button.center.on i{background:var(--ink)}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, initializeAuth, inMemoryPersistence, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { initializeFirestore, persistentLocalCache, persistentSingleTabManager, terminate, collection, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { initializeFirestore, persistentLocalCache, persistentSingleTabManager, terminate, collection, doc, getDoc, getDocFromCache, setDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCIvN2Y1a9ByNmz4UpgdmaTFrd5SAYZZGY",
@@ -745,7 +745,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v33"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v34"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -925,7 +925,10 @@ onAuthStateChanged(auth, async (u) => {
   const username = (u.email || "").split("@")[0];
   try {
     const ref = doc(db, COL.users, u.uid);
-    let snap = await getDoc(ref);
+    // 인터넷이 없으면 아이패드에 저장된 계정 정보로 바로 시작
+    let snap = null;
+    if (!navigator.onLine) { try { snap = await getDocFromCache(ref); } catch {} }
+    if (!snap) snap = await getDoc(ref);
     if (!snap.exists() && username === MASTER_ID && u.email === idToEmail(MASTER_ID)) {
       await setDoc(ref, { username, name: "관리자", role: "admin", active: true, createdAt: serverTimestamp() });
       snap = await getDoc(ref);
@@ -937,7 +940,7 @@ onAuthStateChanged(auth, async (u) => {
       return;
     }
     me = { uid: u.uid, username, name: p.name || username, role: username === MASTER_ID ? "admin" : p.role };
-    if (isAdmin()) await seedIfNeeded();
+    if (isAdmin() && navigator.onLine) await seedIfNeeded();
     startApp();
   } catch (ex) {
     console.error(ex);
@@ -969,7 +972,7 @@ async function reloadFresh(v) {
 
 let updatesChecked = false;
 async function applyProductUpdates() {
-  if (updatesChecked || !isAdmin() || !products.length) return;
+  if (updatesChecked || !isAdmin() || !products.length || !navigator.onLine) return;
   updatesChecked = true;
   try {
     const ref = doc(db, COL.meta, "productUpdates");
@@ -1013,7 +1016,7 @@ function startApp() {
   unsubs.push(onSnapshot(query(collection(db, COL.sales), orderBy("ts", "desc")), { includeMetadataChanges: true }, (qs) => {
     sales = qs.docs.map((d) => ({ id: d.id, ...d.data(), _pending: d.metadata.hasPendingWrites }));
     numberSales();
-    renderDash(); renderHist();
+    renderDash(); renderHist(); updateNet();
   }, (e) => { console.error(e); toast("판매내역을 불러오지 못했어요: " + e.code, "err", 4000); }));
 
   if (isAdmin()) {
@@ -1049,13 +1052,19 @@ $("#tabs").addEventListener("click", (e) => { const b = e.target.closest("button
 function updateNet() {
   const on = navigator.onLine;
   const el = $("#netState");
-  el.textContent = on ? "온라인" : "오프라인 (연결되면 자동 업로드)";
-  el.classList.toggle("off", !on);
+  // 이 기기에서 아직 서버에 안 올라간 판매 건수
+  const wait = (typeof sales !== "undefined" ? sales : []).filter((s) => s._pending).length;
+  el.textContent = (on ? "온라인" : "오프라인") + (wait ? ` · 업로드 대기 ${wait}건` : on ? "" : " (연결되면 자동 업로드)");
+  el.classList.toggle("off", !on || wait > 0);
 }
 addEventListener("online", updateNet); addEventListener("offline", updateNet); updateNet();
 
 // ---- 버전 표시 · 새 버전 알림 ----
 $$(".app-ver").forEach((el) => (el.textContent = APP_VERSION));
+// 인터넷 없이도 앱이 열리도록 화면·프로그램을 기기에 저장
+if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+  navigator.serviceWorker?.register("sw.js", { updateViaCache: "none" }).catch((e) => console.warn("sw", e));
+}
 $("#todayLbl").textContent = new Date().toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "short" });
 async function checkUpdate() {
   if (!navigator.onLine || location.protocol === "file:") return;
