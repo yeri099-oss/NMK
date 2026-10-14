@@ -497,6 +497,7 @@ nav.tabs button.center.on i{background:var(--ink)}
 .toast{background:var(--ink);border-radius:18px}
 .mitem{box-shadow:var(--lift);border-radius:22px}
 @media(max-width:699px){.deco{opacity:.45}}
+.setline{color:var(--ok-d);font-weight:700}
 .modal .cf{display:flex;flex-direction:column;gap:6px;margin:12px 0;font-size:15px}
 .modal .cf .row span{color:var(--ink2)}
 .modal .cf-total{margin-top:4px}
@@ -662,6 +663,7 @@ nav.tabs button.center.on i{background:var(--ink)}
           <div class="total-box">
             <div class="row"><span>상품 합계 <span class="small" id="cartQty"></span></span><b class="num" id="subTotal">0원</b></div>
             <!-- 할인: 평소엔 작은 버튼만, 누르면 입력칸이 열림 -->
+            <div id="setLines"></div>
             <div class="row small disctoggle-row"><button class="disctoggle" id="discToggle" type="button">＋ 할인</button><span class="num" style="color:var(--warn)" id="discLine"></span></div>
             <div class="disc hidden" id="discBox">
               <div class="seg" id="discType"><button data-v="amount" class="on">원</button><button data-v="percent">%</button></div>
@@ -770,7 +772,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v43"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v44"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -1114,19 +1116,54 @@ setTimeout(checkUpdate, 3000);
 // ================= 판매(POS) =================
 function sellable() { return products.filter((p) => p.active !== false); }
 
+// ---- 세트 할인 (자동 적용) ----
+// products: 상품 이름(nameKo). 여러 상품을 섞어도 개수를 합쳐서 계산합니다.
+// tiers: n개를 묶어서 price원. 가장 싸게 되는 조합을 자동으로 찾습니다.
+const SET_RULES = [
+  { label: "부각 3개 세트", products: ["김부각", "새송이부각"], tiers: [{ qty: 3, price: 12000 }] },
+  { label: "귤당근쥬스 세트", products: ["귤당근쥬스"], tiers: [{ qty: 5, price: 20000 }, { qty: 2, price: 9000 }] },
+];
+function setDiscounts(items) {
+  const out = [];
+  for (const r of SET_RULES) {
+    // 그룹에 담긴 낱개 가격 목록 (비싼 것부터 세트로 묶음)
+    const units = [];
+    for (const i of items) if (r.products.includes(i.nameKo)) for (let k = 0; k < i.qty; k++) units.push(i.price);
+    if (!units.length) continue;
+    units.sort((a, b) => b - a);
+    const best = [0];
+    for (let n = 1; n <= units.length; n++) {
+      best[n] = best[n - 1] + units[n - 1];
+      let pre = 0;
+      for (const t of r.tiers) if (n >= t.qty) {
+        pre = units.slice(n - t.qty, n).reduce((a, b) => a + b, 0);
+        best[n] = Math.min(best[n], best[n - t.qty] + Math.min(t.price, pre));
+      }
+    }
+    const list = units.reduce((a, b) => a + b, 0);
+    const d = list - best[units.length];
+    if (d > 0) out.push({ label: r.label, amount: d });
+  }
+  return out;
+}
+
 function calc() {
   const items = sellable().filter((p) => cart[p.id] > 0).map((p) => ({
     productId: p.id, nameKo: p.nameKo, nameEn: p.nameEn || "", price: p.price, qty: cart[p.id], amount: p.price * cart[p.id],
   }));
   const subtotal = items.reduce((a, i) => a + i.amount, 0);
   const qty = items.reduce((a, i) => a + i.qty, 0);
-  let discount = 0;
+  const sets = setDiscounts(items);
+  const setDiscount = sets.reduce((a, x) => a + x.amount, 0);
+  const afterSet = subtotal - setDiscount;
+  let manual = 0;
   if (st.discVal > 0) {
-    discount = st.discType === "percent" ? Math.round(subtotal * Math.min(st.discVal, 100) / 100) : Math.min(st.discVal, subtotal);
+    manual = st.discType === "percent" ? Math.round(afterSet * Math.min(st.discVal, 100) / 100) : Math.min(st.discVal, afterSet);
   }
+  const discount = setDiscount + manual; // 대시보드 '실매출'은 세트 할인 + 직접 할인을 모두 뺀 금액
   const total = subtotal - discount;
   const change = st.cash ? st.cash - total : null;
-  return { items, subtotal, qty, discount, total, change };
+  return { items, subtotal, qty, sets, setDiscount, manual, discount, total, change };
 }
 
 function renderPos() {
@@ -1182,7 +1219,8 @@ function renderCheckout() {
     : `<div class="muted small" style="padding:4px 0">상품을 눌러 수량을 담아주세요</div>`;
   $("#cartQty").textContent = c.qty ? `(${c.qty}개)` : "";
   $("#subTotal").textContent = won(c.subtotal);
-  $("#discLine").textContent = c.discount ? `할인 −${won(c.discount)}${st.discType === "percent" ? ` (${Math.min(st.discVal, 100)}%)` : ""}` : "";
+  $("#setLines").innerHTML = c.sets.map((x) => `<div class="row small setline"><span>${esc(x.label)} 할인</span><b class="num">−${won(x.amount)}</b></div>`).join("");
+  $("#discLine").textContent = c.manual ? `할인 −${won(c.manual)}${st.discType === "percent" ? ` (${Math.min(st.discVal, 100)}%)` : ""}` : "";
   $("#grandTotal").textContent = won(c.total);
   $$("#discType button").forEach((b) => b.classList.toggle("on", b.dataset.v === st.discType));
   $$("#payType button").forEach((b) => b.classList.toggle("on", b.dataset.v === st.pay));
@@ -1262,7 +1300,8 @@ $("#sellBtn").onclick = async () => {
     </div>
     <div class="total-box cf-total">
       <div class="row"><span>상품 합계</span><b class="num">${won(c.subtotal)}</b></div>
-      ${c.discount ? `<div class="row" style="color:var(--warn)"><span>할인</span><b class="num">−${won(c.discount)}</b></div>` : ""}
+      ${c.sets.map((x) => `<div class="row setline"><span>${esc(x.label)} 할인</span><b class="num">−${won(x.amount)}</b></div>`).join("")}
+      ${c.manual ? `<div class="row" style="color:var(--warn)"><span>할인</span><b class="num">−${won(c.manual)}</b></div>` : ""}
       <div class="row" style="margin-top:4px"><b>결제 금액</b><span class="big num">${won(c.total)}</span></div>
     </div>
     ${cashOn ? `<div class="change-box cf-change"><div class="row"><b>거스름돈</b><span class="big num">${won(c.change)}</span></div></div>` : ""}
@@ -1271,7 +1310,8 @@ $("#sellBtn").onclick = async () => {
   const now = Date.now();
   const sale = {
     ts: now, day: dayKey(now), items: c.items, qty: c.qty, subtotal: c.subtotal,
-    discountType: c.discount ? st.discType : null, discountValue: c.discount ? st.discVal : 0, discount: c.discount,
+    discountType: c.manual ? st.discType : null, discountValue: c.manual ? st.discVal : 0, discount: c.discount,
+    setDiscount: c.setDiscount, setDiscounts: c.sets, manualDiscount: c.manual,
     total: c.total, payment: st.pay,
     cashReceived: st.pay === "cash" && st.cash ? st.cash : null,
     change: st.pay === "cash" && st.cash ? c.change : null,
@@ -1593,7 +1633,8 @@ function openSale(id) {
   openModal(`
     <h3>${dayLabel(s.day)} ${timeStr(s.ts)} · #${s._no}</h3>
     ${itemsTable(s.items || [], true)}
-    ${s.discount ? `<div class="row small" style="margin-top:6px"><span>할인 ${s.discountType === "percent" ? `(${s.discountValue}%)` : ""}</span><span class="num">−${won(s.discount)}</span></div>` : ""}
+    ${(s.setDiscounts || []).map((x) => `<div class="row small setline" style="margin-top:6px"><span>${esc(x.label)} 할인</span><span class="num">−${won(x.amount)}</span></div>`).join("")}
+    ${(s.manualDiscount ?? (s.setDiscount ? 0 : s.discount)) ? `<div class="row small" style="margin-top:6px"><span>할인 ${s.discountType === "percent" ? `(${s.discountValue}%)` : ""}</span><span class="num">−${won(s.manualDiscount ?? s.discount)}</span></div>` : ""}
     <div class="row" style="margin:8px 0 12px"><b>결제 금액</b><b class="num" style="font-size:20px">${won(s.total)}</b></div>
     ${s.cashReceived ? `<div class="row small" style="margin-bottom:10px"><span>받은 현금 / 거스름돈</span><span class="num">${won(s.cashReceived)} / ${won(s.change)}</span></div>` : ""}
     <div class="small muted" style="margin-bottom:12px">판매자: ${esc(s.sellerName)}</div>
