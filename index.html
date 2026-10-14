@@ -497,6 +497,11 @@ nav.tabs button.center.on i{background:var(--ink)}
 .toast{background:var(--ink);border-radius:18px}
 .mitem{box-shadow:var(--lift);border-radius:22px}
 @media(max-width:699px){.deco{opacity:.45}}
+.disctoggle-row{min-height:28px;margin:2px 0}
+.disctoggle{border:0;background:rgba(255,255,255,.7);color:var(--ink2);font-weight:700;font-size:13px;border-radius:99px;padding:5px 12px}
+.total-box .disc{margin:6px 0 8px;align-items:center}
+.total-box .disc .input{background:#fff;padding:9px 12px}
+.disccancel{border:0;background:rgba(255,255,255,.7);color:var(--ink2);width:36px;height:36px;border-radius:99px;flex-shrink:0;font-weight:800}
 .qrbtn{background:var(--ink);color:#fff;box-shadow:var(--press)}
 @media(max-width:699px){.infohint{display:none}.qrbtn{margin-left:auto}}
 .qrfull{position:fixed;inset:0;z-index:70;background:rgba(31,29,36,.55);display:flex;align-items:center;justify-content:center;padding:20px}
@@ -650,21 +655,19 @@ nav.tabs button.center.on i{background:var(--ink)}
 
           <div class="total-box">
             <div class="row"><span>상품 합계 <span class="small" id="cartQty"></span></span><b class="num" id="subTotal">0원</b></div>
-            <div class="row small" style="color:var(--warn)" id="discLine"></div>
+            <!-- 할인: 평소엔 작은 버튼만, 누르면 입력칸이 열림 -->
+            <div class="row small disctoggle-row"><button class="disctoggle" id="discToggle" type="button">＋ 할인</button><span class="num" style="color:var(--warn)" id="discLine"></span></div>
+            <div class="disc hidden" id="discBox">
+              <div class="seg" id="discType"><button data-v="amount" class="on">원</button><button data-v="percent">%</button></div>
+              <input class="input num" id="discVal" inputmode="numeric" placeholder="할인 금액">
+              <button class="disccancel" id="discCancel" type="button" aria-label="할인 취소">✕</button>
+            </div>
             <div class="row" style="margin-top:4px"><span style="font-weight:700">결제 금액</span><span class="big num" id="grandTotal">0원</span></div>
           </div>
 
           <!-- 현금일 때: 받은 현금 → 결제 금액 → 거스름돈 순서 -->
           <div class="change-box hidden" id="changeBox">
             <div class="row"><span style="font-weight:700" id="changeLabel">거스름돈</span><span class="big num" id="changeVal">-</span></div>
-          </div>
-
-          <div>
-            <div class="grp-title">할인 / 서비스 <span class="muted small">(필요할 때만)</span></div>
-            <div class="disc">
-              <div class="seg" id="discType"><button data-v="amount" class="on">원</button><button data-v="percent">%</button></div>
-              <input class="input num" id="discVal" inputmode="numeric" placeholder="할인 없음">
-            </div>
           </div>
 
           <div>
@@ -761,7 +764,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v40"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v41"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -1225,8 +1228,15 @@ function resetPos() {
   for (const k of Object.keys(cart)) delete cart[k];
   Object.assign(st, { discType: "amount", discVal: 0, pay: null, cash: 0, nation: null, gender: null });
   $("#discVal").value = ""; $("#cashIn").value = ""; $("#memo").value = "";
+  showDisc(false);
   renderPos();
 }
+function showDisc(on) {
+  $("#discBox").classList.toggle("hidden", !on);
+  $("#discToggle").classList.toggle("hidden", on);
+}
+$("#discToggle").onclick = () => { showDisc(true); $("#discVal").focus(); };
+$("#discCancel").onclick = () => { st.discVal = 0; $("#discVal").value = ""; showDisc(false); renderCheckout(); };
 $("#resetBtn").onclick = resetPos;
 
 $("#sellBtn").onclick = async () => {
