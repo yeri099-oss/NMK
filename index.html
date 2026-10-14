@@ -716,6 +716,10 @@ nav.tabs button.center.on i{background:var(--ink)}
       </div>
       <div class="mlist" id="userList" style="margin-top:10px"></div>
 
+      <h2 class="sec">고객용 상품 소개</h2>
+      <div class="card"><p class="small" style="margin-top:0">고객이 QR로 찍어서 보는 페이지예요. 로그인 없이 상품 사진·가격·설명만 보여요.</p>
+        <a class="btn sm" href="menu.html" target="_blank">고객용 페이지 열기</a> <a class="btn sm" href="qr-menu-poster.png" target="_blank">매대용 QR 포스터</a></div>
+
       <h2 class="sec">파이어베이스 규칙</h2>
       <div class="card"><p class="small" style="margin-top:0">규칙을 다시 넣어야 할 때 쓰는 복사 도우미예요.</p><a class="btn sm" href="rules.html" target="_blank">규칙 복사 도우미 열기</a></div>
 
@@ -745,7 +749,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v34"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v36"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시

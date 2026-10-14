@@ -327,9 +327,9 @@ service cloud.firestore {
       allow read: if festaAdmin() || (request.auth != null && request.auth.uid == uid);
       allow write: if festaAdmin();
     }
-    // 상품(이름·가격·설명·사진): 사용 계정 누구나 보기, 추가·수정·삭제는 관리자만
+    // 상품(이름·가격·설명·사진): 누구나 보기(고객용 상품 소개 페이지), 추가·수정·삭제는 관리자만
     match /festaApp_products/{docId} {
-      allow read: if festaActive();
+      allow read: if true; // 고객용 상품 소개 페이지(menu.html)에서 로그인 없이 보기
       allow write: if festaAdmin();
     }
     // 판매내역: 사용 계정 누구나 보기·등록(본인 이름으로만).

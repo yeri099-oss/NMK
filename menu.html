@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#fbf9f6">
+<title>꽃,밥에피다 · 상품 소개</title>
+<meta name="description" content="꽃,밥에피다 한식페스타 상품 소개 · Product Guide">
+<meta property="og:type" content="website">
+<meta property="og:title" content="꽃,밥에피다 상품 소개">
+<meta property="og:description" content="한식페스타 판매 상품의 사진·가격·설명 (한국어 / English)">
+<meta property="og:url" content="https://yeri099-oss.github.io/NMK/menu.html">
+<meta property="og:image" content="https://yeri099-oss.github.io/NMK/og-image.png?v8">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2.0.3/fonts/variable/woff2/SUIT-Variable.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap">
+<style>
+/* 고객용 상품 소개: 앱과 같은 파스텔 카드, 로그인·판매 기능 없음 */
+:root{
+  --bg:#fbf9f6; --surface:#ffffff; --soft:#f5f2ee; --ink:#1f1d24; --ink2:#5d5a63; --muted:#9f9ba4; --line:#ece8e2;
+  --t0:#fbe3e3; --t1:#dcefe6; --t2:#e9e3f6; --t3:#fde6d6; --t4:#eff3d6; --brand-d:#b5733f; --logo:#b45b40;
+  --lift:0 1px 0 rgba(255,255,255,.9) inset,0 -2px 0 rgba(31,29,36,.04) inset,0 14px 28px -14px rgba(60,40,30,.28),0 3px 8px -2px rgba(60,40,30,.08);
+}
+*{box-sizing:border-box}
+html{background:linear-gradient(180deg,#fdfbf8 0%,#f7f4ef 60%,#f1f5f0 100%) fixed;min-height:100%}
+body{margin:0;color:var(--ink);font-family:"Outfit","SUIT Variable","SUIT","Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo",sans-serif;-webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:1080px;margin:0 auto;padding:calc(16px + env(safe-area-inset-top)) 18px calc(40px + env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+header img{width:46px;height:46px;border-radius:12px}
+header .t{flex:1;min-width:0}
+header .brand{font-size:13px;font-weight:700;color:var(--logo);letter-spacing:.5px}
+header h1{margin:2px 0 0;font-size:26px;font-weight:800;letter-spacing:-.6px;line-height:1.2}
+.lang{display:inline-flex;background:var(--soft);border-radius:99px;padding:4px;box-shadow:inset 0 2px 5px rgba(60,40,30,.07);flex-shrink:0}
+.lang button{border:0;background:none;padding:8px 14px;border-radius:99px;font-weight:700;font-size:14px;color:var(--muted)}
+.lang button.on{background:var(--surface);color:var(--ink);box-shadow:var(--lift)}
+.hint{color:var(--ink2);font-size:14px;margin:0 2px 14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.card{border:0;padding:0;text-align:left;background:var(--surface);border-radius:26px;box-shadow:var(--lift);overflow:hidden;display:flex;flex-direction:column}
+.card .ph{aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;font-size:64px;overflow:hidden}
+.card .ph img{width:100%;height:100%;object-fit:contain}
+.t0 .ph,.d.t0 .dph{background:var(--t0)}.t1 .ph,.d.t1 .dph{background:var(--t1)}.t2 .ph,.d.t2 .dph{background:var(--t2)}.t3 .ph,.d.t3 .dph{background:var(--t3)}.t4 .ph,.d.t4 .dph{background:var(--t4)}
+.card .b{padding:14px 18px 18px}
+.card h2{margin:0;font-size:20px;font-weight:700;letter-spacing:-.3px}
+.card .en{font-size:13px;color:var(--muted);margin-top:2px}
+.card .pr{font-size:19px;font-weight:800;color:var(--brand-d);margin-top:6px}
+.card .more{font-size:13px;color:var(--ink2);margin-top:8px}
+.state{padding:60px 16px;text-align:center;color:var(--ink2)}
+/* 상세 */
+.d{position:fixed;inset:0;z-index:20;background:linear-gradient(180deg,#fdf6f3,#f3f0f8);overflow:auto;-webkit-overflow-scrolling:touch}
+.d[hidden]{display:none}
+.d .bar{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top)) 16px 12px;background:linear-gradient(180deg,rgba(253,246,243,.96),rgba(253,246,243,.8));-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.d .back{border:0;background:var(--surface);box-shadow:var(--lift);border-radius:99px;padding:10px 16px;font-weight:700;font-size:15px}
+.d .sp{flex:1}
+.d .in{max-width:1000px;margin:0 auto;padding:4px 20px calc(40px + env(safe-area-inset-bottom));display:grid;gap:22px}
+.d .dph{border-radius:26px;box-shadow:var(--lift);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:96px;width:100%;min-height:160px}
+.d .dph img{display:block;width:100%;height:auto;max-height:62vh;object-fit:contain}
+.d h2{margin:0;font-size:32px;font-weight:800;letter-spacing:-.8px;line-height:1.2}
+.d .en{color:var(--ink2);font-size:16px;margin-top:4px}
+.d .pr{font-size:30px;font-weight:800;color:var(--brand-d);margin:10px 0 14px}
+.d .desc{font-size:18px;line-height:1.75;white-space:pre-wrap;word-break:keep-all}
+@media(min-width:820px){
+  .d .in{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);align-items:start;padding-top:12px}
+  .d .dph{position:sticky;top:90px}
+}
+footer{margin-top:26px;text-align:center;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img src="icon-192.png" alt="">
+    <div class="t">
+      <div class="brand">꽃,밥에피다</div>
+      <h1 id="title">상품 소개</h1>
+    </div>
+    <div class="lang" id="lang"><button data-l="ko">한국어</button><button data-l="en">English</button></div>
+  </header>
+  <p class="hint" id="hint"></p>
+  <div class="grid" id="grid"><div class="state" id="state">불러오는 중…</div></div>
+  <footer>꽃,밥에피다 · 국립중앙박물관 한식페스타</footer>
+</div>
+
+<section class="d" id="detail" hidden>
+  <div class="bar"><button class="back" id="back" type="button"></button><span class="sp"></span><div class="lang" id="lang2"><button data-l="ko">한국어</button><button data-l="en">English</button></div></div>
+  <div class="in" id="dbody"></div>
+</section>
+
+<script type="module">
+// 이 페이지는 상품 정보만 읽습니다 (로그인·판매·매출 기능 없음)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey: "AIzaSyCIvN2Y1a9ByNmz4UpgdmaTFrd5SAYZZGY",
+  authDomain: "trip-84bd3.firebaseapp.com",
+  projectId: "trip-84bd3",
+  storageBucket: "trip-84bd3.firebasestorage.app",
+  messagingSenderId: "830387988854",
+  appId: "1:830387988854:web:210d2cd9a6e0542114b257",
+}, "menu");
+const db = getFirestore(app);
+
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fmt = (n) => Math.round(n || 0).toLocaleString("ko-KR");
+const T = {
+  ko: { title: "상품 소개", hint: "상품을 누르면 자세한 설명을 볼 수 있어요.", more: "자세히 보기 ›", back: "‹ 목록", empty: "준비 중이에요.", err: "상품 정보를 불러오지 못했어요. 잠시 후 다시 열어주세요." },
+  en: { title: "Our Products", hint: "Tap a product to see the full description.", more: "See details ›", back: "‹ Back", empty: "Coming soon.", err: "Couldn't load products. Please try again in a moment." },
+};
+let lang = (() => { try { return localStorage.getItem("menuLang") || ((navigator.language || "ko").startsWith("ko") ? "ko" : "en"); } catch { return "ko"; } })();
+let products = [];
+let loaded = false, failed = false, fromList = false;
+
+const name = (p) => (lang === "en" ? p.nameEn || p.nameKo : p.nameKo);
+const sub = (p) => (lang === "en" ? p.nameKo : p.nameEn || "");
+const desc = (p) => (lang === "en" ? p.descEn || p.descKo || "" : p.descKo || "");
+const price = (p) => (lang === "en" ? "₩" + fmt(p.price) : fmt(p.price) + "원");
+const visual = (p) => (p.image ? `<img src="${esc(p.image)}" alt="${esc(name(p))}" loading="lazy">` : esc(p.emoji || "🛍️"));
+
+function renderList() {
+  const t = T[lang];
+  document.documentElement.lang = lang;
+  $("#title").textContent = t.title;
+  $("#hint").textContent = t.hint;
+  document.querySelectorAll(".lang button").forEach((b) => b.classList.toggle("on", b.dataset.l === lang));
+  if (!loaded) { $("#grid").innerHTML = `<div class="state">${failed ? t.err : "불러오는 중… / Loading…"}</div>`; return; }
+  $("#grid").innerHTML = products.length ? products.map((p, i) => `
+    <button class="card t${i % 5}" data-id="${esc(p.id)}" type="button">
+      <div class="ph">${visual(p)}</div>
+      <div class="b"><h2>${esc(name(p))}</h2>${sub(p) ? `<div class="en">${esc(sub(p))}</div>` : ""}
+        <div class="pr">${price(p)}</div><div class="more">${t.more}</div></div>
+    </button>`).join("") : `<div class="state">${t.empty}</div>`;
+}
+function renderDetail() {
+  const id = decodeURIComponent((location.hash.match(/^#p-(.+)$/) || [])[1] || "");
+  const i = products.findIndex((p) => p.id === id);
+  const d = $("#detail");
+  if (i < 0) { d.hidden = true; document.body.style.overflow = ""; return; }
+  const p = products[i];
+  d.className = "d t" + (i % 5);
+  $("#back").textContent = T[lang].back;
+  $("#dbody").innerHTML = `
+    <div class="dph">${visual(p)}</div>
+    <div><h2>${esc(name(p))}</h2>${sub(p) ? `<div class="en">${esc(sub(p))}</div>` : ""}
+      <div class="pr">${price(p)}</div><div class="desc">${esc(desc(p))}</div></div>`;
+  d.hidden = false; document.body.style.overflow = "hidden";
+}
+function render() { renderList(); renderDetail(); }
+
+onSnapshot(collection(db, "festaApp_products"), (qs) => {
+  products = qs.docs.map((d) => ({ id: d.id, ...d.data() })).filter((p) => p.active !== false)
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0) || String(a.nameKo).localeCompare(String(b.nameKo)));
+  loaded = true; failed = false; render();
+}, (e) => { console.error(e); failed = true; render(); });
+
+document.addEventListener("click", (e) => {
+  const l = e.target.closest(".lang button");
+  if (l) { lang = l.dataset.l; try { localStorage.setItem("menuLang", lang); } catch {} render(); return; }
+  const c = e.target.closest(".card");
+  if (c) { fromList = true; location.hash = "p-" + encodeURIComponent(c.dataset.id); return; }
+  if (e.target.closest("#back")) { if (fromList) { fromList = false; history.back(); } else location.hash = ""; }
+});
+addEventListener("hashchange", renderDetail);
+render();
+</script>
+</body>
+</html>

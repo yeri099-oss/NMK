@@ -2,9 +2,9 @@
 // - 앱 화면(HTML)은 인터넷이 되면 항상 새로 받고, 안 되면 저장해둔 화면을 띄움
 // - 파이어베이스 프로그램·글꼴·사진은 한 번 받으면 저장해두고 사용
 // - 판매 데이터 통신(googleapis.com)은 건드리지 않음 (파이어베이스가 직접 오프라인 대기·업로드 처리)
-const CACHE = "festa-app-v1";
+const CACHE = "festa-app-v2";
 const PRECACHE = [
-  "./", "./index.html", "./manifest.webmanifest",
+  "./", "./index.html", "./menu.html", "./manifest.webmanifest",
   "./favicon.png", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png",
   "./botanical-l.svg", "./botanical-r.svg",
   "./img/bojagi-castella-box.jpg", "./img/gim-bugak.jpg", "./img/gyul-carrot-juice-photo.jpg",
@@ -42,15 +42,16 @@ self.addEventListener("fetch", (e) => {
   if (url.searchParams.has("check")) return; // 새 버전 확인은 항상 인터넷으로
 
   if (isPage(req, url)) {
-    // 화면: 인터넷 우선(4초), 안 되면 저장본
+    // 화면: 인터넷 우선(4초), 안 되면 같은 화면의 저장본 (앱 화면과 고객용 상품 소개 화면을 따로 저장)
+    const key = url.pathname.endsWith("menu.html") ? "./menu.html" : "./index.html";
     e.respondWith((async () => {
       const c = await caches.open(CACHE);
       try {
         const res = await Promise.race([fetch(req), new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), 4000))]);
-        if (res && res.ok) c.put("./index.html", res.clone());
+        if (res && res.ok) c.put(key, res.clone());
         return res;
       } catch {
-        return (await c.match("./index.html")) || (await c.match("./")) || Response.error();
+        return (await c.match(key)) || Response.error();
       }
     })());
     return;
