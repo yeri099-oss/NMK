@@ -497,6 +497,12 @@ nav.tabs button.center.on i{background:var(--ink)}
 .toast{background:var(--ink);border-radius:18px}
 .mitem{box-shadow:var(--lift);border-radius:22px}
 @media(max-width:699px){.deco{opacity:.45}}
+.modal .cf{display:flex;flex-direction:column;gap:6px;margin:12px 0;font-size:15px}
+.modal .cf .row span{color:var(--ink2)}
+.modal .cf-total{margin-top:4px}
+.modal .cf-total .big{font-size:26px}
+.modal .cf-change{margin-top:10px}
+.modal .cf-change .big{font-size:24px}
 .disctoggle-row{min-height:28px;margin:2px 0}
 .disctoggle{border:0;background:rgba(255,255,255,.7);color:var(--ink2);font-weight:700;font-size:13px;border-radius:99px;padding:5px 12px}
 .total-box .disc{margin:6px 0 8px;align-items:center}
@@ -764,7 +770,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v42"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v43"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -1245,14 +1251,22 @@ $("#sellBtn").onclick = async () => {
   if (!st.pay) { toast("결제 방식(카드/현금/QR)을 선택해 주세요.", "err"); scrollToEl($("#payType"), 200); return; }
   if (st.pay === "cash" && st.cash && st.cash < c.total) { toast(`받은 현금이 ${won(c.total - st.cash)} 부족해요.`, "err"); return; }
   const memo = $("#memo").value.trim();
+  // 확인 창도 판매 화면과 같은 순서: 고객 → 결제 방식 → 받은 현금 → 상품 합계·할인 → 결제 금액 → 거스름돈 → 비고
+  const cashOn = st.pay === "cash" && st.cash;
   const ok = await confirmBox("판매 등록", `
     ${itemsTable(c.items)}
-    ${c.discount ? `<div class="row small" style="margin-top:6px"><span>할인</span><span class="num">−${won(c.discount)}</span></div>` : ""}
-    <div class="row" style="margin-top:8px"><b>결제 금액</b><b class="num" style="font-size:22px;color:var(--brand-d)">${won(c.total)}</b></div>
-    <div class="row small" style="margin-top:4px"><span>결제 방식</span><b>${PAY[st.pay]}</b></div>
-    ${st.pay === "cash" && st.cash ? `<div class="row small"><span>받은 금액 / 거스름돈</span><b class="num">${won(st.cash)} / ${won(c.change)}</b></div>` : ""}
-    ${custLabel(st) ? `<div class="row small"><span>고객</span><b>${custLabel(st)}</b></div>` : ""}
-    ${memo ? `<div class="small" style="margin-top:4px">비고: ${esc(memo)}</div>` : ""}`, "판매 등록");
+    <div class="cf">
+      <div class="row"><span>고객</span><b>${custLabel(st) || `<span class="muted">미입력</span>`}</b></div>
+      <div class="row"><span>결제 방식</span><b>${PAY[st.pay]}</b></div>
+      ${cashOn ? `<div class="row"><span>받은 현금</span><b class="num">${won(st.cash)}</b></div>` : ""}
+    </div>
+    <div class="total-box cf-total">
+      <div class="row"><span>상품 합계</span><b class="num">${won(c.subtotal)}</b></div>
+      ${c.discount ? `<div class="row" style="color:var(--warn)"><span>할인</span><b class="num">−${won(c.discount)}</b></div>` : ""}
+      <div class="row" style="margin-top:4px"><b>결제 금액</b><span class="big num">${won(c.total)}</span></div>
+    </div>
+    ${cashOn ? `<div class="change-box cf-change"><div class="row"><b>거스름돈</b><span class="big num">${won(c.change)}</span></div></div>` : ""}
+    ${memo ? `<div class="cf"><div class="row"><span>비고</span><b>${esc(memo)}</b></div></div>` : ""}`, "판매 등록");
   if (!ok) return;
   const now = Date.now();
   const sale = {
