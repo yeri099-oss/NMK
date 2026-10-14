@@ -642,7 +642,7 @@ nav.tabs button.center.on i{background:var(--ink)}
 
           <div id="cashBox" class="hidden">
             <div class="grp-title">받은 현금</div>
-            <input class="input num" id="cashIn" inputmode="numeric" placeholder="받은 금액 입력" style="font-size:20px;font-weight:800">
+            <input class="input num" id="cashIn" inputmode="numeric" placeholder="받은 금액 입력" style="font-size:20px;font-weight:800;text-align:right">
             <div class="cashq">
               <button class="btn sm" data-add="1000">+1천</button>
               <button class="btn sm" data-add="5000">+5천</button>
@@ -764,7 +764,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v41"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v42"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
