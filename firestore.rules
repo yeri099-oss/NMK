@@ -342,6 +342,16 @@ service cloud.firestore {
           && request.resource.data.sellerUid == request.auth.uid);
       allow delete: if festaAdmin() || (festaActive() && resource.data.sellerUid == request.auth.uid);
     }
+    // 고객용 상품 소개 페이지 접속 수 (날짜별 숫자만): 누구나 +기록, 보기는 직원만
+    match /festaApp_stats/{docId} {
+      allow read: if festaActive();
+      allow create: if docId.matches('menu-[0-9]{4}-[0-9]{2}-[0-9]{2}')
+        && request.resource.data.size() <= 3;
+      allow update: if docId.matches('menu-[0-9]{4}-[0-9]{2}-[0-9]{2}')
+        && request.resource.data.size() <= 40
+        && request.resource.data.diff(resource.data).affectedKeys().size() <= 2;
+      allow delete: if festaAdmin();
+    }
     // 앱 설정(초기 상품 등록 여부 등)
     match /festaApp_meta/{docId} {
       allow read: if festaActive();

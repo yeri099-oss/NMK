@@ -497,6 +497,11 @@ nav.tabs button.center.on i{background:var(--ink)}
 .toast{background:var(--ink);border-radius:18px}
 .mitem{box-shadow:var(--lift);border-radius:22px}
 @media(max-width:699px){.deco{opacity:.45}}
+.tile.qrstat{margin-top:10px;background:var(--surface);display:flex;flex-wrap:wrap;align-items:center;gap:10px 22px}
+.tile.qrstat .qrhead{min-width:180px}
+.tile.qrstat .qrviews{flex:1;min-width:0;display:flex;flex-wrap:wrap;gap:6px 8px;font-size:13px}
+.tile.qrstat .qrviews span{background:var(--soft);border-radius:99px;padding:4px 10px;color:var(--ink2)}
+.tile.qrstat .qrviews b{color:var(--ink);font-weight:700}
 .setline{color:var(--ok-d);font-weight:700}
 .modal .cf{display:flex;flex-direction:column;gap:6px;margin:12px 0;font-size:15px}
 .modal .cf .row span{color:var(--ink2)}
@@ -772,7 +777,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v44"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v45"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -780,7 +785,7 @@ const FESTA_DAYS = [
   { key: "2026-10-23", label: "10.23 (금)" },
   { key: "2026-10-24", label: "10.24 (토)" },
 ];
-const COL = { users: "festaApp_users", products: "festaApp_products", sales: "festaApp_sales", meta: "festaApp_meta" };
+const COL = { users: "festaApp_users", products: "festaApp_products", sales: "festaApp_sales", meta: "festaApp_meta", stats: "festaApp_stats" };
 const PAY = { card: "카드", cash: "현금", zeropay: "QR" }; // zeropay 키는 기존 데이터 호환용 (화면 표시는 QR)
 const NATION = { KR: "한국인", FG: "외국인" };
 const GENDER = { F: "여", M: "남" };
@@ -843,6 +848,7 @@ let creatorAuth = null; // 관리자가 다른 계정을 만들 때 쓰는 보�
 let me = null;            // { uid, username, name, role }
 let products = [];
 let sales = [];
+let menuStats = {}; // 고객용 상품 소개 페이지 접속 수 { "2026-10-23": { visits, lang_ko, lang_en, view_<상품id> } }
 let users = [];
 let unsubs = [];
 const cart = {};          // productId -> qty
@@ -1041,6 +1047,12 @@ function startApp() {
     renderPos(); renderInfo(); renderProdAdmin(); renderDash(); renderHist();
     applyProductUpdates();
   }, (e) => { console.error(e); toast("상품을 불러오지 못했어요: " + e.code, "err", 4000); }));
+
+  unsubs.push(onSnapshot(collection(db, COL.stats), (qs) => {
+    menuStats = {};
+    qs.docs.forEach((d) => { if (d.id.startsWith("menu-")) menuStats[d.id.slice(5)] = d.data(); });
+    renderDash();
+  }, (e) => console.warn("stats", e.code)));
 
   unsubs.push(onSnapshot(query(collection(db, COL.sales), orderBy("ts", "desc")), { includeMetadataChanges: true }, (qs) => {
     sales = qs.docs.map((d) => ({ id: d.id, ...d.data(), _pending: d.metadata.hasPendingWrites }));
@@ -1454,6 +1466,17 @@ function breakdownTable(title, map, labels, total) {
     </tbody></table></div>`;
 }
 
+// 고객용 QR 상품 소개 접속 수 (날짜 선택에 맞춰 합산)
+function qrTile(prodRows) {
+  const festaKeys = FESTA_DAYS.map((d) => d.key);
+  const days = Object.keys(menuStats).filter((k) => dashDay === "all" || (dashDay === "other" ? !festaKeys.includes(k) : k === dashDay));
+  const sum = (f) => days.reduce((a, k) => a + (Number(menuStats[k][f]) || 0), 0);
+  const visits = sum("visits");
+  const views = prodRows.map((x) => ({ name: x.name, n: sum("view_" + x.key) })).filter((x) => x.n);
+  return `<div class="tile qrstat"><div class="qrhead"><div class="k">고객 QR 상품소개 접속</div><div class="v num">${fmt(visits)}회</div>
+      <div class="s num">한국어 ${fmt(sum("lang_ko"))} · English ${fmt(sum("lang_en"))}</div></div>
+    <div class="qrviews">${views.length ? views.map((x) => `<span class="num"><b>${esc(x.name)}</b> ${fmt(x.n)}</span>`).join("") : `<span class="muted">상품 상세 조회 기록이 아직 없어요</span>`}</div></div>`;
+}
 function renderDash() {
   if (!me) return;
   renderDayChips($("#dashDays"), dashDay);
@@ -1510,6 +1533,7 @@ function renderDash() {
         <div class="ring" style="--p:${pct}"><span class="num">${pct}%</span></div>
         <div class="k">${esc(x.name)}</div><div class="v num">${fmt(x.qty)}개</div><div class="s num">${won(x.amount)}</div></div>`; }).join("")}
     </div>
+    ${qrTile(prodRows)}
     ${dashDay === "all" && otherCnt ? `<div class="note">⚠️ 행사일(10/23·24) 외 판매 ${otherCnt}건이 전체 합계에 포함돼 있어요. 연습 데이터라면 [관리] 탭에서 정리할 수 있어요.</div>` : ""}
     <div class="dgrid">
       ${dayCompare}

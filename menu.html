@@ -91,7 +91,7 @@ footer{margin-top:26px;text-align:center;color:var(--muted);font-size:12px}
 <script type="module">
 // 이 페이지는 상품 정보만 읽습니다 (로그인·판매·매출 기능 없음)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, doc, setDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const app = initializeApp({
   apiKey: "AIzaSyCIvN2Y1a9ByNmz4UpgdmaTFrd5SAYZZGY",
@@ -140,6 +140,7 @@ function renderDetail() {
   const d = $("#detail");
   if (i < 0) { d.hidden = true; document.body.style.overflow = ""; return; }
   const p = products[i];
+  countView(p.id);
   d.className = "d t" + (i % 5);
   $("#back").textContent = T[lang].back;
   $("#dbody").innerHTML = `
@@ -149,6 +150,15 @@ function renderDetail() {
   d.hidden = false; document.body.style.overflow = "hidden";
 }
 function render() { renderList(); renderDetail(); }
+
+// ---- 접속 수 기록 (이름·기기 정보 없이 날짜별 숫자만) ----
+// 같은 사람이 새로고침해도 한 번만 세도록 이 탭(세션) 안에서는 한 번만 기록
+const dayKey = (() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; })();
+const statRef = doc(db, "festaApp_stats", "menu-" + dayKey);
+function once(key) { try { if (sessionStorage.getItem(key)) return false; sessionStorage.setItem(key, "1"); } catch {} return true; }
+function bump(fields) { setDoc(statRef, fields, { merge: true }).catch((e) => console.warn("stat", e.code)); }
+if (once("menuVisit")) bump({ visits: increment(1), ["lang_" + lang]: increment(1) });
+function countView(id) { if (id && once("menuView_" + id)) bump({ ["view_" + id]: increment(1) }); }
 
 onSnapshot(collection(db, "festaApp_products"), (qs) => {
   products = qs.docs.map((d) => ({ id: d.id, ...d.data() })).filter((p) => p.active !== false)
