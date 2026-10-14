@@ -759,7 +759,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v37"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v38"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -817,7 +817,9 @@ const PRODUCT_UPDATES = [
   { id: "bojagi-en-5", match: "보자기카스테라", set: { descEn: "Korea's first soy sauce castella — not a soy sauce taste, but rich umami\nA refined dessert inspired by Kkotbap's signature dish, 'Bojagi Bibimbap'\nMuch less sugar, balanced with traditional soy sauce aged for 2 years — a new kind of flavor\n\n*Organic Korean wheat — bought every year from our sister company, Nenia Agricultural Co.\n*Animal-welfare, antibiotic-free fertilized eggs — from certified clean farms; the foundation of the castella\n*Naturally aged raw honey — from Muju Gucheondong; unheated and untreated, for a gentle sweetness\n*Traditional organic Korean soybean soy sauce — brewed at the foot of Mt. Deogyusan in Geochang, aged 2 years with bamboo salt\n*Cheonbihyang rice wine — a clear rice wine brewed by a master from Pyeongtaek rice; it completes the flavor\n\nMoist and rich — best with organic juice or another drink\nStorage: keep frozen; thaw naturally at room temperature for 30 min–1 hour / keeps 1 week at room temperature once thawed" } },
 ];
 
-const app = initializeApp(firebaseConfig);
+// 같은 사이트(yeri099-oss.github.io)의 업무일지 등 다른 앱과 로그인·저장소가 섞이지 않도록
+// 한식페스타 전용 이름으로 시작합니다 (기본 이름을 쓰면 한쪽 로그인/로그아웃이 다른 앱에도 적용됨)
+const app = initializeApp(firebaseConfig, "festa");
 const auth = getAuth(app);
 // 여러 탭/홈 화면 앱이 동시에 열려 있을 때, 뒤에 숨은(멈춘) 화면이 저장소를 붙잡아 '불러오는 중'에서 멈추지 않도록
 // 가장 최근에 연 화면이 저장소를 가져옵니다
