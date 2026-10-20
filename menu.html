@@ -67,6 +67,18 @@ header h1{margin:2px 0 0;font-size:26px;font-weight:800;letter-spacing:-.6px;lin
   .d .dph{position:sticky;top:90px}
 }
 footer{margin-top:26px;text-align:center;color:var(--muted);font-size:12px}
+/* 휴대폰: 상품 두 개씩 */
+@media(max-width:599px){
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .card{border-radius:20px}
+  .card .ph{aspect-ratio:1/1;font-size:44px}
+  .card .ph img{object-fit:cover}
+  .card .b{padding:10px 12px 12px}
+  .card h2{font-size:15px;line-height:1.3}
+  .card .en{font-size:11px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .card .pr{font-size:15px;margin-top:4px}
+  .card .more{display:none}
+}
 </style>
 </head>
 <body>
