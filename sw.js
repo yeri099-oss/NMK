@@ -2,13 +2,13 @@
 // - 앱 화면(HTML)은 인터넷이 되면 항상 새로 받고, 안 되면 저장해둔 화면을 띄움
 // - 파이어베이스 프로그램·글꼴·사진은 한 번 받으면 저장해두고 사용
 // - 판매 데이터 통신(googleapis.com)은 건드리지 않음 (파이어베이스가 직접 오프라인 대기·업로드 처리)
-const CACHE = "festa-app-v9";
+const CACHE = "festa-app-v10";
 const PRECACHE = [
   "./", "./index.html", "./menu.html", "./manifest.webmanifest",
   "./favicon.png", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png",
   "./botanical-l.svg", "./botanical-r.svg", "./qr-menu-code.png",
   "./img/bojagi-castella-box.jpg", "./img/gim-bugak.jpg", "./img/gyul-carrot-juice-photo.jpg",
-  "./img/lemon-juice-styled.jpg", "./img/saesongi-bugak.jpg", "./img/soy-10y.jpg", "./img/soy-3y.jpg", "./img/soy-susungdae.jpg", "./img/soy-amisan.jpg", "./img/soy-jeju.jpg", "./img/newspaper-bag.jpg",
+  "./img/lemon-juice-styled.jpg", "./img/saesongi-bugak.jpg", "./img/soy-10y.jpg", "./img/soy-3y.jpg", "./img/soy-susungdae.jpg", "./img/soy-amisan.jpg", "./img/soy-jeju.jpg", "./img/newspaper-bag-medium.jpg", "./img/newspaper-bag-large.jpg",
   "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js",
   "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js",
   "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js",
