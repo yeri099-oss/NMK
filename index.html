@@ -585,6 +585,17 @@ nav.tabs button.center.on i{background:var(--ink)}
   .tile.pq .ring::before{inset:4px}
   .tile.pq .ring span{font-size:10px}
 }
+/* 상품정보 탭: 휴대폰 2개 · 아이패드 세로 3개 · 가로 4개 */
+.igrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media(min-width:700px){.igrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}}
+@media(min-width:1000px){.igrid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.icard .thumb{aspect-ratio:1/1}
+.icard .thumb img{object-fit:cover}
+.icard .body{padding:10px 12px 14px}
+.icard h3{font-size:16px;line-height:1.3}
+.icard .price{font-size:16px;margin:4px 0 6px}
+.icard .desc{font-size:12.5px;-webkit-line-clamp:2}
+@media(max-width:699px){.icard .desc{display:none}.icard h3{font-size:15px}.icard .price{font-size:15px;margin-bottom:0}}
 </style>
 </head>
 <body>
@@ -794,7 +805,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v57"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v58"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
