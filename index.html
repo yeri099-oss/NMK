@@ -497,6 +497,7 @@ nav.tabs button.center.on i{background:var(--ink)}
 .toast{background:var(--ink);border-radius:18px}
 .mitem{box-shadow:var(--lift);border-radius:22px}
 @media(max-width:699px){.deco{opacity:.45}}
+
 .plist{gap:6px}
 .prow{padding:6px 10px 6px 16px}
 .prow .tap{padding:4px 0}
@@ -572,6 +573,17 @@ nav.tabs button.center.on i{background:var(--ink)}
 @media(orientation:landscape) and (min-width:700px){
   .present .pimg{height:auto;width:min(40vw,460px);display:flex;justify-content:center}
   .present .pimg img{width:100%;height:auto;max-height:calc(100vh - 140px)}
+}
+/* 휴대폰 상품별 판매량: 두 개씩, 작게 */
+@media(max-width:699px){
+  .tiles.prod{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .tile.pq{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"k ring" "v ring" "s ring";align-items:center;gap:0 6px;padding:10px 10px 10px 14px;min-height:0}
+  .tile.pq .k{grid-area:k;font-size:13px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tile.pq .v{grid-area:v;font-size:20px;margin:2px 0 0}
+  .tile.pq .s{grid-area:s;font-size:12px;min-width:0;text-align:left}
+  .tile.pq .ring{grid-area:ring;order:0;width:38px;height:38px}
+  .tile.pq .ring::before{inset:4px}
+  .tile.pq .ring span{font-size:10px}
 }
 </style>
 </head>
@@ -782,7 +794,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v54"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v55"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
