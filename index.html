@@ -497,6 +497,11 @@ nav.tabs button.center.on i{background:var(--ink)}
 .toast{background:var(--ink);border-radius:18px}
 .mitem{box-shadow:var(--lift);border-radius:22px}
 @media(max-width:699px){.deco{opacity:.45}}
+.plist{gap:6px}
+.prow{padding:6px 10px 6px 16px}
+.prow .tap{padding:4px 0}
+.pname{font-size:17px}
+.qty button{width:44px;height:44px}
 .tile.qrstat{margin-top:10px;background:var(--surface);display:flex;flex-wrap:wrap;align-items:center;gap:10px 22px}
 .tile.qrstat .qrhead{min-width:180px}
 .tile.qrstat .qrviews{flex:1;min-width:0;display:flex;flex-wrap:wrap;gap:6px 8px;font-size:13px}
@@ -777,7 +782,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v45"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v46"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -805,6 +810,15 @@ const SEED_PRODUCTS = [
   { nameKo: "보자기카스테라", nameEn: "Bojagi Castella (Soy Sauce Castella)", price: 19800, emoji: "🎁", image: "img/bojagi-castella-box.jpg",
     descKo: "국내 최초 간장 카스테라 — 간장 맛이 아닌 '감칠맛'\n꽃,밥에피다 시그니처 메뉴 '보자기 비빔밥'을 모티브로 만든 근사한 디저트\n당도는 확 낮추고 2년 숙성 전통간장으로 맛의 밸런스를 맞춘 새로운 맛\n\n*유기농 우리밀 — 형제기업 농업회사법인 (주)네니아에서 매년 수매\n*동물복지 무항생제 유정란 — 깨끗한 축산농장인증, 카스테라의 기초\n*자연숙성 생꿀 — 무주 구천동, 비가열·인위적 처치 없음, 은은한 단맛\n*유기농 우리콩 전통간장 — 거창 덕유산 자락에서 담근 2년 숙성 콩죽염간장\n*천비향 약주 — 평택 우리쌀로 명인이 빚은 청주, 풍미의 완성도\n\n유기농 주스 등 음료와 함께하면 촉촉하고 밀도 있는 맛\n보관: 냉동 보관 후 실온 30분~1시간 자연해동 / 해동 후 실온 1주일 보관 가능",
     descEn: "Korea's first soy sauce castella — not a soy sauce taste, but rich umami\nA refined dessert inspired by Kkotbap's signature dish, 'Bojagi Bibimbap'\nMuch less sugar, balanced with traditional soy sauce aged for 2 years — a new kind of flavor\n\n*Organic Korean wheat — bought every year from our sister company, Nenia Agricultural Co.\n*Animal-welfare, antibiotic-free fertilized eggs — from certified clean farms; the foundation of the castella\n*Naturally aged raw honey — from Muju Gucheondong; unheated and untreated, for a gentle sweetness\n*Traditional organic Korean soybean soy sauce — brewed at the foot of Mt. Deogyusan in Geochang, aged 2 years with bamboo salt\n*Cheonbihyang rice wine — a clear rice wine brewed by a master from Pyeongtaek rice; it completes the flavor\n\nMoist and rich — best with organic juice or another drink\nStorage: keep frozen; thaw naturally at room temperature for 30 min–1 hour / keeps 1 week at room temperature once thawed" },
+];
+
+// 새로 추가하는 상품 (같은 이름이 없을 때만 관리자 로그인 시 한 번 자동 등록, order 로 판매 화면 순서 지정)
+const PRODUCT_ADDS = [
+  { nameKo: "수승대발효 1년장", nameEn: "Susungdae Fermented Soy Sauce (1-Year Aged)", price: 7000, emoji: "🫙", order: 41, descKo: "", descEn: "" },
+  { nameKo: "아미산쑥티 1년장", nameEn: "Amisan Mugwort Soy Sauce (1-Year Aged)", price: 9800, emoji: "🫙", order: 42, descKo: "", descEn: "" },
+  { nameKo: "제주푸른콩 1년장", nameEn: "Jeju Blue Bean Soy Sauce (1-Year Aged)", price: 9800, emoji: "🫙", order: 43, descKo: "", descEn: "" },
+  { nameKo: "귀한 3년 간장", nameEn: "Premium 3-Year Aged Soy Sauce", price: 12000, emoji: "🫙", order: 44, descKo: "", descEn: "" },
+  { nameKo: "귀한 10년 간장", nameEn: "Premium 10-Year Aged Soy Sauce", price: 27500, emoji: "🫙", order: 45, descKo: "", descEn: "" },
 ];
 
 // 이미 등록된 상품의 사진·설명을 한 번만 바꿔주는 목록 (관리자 로그인 시 자동 적용, id 는 바꾸지 마세요)
@@ -1013,6 +1027,14 @@ async function applyProductUpdates() {
     const ref = doc(db, COL.meta, "productUpdates");
     const snap = await getDoc(ref);
     const done = snap.exists() ? snap.data() : {};
+    for (const a of PRODUCT_ADDS) {
+      const id = "add-" + a.nameKo;
+      if (done[id]) continue;
+      if (!products.find((x) => x.nameKo === a.nameKo)) {
+        await setDoc(doc(collection(db, COL.products)), { image: "", ...a, active: true, createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
+      }
+      await setDoc(ref, { [id]: true }, { merge: true });
+    }
     for (const u of PRODUCT_UPDATES) {
       if (done[u.id]) continue;
       const p = products.find((x) => x.nameKo === u.match);
@@ -1028,6 +1050,10 @@ async function seedIfNeeded() {
   const b = writeBatch(db);
   SEED_PRODUCTS.forEach((p, i) => {
     b.set(doc(collection(db, COL.products)), { image: "", ...p, order: (i + 1) * 10, active: true, createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
+  });
+  PRODUCT_ADDS.forEach((p) => {
+    b.set(doc(collection(db, COL.products)), { image: "", ...p, active: true, createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
+    b.set(doc(db, COL.meta, "productUpdates"), { ["add-" + p.nameKo]: true }, { merge: true });
   });
   b.set(ref, { done: true, at: serverTimestamp() });
   await b.commit();
@@ -1528,7 +1554,7 @@ function renderDash() {
         return `<div class="tile ${cls}"><div class="k">${label}</div><div class="v num">${won(v.amount)}</div><div class="s num">${fmt(v.count)}건${note}</div></div>`;
       }).join("")}
     </div>
-    <div class="tiles prod" style="--n:${Math.max(1, prodRows.length)}">
+    <div class="tiles prod" style="--n:${Math.min(5, Math.max(1, prodRows.length))}">
       ${prodRows.map((x, i) => { const pct = r.qty ? Math.round(x.qty / r.qty * 100) : 0; return `<div class="tile pq t${i % 5}">
         <div class="ring" style="--p:${pct}"><span class="num">${pct}%</span></div>
         <div class="k">${esc(x.name)}</div><div class="v num">${fmt(x.qty)}개</div><div class="s num">${won(x.amount)}</div></div>`; }).join("")}
