@@ -120,6 +120,15 @@ const desc = (p) => (lang === "en" ? p.descEn || p.descKo || "" : p.descKo || ""
 const price = (p) => (lang === "en" ? "₩" + fmt(p.price) : fmt(p.price) + "원");
 const visual = (p) => (p.image ? `<img src="${esc(p.image)}" alt="${esc(name(p))}" loading="lazy">` : esc(p.emoji || "🛍️"));
 
+// 같은 분류끼리 같은 색: 음료 / 부각 / 1년장 / 귀한 간장 / 카스테라
+function tintOf(name) {
+  const n = String(name || "");
+  if (/쥬스|주스|레몬/.test(n)) return "t3";
+  if (/부각/.test(n)) return "t1";
+  if (/1년장/.test(n)) return "t4";
+  if (/간장/.test(n)) return "t2";
+  return "t0";
+}
 function renderList() {
   const t = T[lang];
   document.documentElement.lang = lang;
@@ -128,7 +137,7 @@ function renderList() {
   document.querySelectorAll(".lang button").forEach((b) => b.classList.toggle("on", b.dataset.l === lang));
   if (!loaded) { $("#grid").innerHTML = `<div class="state">${failed ? t.err : "불러오는 중… / Loading…"}</div>`; return; }
   $("#grid").innerHTML = products.length ? products.map((p, i) => `
-    <button class="card t${i % 5}" data-id="${esc(p.id)}" type="button">
+    <button class="card ${tintOf(p.nameKo)}" data-id="${esc(p.id)}" type="button">
       <div class="ph">${visual(p)}</div>
       <div class="b"><h2>${esc(name(p))}</h2>${sub(p) ? `<div class="en">${esc(sub(p))}</div>` : ""}
         <div class="pr">${price(p)}</div><div class="more">${t.more}</div></div>
@@ -141,7 +150,7 @@ function renderDetail() {
   if (i < 0) { d.hidden = true; document.body.style.overflow = ""; return; }
   const p = products[i];
   countView(p.id);
-  d.className = "d t" + (i % 5);
+  d.className = "d " + tintOf(p.nameKo);
   $("#back").textContent = T[lang].back;
   $("#dbody").innerHTML = `
     <div class="dph">${visual(p)}</div>

@@ -782,7 +782,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v52"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v53"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -1210,6 +1210,15 @@ function calc() {
   return { items, subtotal, qty, sets, setDiscount, manual, discount, total, change };
 }
 
+// 같은 분류끼리 같은 색: 음료 / 부각 / 1년장 / 귀한 간장 / 카스테라
+function tintOf(name) {
+  const n = String(name || "");
+  if (/쥬스|주스|레몬/.test(n)) return "t3";
+  if (/부각/.test(n)) return "t1";
+  if (/1년장/.test(n)) return "t4";
+  if (/간장/.test(n)) return "t2";
+  return "t0";
+}
 function renderPos() {
   const grid = $("#posGrid");
   const list = sellable();
@@ -1218,7 +1227,7 @@ function renderPos() {
   } else {
     grid.innerHTML = list.map((p, i) => {
       const q = cart[p.id] || 0;
-      return `<div class="prow t${i % 5} ${q ? "sel" : ""}" data-id="${p.id}">
+      return `<div class="prow ${tintOf(p.nameKo)} ${q ? "sel" : ""}" data-id="${p.id}">
         <button class="tap" data-act="plus" type="button"><span class="pname">${esc(p.nameKo)}</span><span class="pprice num">${won(p.price)}</span></button>
         <div class="qty">
           <button data-act="minus" type="button" aria-label="빼기">−</button>
@@ -1376,7 +1385,7 @@ function renderInfo() {
   $$("#infoLang button").forEach((b) => b.classList.toggle("on", b.dataset.l === infoLang));
   const list = sellable();
   $("#infoGrid").innerHTML = list.length ? list.map((p, i) => `
-    <button class="icard t${i % 5}" data-i="${i}" type="button">
+    <button class="icard ${tintOf(p.nameKo)}" data-i="${i}" type="button">
       <div class="thumb">${prodVisual(p)}</div>
       <div class="body">
         <h3>${esc(pName(p, infoLang))}</h3>
@@ -1561,7 +1570,7 @@ function renderDash() {
       }).join("")}
     </div>
     <div class="tiles prod" style="--n:${Math.min(5, Math.max(1, prodRows.length))}">
-      ${prodRows.map((x, i) => { const pct = r.qty ? Math.round(x.qty / r.qty * 100) : 0; return `<div class="tile pq t${i % 5}">
+      ${prodRows.map((x, i) => { const pct = r.qty ? Math.round(x.qty / r.qty * 100) : 0; return `<div class="tile pq ${tintOf(x.name)}">
         <div class="ring" style="--p:${pct}"><span class="num">${pct}%</span></div>
         <div class="k">${esc(x.name)}</div><div class="v num">${fmt(x.qty)}개</div><div class="s num">${won(x.amount)}</div></div>`; }).join("")}
     </div>
