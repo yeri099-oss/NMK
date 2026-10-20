@@ -384,8 +384,8 @@ table.h tbody tr:hover td{background:var(--soft)}
 /* ================= v10 파스텔 · 입체 디자인 ================= */
 :root{
   --bg:#fbf9f6; --surface:#ffffff; --soft:#f5f2ee; --ink:#1f1d24; --ink2:#5d5a63; --muted:#9f9ba4; --line:#ece8e2;
-  --t0:#fbe3e3; --t1:#dcefe6; --t2:#e9e3f6; --t3:#fde6d6; --t4:#eff3d6;
-  --t0d:#e7a9ad; --t1d:#7fb79c; --t2d:#a796d6; --t3d:#eba57a; --t4d:#b7c46a;
+  --t0:#fbe3e3; --t1:#dcefe6; --t2:#e9e3f6; --t3:#fde6d6; --t4:#eff3d6; --t5:#ece8e1;
+  --t0d:#e7a9ad; --t1d:#7fb79c; --t2d:#a796d6; --t3d:#eba57a; --t4d:#b7c46a; --t5d:#a8a092;
   --brand:#f0a979; --brand-d:#c06f3a; --brand-soft:#fde6d6;
   --ok:#7fb79c; --ok-d:#4f8f71; --ok-soft:#dcefe6; --coral:#ee8a84; --mauve:#a796d6; --mauve-d:#6f5fae; --mauve-soft:#e9e3f6;
   --blue:#86a6d8; --blue-soft:#e2ebf8;
@@ -433,7 +433,7 @@ nav.tabs button.center.on i{background:var(--ink)}
 .daychips .chip.on{background:var(--surface);color:var(--ink);box-shadow:var(--lift)}
 /* 판매: 파스텔 상품 카드 */
 .prow{border:0;border-radius:24px;padding:10px 12px 10px 18px;box-shadow:var(--lift);transition:transform .12s,box-shadow .12s}
-.prow.t0{background:var(--t0)}.prow.t1{background:var(--t1)}.prow.t2{background:var(--t2)}.prow.t3{background:var(--t3)}.prow.t4{background:var(--t4)}
+.prow.t0{background:var(--t0)}.prow.t1{background:var(--t1)}.prow.t2{background:var(--t2)}.prow.t3{background:var(--t3)}.prow.t4{background:var(--t4)}.prow.t5{background:var(--t5)}
 .prow.sel{outline:2.5px solid var(--ink);outline-offset:-2.5px;transform:translateY(-1px)}
 .pname{font-weight:700;font-size:19px;color:var(--ink)}
 .pprice{color:var(--ink2);font-weight:600}
@@ -462,7 +462,7 @@ nav.tabs button.center.on i{background:var(--ink)}
 .tile .v{font-weight:800;letter-spacing:-.8px}
 .tile.hero .v{font-size:34px}
 .tile.pq{background:var(--surface)}
-.tile.pq.t0{--c:var(--t0d)}.tile.pq.t1{--c:var(--t1d)}.tile.pq.t2{--c:var(--t2d)}.tile.pq.t3{--c:var(--t3d)}.tile.pq.t4{--c:var(--t4d)}
+.tile.pq.t0{--c:var(--t0d)}.tile.pq.t1{--c:var(--t1d)}.tile.pq.t2{--c:var(--t2d)}.tile.pq.t3{--c:var(--t3d)}.tile.pq.t4{--c:var(--t4d)}.tile.pq.t5{--c:var(--t5d)}
 .fill,.hcol .hb{background:var(--t3d)}
 .bartrack{background:var(--soft)}
 .note{background:var(--t4);color:var(--ink2)}
@@ -476,7 +476,7 @@ nav.tabs button.center.on i{background:var(--ink)}
 .tag.zeropay{background:var(--t2);color:var(--mauve-d)}
 /* 상품정보 */
 .icard{box-shadow:var(--lift);border-radius:26px}
-.icard.t0 .thumb{background:var(--t0)}.icard.t1 .thumb{background:var(--t1)}.icard.t2 .thumb{background:var(--t2)}.icard.t3 .thumb{background:var(--t3)}.icard.t4 .thumb{background:var(--t4)}
+.icard.t0 .thumb{background:var(--t0)}.icard.t1 .thumb{background:var(--t1)}.icard.t2 .thumb{background:var(--t2)}.icard.t3 .thumb{background:var(--t3)}.icard.t4 .thumb{background:var(--t4)}.icard.t5 .thumb{background:var(--t5)}
 .icard h3{font-weight:700}
 .icard .price{color:var(--ink)}
 .lang{background:var(--soft);box-shadow:inset 0 2px 5px rgba(60,40,30,.07)}
@@ -782,7 +782,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v53"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v54"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -819,6 +819,8 @@ const PRODUCT_ADDS = [
   { nameKo: "제주푸른콩 1년장", nameEn: "Jeju Blue Bean Soy Sauce (1-Year)", price: 9800, emoji: "🫙", order: 43, image: "img/soy-jeju.jpg", descKo: "방주 제주푸른콩 간장 1년장 (100ml)\n제주 서귀포 — 잊혀져 가는 맛, 제주 푸른독새기콩으로 만든 간장\n\n*제주 푸른독새기콩 — 서귀포에서 '장콩'으로 불릴 만큼 오래 장 담그던 소멸 위기의 토종콩, 채종포를 직접 조성해 종자를 지키고 주변 농가와 함께 재배 (제주푸른콩 34.5%)\n*제주 암반수 — 미네랄이 풍부한 맑은 물\n*3년 이상 간수를 뺀 천일염 사용\n*화산송이로 지은 발효실에서 메주를 띄우고 제주 전통 옹기에서 숙성", descEn: "Bangju Jeju Blue Bean Soy Sauce, 1-Year (100ml)\nFrom Seogwipo, Jeju — a fading taste brought back with Jeju's native blue 'Dokssaegi' beans\n\n*Jeju blue Dokssaegi beans — a native bean long known as the 'jang bean' in Seogwipo and now endangered; the maker keeps its own seed field and grows it with neighboring farms (Jeju blue beans 34.5%)\n*Jeju volcanic bedrock water, rich in minerals\n*Sea salt drained for 3+ years\n*Meju fermented in a room built of volcanic scoria, then aged in traditional Jeju onggi jars" },
   { nameKo: "귀한 3년 간장", nameEn: "Premium 3-Year Aged Organic Soy Sauce", price: 12000, emoji: "🫙", order: 44, image: "img/soy-3y.jpg", descKo: "꽃,밥에피다 귀한 3년 유기농 간장 — 3년의 기다림, 시간이 만든 깊은 풍미 (100ml)\n계절이 바뀌고 햇볕과 바람이 지나는 긴 시간 동안 자연의 흐름 속에서 천천히 숙성\n\n*3년 숙성 — 짠맛은 줄고 깊고 풍부한 향, 은은한 단맛과 감칠맛까지 살아있는 맛\n*유기농 국산콩 — 엄선한 국내산 유기농 콩으로 담근 전통장 (유기농 국산콩 22%)\n*죽염 — 국내산 천일염으로 만든 죽염, 발효 과정과 어우러져 자극적인 짠맛보다 균형 잡힌 풍미 (죽염 19%)\n\n'오직' 자연 — 콩, 물, 소금 그리고 항아리, 햇볕, 바람\n빠른 생산을 위한 인공적인 과정 없이 전통 방식 그대로 발효", descEn: "Kkotbap Premium 3-Year Aged Organic Soy Sauce — three years of patience, depth made by time (100ml)\nSlowly aged with the seasons, sun and wind, following nature's own pace\n\n*Aged 3 years — less salty, with a deep, rich aroma, gentle sweetness and lively umami\n*Organic Korean soybeans — traditional soy sauce brewed from carefully selected organic Korean beans (organic Korean soybeans 22%)\n*Bamboo salt — made from Korean sea salt; blends with the fermentation for a balanced flavor rather than a harsh saltiness (bamboo salt 19%)\n\nOnly nature — soybeans, water and salt, with earthen jars, sunlight and wind\nNo artificial shortcuts for fast production; fermented the traditional way" },
   { nameKo: "귀한 10년 간장", nameEn: "Premium 10-Year Aged Soy Sauce", price: 27500, emoji: "🫙", order: 45, image: "img/soy-10y.jpg", descKo: "꽃,밥에피다 귀한 10년 진간장 — 10년의 기다림 (100ml)\n계절이 바뀌고 햇볕과 바람이 지나가는 긴 시간 동안 자연의 흐름 속에서 천천히 숙성\n\n*10년 숙성 — 짠맛은 줄고 깊고 풍부한 향, 은은한 단맛과 감칠맛까지 살아있는 맛\n*국산콩 — 엄선한 국내산 콩으로 담근 전통장 (국산콩 22%)\n*국내산 천일염 — 발효 과정과 어우러져 자극적인 짠맛보다 균형 잡힌 풍미\n\n'오직' 자연 — 콩, 물, 소금 그리고 항아리, 햇볕, 바람\n빠른 생산을 위한 인공적인 과정 없이 전통 방식 그대로 발효", descEn: "Kkotbap Premium 10-Year Aged Soy Sauce — ten years in the making (100ml)\nSlowly aged with the seasons, sun and wind, following nature's own pace\n\n*Aged 10 years — less salty, with a deep, rich aroma, gentle sweetness and lively umami\n*Korean soybeans — traditional soy sauce brewed from carefully selected Korean beans (Korean soybeans 22%)\n*Korean sea salt — blends with the fermentation for a balanced flavor rather than a harsh saltiness\n\nOnly nature — soybeans, water and salt, with earthen jars, sunlight and wind\nNo artificial shortcuts for fast production; fermented the traditional way" },
+  { nameKo: "신문지백(중)", nameEn: "Newspaper Bag (Medium)", price: 300, emoji: "🛍️", order: 60, image: "img/newspaper-bag.jpg", descKo: "꽃,밥에피다 신문지로 만든 재생 쇼핑백\n— 다 읽은 신문지를 손으로 접어 만든 친환경 포장백\n\n*중 300원 / 대 500원\n*구매하신 상품을 담아 가실 때 함께 구매 가능", descEn: "Kkotbap upcycled shopping bag made from newspaper\n— an eco-friendly bag hand-folded from old newspapers\n\n*Medium ₩300 / Large ₩500\n*Available to carry the products you buy" },
+  { nameKo: "신문지백(대)", nameEn: "Newspaper Bag (Large)", price: 500, emoji: "🛍️", order: 61, image: "img/newspaper-bag.jpg", descKo: "꽃,밥에피다 신문지로 만든 재생 쇼핑백\n— 다 읽은 신문지를 손으로 접어 만든 친환경 포장백\n\n*중 300원 / 대 500원\n*구매하신 상품을 담아 가실 때 함께 구매 가능", descEn: "Kkotbap upcycled shopping bag made from newspaper\n— an eco-friendly bag hand-folded from old newspapers\n\n*Medium ₩300 / Large ₩500\n*Available to carry the products you buy" },
 ];
 
 // 이미 등록된 상품의 사진·설명을 한 번만 바꿔주는 목록 (관리자 로그인 시 자동 적용, id 는 바꾸지 마세요)
@@ -1217,6 +1219,7 @@ function tintOf(name) {
   if (/부각/.test(n)) return "t1";
   if (/1년장/.test(n)) return "t4";
   if (/간장/.test(n)) return "t2";
+  if (/신문지|쇼핑백/.test(n)) return "t5";
   return "t0";
 }
 function renderPos() {

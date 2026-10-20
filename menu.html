@@ -20,7 +20,7 @@
 /* 고객용 상품 소개: 앱과 같은 파스텔 카드, 로그인·판매 기능 없음 */
 :root{
   --bg:#fbf9f6; --surface:#ffffff; --soft:#f5f2ee; --ink:#1f1d24; --ink2:#5d5a63; --muted:#9f9ba4; --line:#ece8e2;
-  --t0:#fbe3e3; --t1:#dcefe6; --t2:#e9e3f6; --t3:#fde6d6; --t4:#eff3d6; --brand-d:#b5733f; --logo:#b45b40;
+  --t0:#fbe3e3; --t1:#dcefe6; --t2:#e9e3f6; --t3:#fde6d6; --t4:#eff3d6; --t5:#ece8e1; --brand-d:#b5733f; --logo:#b45b40;
   --lift:0 1px 0 rgba(255,255,255,.9) inset,0 -2px 0 rgba(31,29,36,.04) inset,0 14px 28px -14px rgba(60,40,30,.28),0 3px 8px -2px rgba(60,40,30,.08);
 }
 *{box-sizing:border-box}
@@ -42,6 +42,7 @@ header h1{margin:2px 0 0;font-size:26px;font-weight:800;letter-spacing:-.6px;lin
 .card .ph{aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;font-size:64px;overflow:hidden}
 .card .ph img{width:100%;height:100%;object-fit:contain}
 .t0 .ph,.d.t0 .dph{background:var(--t0)}.t1 .ph,.d.t1 .dph{background:var(--t1)}.t2 .ph,.d.t2 .dph{background:var(--t2)}.t3 .ph,.d.t3 .dph{background:var(--t3)}.t4 .ph,.d.t4 .dph{background:var(--t4)}
+.t5 .ph,.d.t5 .dph{background:var(--t5)}
 .card .b{padding:14px 18px 18px}
 .card h2{margin:0;font-size:20px;font-weight:700;letter-spacing:-.3px}
 .card .en{font-size:13px;color:var(--muted);margin-top:2px}
@@ -127,6 +128,7 @@ function tintOf(name) {
   if (/부각/.test(n)) return "t1";
   if (/1년장/.test(n)) return "t4";
   if (/간장/.test(n)) return "t2";
+  if (/신문지|쇼핑백/.test(n)) return "t5";
   return "t0";
 }
 function renderList() {
