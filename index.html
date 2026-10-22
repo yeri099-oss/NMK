@@ -635,6 +635,14 @@ nav.tabs button.center.on i{background:var(--ink)}
 .prizelog{margin-top:14px}
 @media(max-width:699px){.prize{padding:12px 10px}.prize .pnm{font-size:14px}.prize .pcount b{font-size:20px}}
 .couponsum{background:var(--t3);border-radius:16px;padding:10px 14px;margin-bottom:12px;font-size:14px;font-weight:600}.couponsum b{font-size:20px;margin:0 2px}
+.memorow{display:flex;gap:8px}.memorow .input{flex:1;min-width:0}
+.svcbtn{flex-shrink:0;background:var(--soft);color:var(--ink2);box-shadow:inset 0 -3px 0 rgba(31,29,36,.05);padding:10px 16px}
+.svcbtn.on{background:var(--t2d);color:#fff;box-shadow:var(--press)}
+.svcwhy{margin-top:8px;align-items:center}
+.svcline{color:var(--mauve-d);font-weight:700}
+.svcmode #payType{opacity:.35;pointer-events:none}
+.svcmode #discToggle,.svcmode #discBox,.svcmode #discLine{display:none!important}
+.tag.service{background:var(--t2);color:var(--mauve-d)}
 </style>
 </head>
 <body>
@@ -761,7 +769,8 @@ nav.tabs button.center.on i{background:var(--ink)}
 
           <div>
             <div class="grp-title">비고</div>
-            <input class="input" id="memo" placeholder="특이사항">
+            <div class="memorow"><input class="input" id="memo" placeholder="특이사항"><button class="btn svcbtn" id="svcToggle" type="button">서비스</button></div>
+            <div class="chips svcwhy hidden" id="svcWhy"><span class="small muted">서비스 사유</span><button class="chip" data-why="시식" type="button">시식</button><button class="chip" data-why="선물" type="button">선물</button><button class="chip" data-why="기타" type="button">기타</button></div>
           </div>
         </div>
       </div>
@@ -854,7 +863,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v62"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v63"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -863,7 +872,7 @@ const FESTA_DAYS = [
   { key: "2026-10-24", label: "10.24 (토)" },
 ];
 const COL = { prizes: "festaApp_prizes", users: "festaApp_users", products: "festaApp_products", sales: "festaApp_sales", meta: "festaApp_meta", stats: "festaApp_stats" };
-const PAY = { card: "카드", cash: "현금", zeropay: "QR", transfer: "계좌이체" }; // zeropay 키는 기존 데이터 호환용 (화면 표시는 QR)
+const PAY = { card: "카드", cash: "현금", zeropay: "QR", transfer: "계좌이체", service: "서비스" }; // zeropay 키는 기존 데이터 호환용 (화면 표시는 QR)
 const NATION = { KR: "한국인", FG: "외국인" };
 const GENDER = { F: "여", M: "남" };
 const SEED_PRODUCTS = [
@@ -961,7 +970,7 @@ let menuStats = {}; // 고객용 상품 소개 페이지 접속 수 { "2026-10-2
 let users = [];
 let unsubs = [];
 const cart = {};          // productId -> qty
-const st = { discType: "amount", discVal: 0, pay: null, cash: 0, nation: null, gender: null };
+const st = { discType: "amount", discVal: 0, pay: null, cash: 0, nation: null, gender: null, service: false, why: null };
 let infoLang = lsGet("festaLang") || "ko";
 let dashDay = "all", histDay = "all";
 let histSort = { key: "ts", dir: -1 };
@@ -1291,6 +1300,9 @@ function calc() {
   }));
   const subtotal = items.reduce((a, i) => a + i.amount, 0);
   const qty = items.reduce((a, i) => a + i.qty, 0);
+  if (st.service) { // 서비스(시식·선물 등): 0원, 매출에서 빠지고 수량만 따로 집계
+    return { items, subtotal, qty, sets: [], setDiscount: 0, manual: 0, discount: subtotal, total: 0, change: null, service: true };
+  }
   const sets = setDiscounts(items);
   const setDiscount = sets.reduce((a, x) => a + x.amount, 0);
   const afterSet = subtotal - setDiscount;
@@ -1370,11 +1382,16 @@ function renderCheckout() {
   $("#setLines").innerHTML = c.sets.map((x) => `<div class="row small setline"><span>${esc(x.label)} 할인</span><b class="num">−${won(x.amount)}</b></div>`).join("");
   $("#discLine").textContent = c.manual ? `할인 −${won(c.manual)}${st.discType === "percent" ? ` (${Math.min(st.discVal, 100)}%)` : ""}` : "";
   $("#grandTotal").textContent = won(c.total);
+  $("#svcToggle").classList.toggle("on", st.service);
+  $("#svcWhy").classList.toggle("hidden", !st.service);
+  $$("#svcWhy [data-why]").forEach((b) => b.classList.toggle("on", st.why === b.dataset.why));
+  $("#checkout").classList.toggle("svcmode", st.service);
+  if (st.service) $("#setLines").innerHTML = `<div class="row small svcline"><span>서비스 (0원 처리)</span><b class="num">−${won(c.subtotal)}</b></div>`;
   $$("#discType button").forEach((b) => b.classList.toggle("on", b.dataset.v === st.discType));
   $$("#payType button").forEach((b) => b.classList.toggle("on", b.dataset.v === st.pay));
   $$("[data-cust]").forEach((b) => b.classList.toggle("on", st[b.dataset.cust] === b.dataset.val));
-  $("#cashBox").classList.toggle("hidden", st.pay !== "cash");
-  $("#changeBox").classList.toggle("hidden", st.pay !== "cash");
+  $("#cashBox").classList.toggle("hidden", st.pay !== "cash" || st.service);
+  $("#changeBox").classList.toggle("hidden", st.pay !== "cash" || st.service);
   $("#transferBox").classList.toggle("hidden", st.pay !== "transfer");
   const box = $("#changeBox");
   if (c.change === null) { $("#changeLabel").textContent = "거스름돈"; $("#changeVal").textContent = "-"; box.classList.remove("short"); }
@@ -1388,6 +1405,10 @@ function updateMobibar() {
   $("#mobibar").classList.toggle("hidden", !on);
   document.body.classList.toggle("has-mobibar", on);
 }
+// 서비스 버튼: 누르면 0원 서비스로 등록 (결제 방식 필요 없음)
+$("#svcToggle").onclick = () => { st.service = !st.service; if (!st.service) st.why = null; renderCheckout(); };
+$("#svcWhy").addEventListener("click", (e) => { const b = e.target.closest("[data-why]"); if (!b) return; st.why = st.why === b.dataset.why ? null : b.dataset.why; renderCheckout(); });
+
 // ================= 뽑기 경품 =================
 let posMode = "sale";
 $("#posMode").addEventListener("click", (e) => {
@@ -1473,7 +1494,7 @@ $("#clearItems").onclick = () => { for (const k of Object.keys(cart)) delete car
 
 function resetPos() {
   for (const k of Object.keys(cart)) delete cart[k];
-  Object.assign(st, { discType: "amount", discVal: 0, pay: null, cash: 0, nation: null, gender: null });
+  Object.assign(st, { discType: "amount", discVal: 0, pay: null, cash: 0, nation: null, gender: null, service: false, why: null });
   $("#discVal").value = ""; $("#cashIn").value = ""; $("#memo").value = "";
   showDisc(false);
   renderPos();
@@ -1489,22 +1510,23 @@ $("#resetBtn").onclick = resetPos;
 $("#sellBtn").onclick = async () => {
   const c = calc();
   if (!c.items.length) { toast("상품을 먼저 선택해 주세요.", "err"); return; }
-  if (!st.pay) { toast("결제 방식(카드/현금/QR/계좌이체)을 선택해 주세요.", "err"); scrollToEl($("#payType"), 200); return; }
+  if (!st.pay && !st.service) { toast("결제 방식(카드/현금/QR/계좌이체)을 선택해 주세요.", "err"); scrollToEl($("#payType"), 200); return; }
   if (st.pay === "cash" && st.cash && st.cash < c.total) { toast(`받은 현금이 ${won(c.total - st.cash)} 부족해요.`, "err"); return; }
-  const memo = $("#memo").value.trim();
+  const memo = [st.service && st.why, $("#memo").value.trim()].filter(Boolean).join(" · ");
   // 확인 창도 판매 화면과 같은 순서: 고객 → 결제 방식 → 받은 현금 → 상품 합계·할인 → 결제 금액 → 거스름돈 → 비고
-  const cashOn = st.pay === "cash" && st.cash;
+  const cashOn = st.pay === "cash" && st.cash && !st.service;
   const ok = await confirmBox("판매 등록", `
     ${itemsTable(c.items)}
     <div class="cf">
       <div class="row"><span>고객</span><b>${custLabel(st) || `<span class="muted">미입력</span>`}</b></div>
-      <div class="row"><span>결제 방식</span><b>${PAY[st.pay]}</b></div>
+      <div class="row"><span>결제 방식</span><b>${st.service ? "서비스 (0원)" : PAY[st.pay]}</b></div>
       ${cashOn ? `<div class="row"><span>받은 현금</span><b class="num">${won(st.cash)}</b></div>` : ""}
     </div>
     <div class="total-box cf-total">
       <div class="row"><span>상품 합계</span><b class="num">${won(c.subtotal)}</b></div>
       ${c.sets.map((x) => `<div class="row setline"><span>${esc(x.label)} 할인</span><b class="num">−${won(x.amount)}</b></div>`).join("")}
       ${c.manual ? `<div class="row" style="color:var(--warn)"><span>할인</span><b class="num">−${won(c.manual)}</b></div>` : ""}
+      ${c.service ? `<div class="row svcline"><span>서비스</span><b class="num">−${won(c.subtotal)}</b></div>` : ""}
       <div class="row" style="margin-top:4px"><b>결제 금액</b><span class="big num">${won(c.total)}</span></div>
     </div>
     ${cashOn ? `<div class="change-box cf-change"><div class="row"><b>거스름돈</b><span class="big num">${won(c.change)}</span></div></div>` : ""}
@@ -1515,15 +1537,15 @@ $("#sellBtn").onclick = async () => {
     ts: now, day: dayKey(now), items: c.items, qty: c.qty, subtotal: c.subtotal,
     discountType: c.manual ? st.discType : null, discountValue: c.manual ? st.discVal : 0, discount: c.discount,
     setDiscount: c.setDiscount, setDiscounts: c.sets, manualDiscount: c.manual,
-    total: c.total, payment: st.pay,
-    cashReceived: st.pay === "cash" && st.cash ? st.cash : null,
-    change: st.pay === "cash" && st.cash ? c.change : null,
+    total: c.total, payment: c.service ? "service" : st.pay, service: !!c.service,
+    cashReceived: cashOn ? st.cash : null,
+    change: cashOn ? c.change : null,
     customer: { nation: st.nation, gender: st.gender },
     memo, sellerUid: me.uid, sellerName: me.name, createdAt: serverTimestamp(),
   };
   // 오프라인이어도 바로 저장되고, 연결되면 자동으로 서버에 올라갑니다 (await 하지 않음)
   setDoc(doc(collection(db, COL.sales)), sale).catch((e) => { console.error(e); toast("판매 저장 실패: " + e.code + " — 판매내역을 확인해 주세요.", "err", 6000); });
-  toast(`판매 등록 완료 · ${won(c.total)}${sale.change ? ` · 거스름돈 ${won(sale.change)}` : ""}`, "ok", 3000);
+  toast(c.service ? `서비스 등록 완료 · ${c.qty}개` : `판매 등록 완료 · ${won(c.total)}${sale.change ? ` · 거스름돈 ${won(sale.change)}` : ""}`, "ok", 3000);
   resetPos();
 };
 
@@ -1651,7 +1673,13 @@ function renderDayChips(el, cur) {
 
 // ================= 대시보드 =================
 function stats(list) {
-  const r = { total: 0, subtotal: 0, discount: 0, count: list.length, qty: 0, byProd: {}, byPay: {}, byNation: {}, byGender: {}, byHour: {} };
+  const svc = { count: 0, qty: 0, amount: 0, byProd: {} };
+  for (const s of list) if (s.service) {
+    svc.count++; svc.qty += s.qty || 0; svc.amount += s.subtotal || 0;
+    for (const it of s.items || []) { const k = it.productId || it.nameKo; const o = svc.byProd[k] || (svc.byProd[k] = { name: it.nameKo, qty: 0 }); o.qty += it.qty; }
+  }
+  list = list.filter((s) => !s.service);
+  const r = { total: 0, subtotal: 0, discount: 0, count: list.length, qty: 0, byProd: {}, byPay: {}, byNation: {}, byGender: {}, byHour: {}, svc };
   for (const s of list) {
     r.total += s.total || 0; r.subtotal += s.subtotal || 0; r.discount += s.discount || 0; r.qty += s.qty || 0;
     for (const it of s.items || []) {
@@ -1679,6 +1707,12 @@ function breakdownTable(title, map, labels, total) {
     </tbody></table></div>`;
 }
 
+// 서비스(0원) 제공 현황
+function serviceTile(r) {
+  const v = r.svc; if (!v.count) return "";
+  return `<div class="tile qrstat"><div class="qrhead"><div class="k">서비스 (시식·선물 등, 매출 제외)</div><div class="v num">${fmt(v.qty)}개</div><div class="s num">${fmt(v.count)}건 · 정가 ${won(v.amount)}</div></div>
+    <div class="qrviews">${Object.values(v.byProd).map((x) => `<span class="num"><b>${esc(x.name)}</b> ${fmt(x.qty)}</span>`).join("")}</div></div>`;
+}
 // 뽑기 경품 지급 현황 (날짜 선택 반영, 남은 수량은 전체 기준)
 function prizeTile() {
   const c = prizeCounts(filterDay(prizeLogs, dashDay)), all = prizeCounts();
@@ -1752,6 +1786,7 @@ function renderDash() {
         <div class="ring" style="--p:${pct}"><span class="num">${pct}%</span></div>
         <div class="k">${esc(x.name)}</div><div class="v num">${fmt(x.qty)}개</div><div class="s num">${won(x.amount)}</div></div>`; }).join("")}
     </div>
+    ${serviceTile(r)}
     ${prizeTile()}
     ${qrTile(prodRows)}
     ${dashDay === "all" && otherCnt ? `<div class="note">⚠️ 행사일(10/23·24) 외 판매 ${otherCnt}건이 전체 합계에 포함돼 있어요. 연습 데이터라면 [관리] 탭에서 정리할 수 있어요.</div>` : ""}
@@ -1840,7 +1875,7 @@ function renderHist() {
   const head = `<thead><tr>${HIST_COLS.map((c) => `<th data-k="${c.key}" class="${c.r ? "r" : ""}">${c.label}${histSort.key === c.key ? `<span class="arr">${histSort.dir > 0 ? "▲" : "▼"}</span>` : ""}</th>`).join("")}</tr></thead>`;
   const body = list.length ? list.map((s) => `<tr data-id="${s.id}">
       <td class="num muted">#${s._no}</td>
-      <td class="items">${esc(itemsText(s))}${s.discount ? ` <span class="small" style="color:var(--warn)">(할인 −${fmt(s.discount)})</span>` : ""}${s.memo ? `<div class="small muted">${esc(s.memo)}</div>` : ""}</td>
+      <td class="items">${esc(itemsText(s))}${s.service ? "" : s.discount ? ` <span class="small" style="color:var(--warn)">(할인 −${fmt(s.discount)})</span>` : ""}${s.memo ? `<div class="small muted">${esc(s.memo)}</div>` : ""}</td>
       <td class="r num"><b>${fmt(s.total)}</b></td>
       <td><span class="tag ${s.payment}">${PAY[s.payment] || "-"}</span></td>
       <td>${NATION[s.customer?.nation] || `<span class="muted">-</span>`}</td>
@@ -1884,7 +1919,7 @@ function openSale(id) {
     <div class="small muted" style="margin-bottom:12px">판매자: ${esc(s.sellerName)}</div>
     ${canEdit ? `
       <div class="grp-title">결제 방식</div>
-      <div class="seg" id="ePay">${Object.entries(PAY).map(([k, v]) => `<button data-v="${k}" class="${k === e.payment ? "on" : ""}">${v}</button>`).join("")}</div>
+      <div class="seg" id="ePay">${Object.entries(PAY).filter(([k]) => s.service ? k === "service" : k !== "service").map(([k, v]) => `<button data-v="${k}" class="${k === e.payment ? "on" : ""}">${v}</button>`).join("")}</div>
       <div class="grp-title" style="margin-top:12px">고객 정보</div>
       <div class="chips" id="eCust">
         <button class="chip" data-c="nation" data-v="KR">한국인</button><button class="chip" data-c="nation" data-v="FG">외국인</button>
