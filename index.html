@@ -654,8 +654,6 @@ html,body,button,a,input,select,textarea,.prow,.chip,.btn{touch-action:manipulat
 @media(max-width:699px){.present .pnav{width:46px;height:120px;font-size:84px;border-radius:20px;padding-bottom:12px;background:rgba(255,255,255,.6);top:calc(190px + env(safe-area-inset-top))}.present .pnav.prev{left:4px}.present .pnav.next{right:4px}.present .stage{padding-left:20px;padding-right:20px;justify-content:flex-start}}
 @keyframes flipNext{0%{transform:perspective(1800px) rotateY(75deg);opacity:.2;box-shadow:-40px 0 60px rgba(60,40,30,.25)}100%{transform:perspective(1800px) rotateY(0);opacity:1}}
 @keyframes flipPrev{0%{transform:perspective(1800px) rotateY(-75deg);opacity:.2;box-shadow:40px 0 60px rgba(60,40,30,.25)}100%{transform:perspective(1800px) rotateY(0);opacity:1}}
-.flip-next{animation:flipNext .55s cubic-bezier(.2,.7,.2,1);transform-origin:left center}
-.flip-prev{animation:flipPrev .55s cubic-bezier(.2,.7,.2,1);transform-origin:right center}
 @media(prefers-reduced-motion:reduce){.flip-next,.flip-prev{animation:none}}
 .present .zoom{display:flex;gap:6px;margin-right:8px}
 .present .zoom button{border:0;background:var(--surface);box-shadow:var(--lift);border-radius:14px;height:42px;min-width:54px;font-size:18px;font-weight:800;color:var(--ink);padding:0 10px}
@@ -885,7 +883,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v68"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v69"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
