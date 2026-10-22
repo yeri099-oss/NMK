@@ -596,6 +596,14 @@ nav.tabs button.center.on i{background:var(--ink)}
 .icard .price{font-size:16px;margin:4px 0 6px}
 .icard .desc{font-size:12.5px;-webkit-line-clamp:2}
 @media(max-width:699px){.icard .desc{display:none}.icard h3{font-size:15px}.icard .price{font-size:15px;margin-bottom:0}}
+.acctbtn{background:var(--surface);color:var(--ink);box-shadow:var(--lift)}
+.acctbox .acct{width:100%;background:var(--t1);border-radius:20px;padding:20px 16px;display:flex;flex-direction:column;gap:6px}
+.acctbox .abank{font-size:20px;font-weight:800}
+.acctbox .abank small{font-size:13px;color:var(--ink2);font-weight:600}
+.acctbox .anum{font-size:clamp(22px,6.4vw,34px);font-weight:800;letter-spacing:.3px;color:var(--ink);white-space:nowrap}
+.acctbox .aholder{font-size:17px;color:var(--ink2);font-weight:600}
+.acctbox .abtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+@media(max-width:699px){#view-info .toolbar{display:grid;grid-template-columns:1fr 1fr;gap:8px}#view-info .toolbar .lang{grid-column:1/-1;justify-self:start}#view-info .toolbar .acctbtn,#view-info .toolbar .qrbtn{margin-left:0;font-size:14px;padding:11px 6px}}
 </style>
 </head>
 <body>
@@ -728,6 +736,7 @@ nav.tabs button.center.on i{background:var(--ink)}
       <div class="toolbar">
         <div class="lang" id="infoLang"><button data-l="ko" class="on">한국어</button><button data-l="en">English</button></div>
         <span class="small muted infohint" style="flex:1">상품을 누르면 사진과 설명을 크게 보여줘요</span>
+        <button class="btn acctbtn" id="acctShow" type="button">계좌이체 안내</button>
         <button class="btn qrbtn" id="qrShow" type="button">고객용 QR 보여주기</button>
       </div>
       <div class="igrid" id="infoGrid"></div>
@@ -805,7 +814,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v59"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v60"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -1430,6 +1439,28 @@ $("#infoLang").addEventListener("click", (e) => {
   infoLang = b.dataset.l; lsSet("festaLang", infoLang); renderInfo();
 });
 // 고객이 휴대폰으로 찍어 상품 설명을 보는 QR (menu.html)
+// 계좌이체 안내 (고객에게 화면을 보여주거나 번호 복사)
+const BANK = { bank: "기업은행", number: "024-097321-04-031", holder: "꽃밥이야기" };
+$("#acctShow").onclick = () => {
+  const el = document.createElement("div");
+  el.className = "qrfull";
+  el.innerHTML = `<div class="qrbox acctbox"><div class="qrt">계좌이체 안내 <span>Bank Transfer</span></div>
+    <div class="acct"><div class="abank">${BANK.bank} <small>IBK</small></div><div class="anum num">${BANK.number}</div><div class="aholder">예금주 ${BANK.holder}</div></div>
+    <div class="qrs">입금 후 화면을 보여주세요 · Please show the transfer screen</div>
+    <div class="abtns"><button class="btn" type="button" data-copy>계좌번호 복사</button><button class="btn primary" type="button" data-close>닫기</button></div></div>`;
+  const close = () => { el.remove(); document.removeEventListener("keydown", onKey); };
+  const onKey = (e) => { if (e.key === "Escape") close(); };
+  el.addEventListener("click", async (e) => {
+    if (e.target.closest("[data-copy]")) {
+      const t = `${BANK.bank} ${BANK.number} ${BANK.holder}`;
+      try { await navigator.clipboard.writeText(t); toast("계좌번호를 복사했어요", "ok"); } catch { toast(t); }
+      return;
+    }
+    if (e.target === el || e.target.closest("[data-close]")) close();
+  });
+  document.addEventListener("keydown", onKey);
+  document.body.appendChild(el);
+};
 $("#qrShow").onclick = () => {
   const el = document.createElement("div");
   el.className = "qrfull";
