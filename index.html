@@ -646,10 +646,17 @@ nav.tabs button.center.on i{background:var(--ink)}
 /* 버튼을 빨리 두 번 눌러도 화면이 확대되지 않게 */
 html,body,button,a,input,select,textarea,.prow,.chip,.btn{touch-action:manipulation}
 .present .pcnt{font-size:14px;color:var(--ink2);font-weight:700}
-.present .pnav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:64px;border:0;border-radius:16px;background:rgba(255,255,255,.75);box-shadow:var(--lift);font-size:32px;line-height:1;color:var(--ink);z-index:3}
+.present .pnav{position:absolute;top:50%;transform:translateY(-50%);width:84px;height:200px;border:0;border-radius:28px;background:rgba(255,255,255,.55);box-shadow:var(--lift);font-size:150px;font-weight:300;line-height:1;color:var(--ink);z-index:3;display:flex;align-items:center;justify-content:center;padding-bottom:22px;animation:navHint 1.6s ease-in-out 2}
+.present .pnav:active{background:rgba(255,255,255,.9)}
+@keyframes navHint{50%{opacity:.45}}
 .present .pnav.prev{left:8px}.present .pnav.next{right:8px}
-.present .stage{padding-left:60px;padding-right:60px}
-@media(max-width:699px){.present .pnav{display:none}.present .stage{padding-left:20px;padding-right:20px;justify-content:flex-start}.present .pcnt::before{content:'‹ ';opacity:.5}.present .pcnt::after{content:' ›';opacity:.5}}
+.present .stage{padding-left:104px;padding-right:104px}
+@media(max-width:699px){.present .pnav{width:46px;height:120px;font-size:84px;border-radius:20px;padding-bottom:12px;background:rgba(255,255,255,.6);top:calc(190px + env(safe-area-inset-top))}.present .pnav.prev{left:4px}.present .pnav.next{right:4px}.present .stage{padding-left:20px;padding-right:20px;justify-content:flex-start}}
+@keyframes flipNext{0%{transform:perspective(1800px) rotateY(75deg);opacity:.2;box-shadow:-40px 0 60px rgba(60,40,30,.25)}100%{transform:perspective(1800px) rotateY(0);opacity:1}}
+@keyframes flipPrev{0%{transform:perspective(1800px) rotateY(-75deg);opacity:.2;box-shadow:40px 0 60px rgba(60,40,30,.25)}100%{transform:perspective(1800px) rotateY(0);opacity:1}}
+.flip-next{animation:flipNext .55s cubic-bezier(.2,.7,.2,1);transform-origin:left center}
+.flip-prev{animation:flipPrev .55s cubic-bezier(.2,.7,.2,1);transform-origin:right center}
+@media(prefers-reduced-motion:reduce){.flip-next,.flip-prev{animation:none}}
 </style>
 </head>
 <body>
@@ -870,7 +877,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v66"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v67"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -1666,7 +1673,7 @@ function openPresent(idx, list) {
     while (st.scrollHeight > st.clientHeight + 1 && fs > min) { fs -= 1; pd.style.fontSize = fs + "px"; }
   };
   addEventListener("resize", fit);
-  const move = (d) => { idx = (idx + d + list.length) % list.length; p = list[idx]; draw(); el.querySelector(".stage").scrollTop = 0; };
+  const move = (d) => { idx = (idx + d + list.length) % list.length; p = list[idx]; draw(); const st = el.querySelector(".stage"); st.scrollTop = 0; st.classList.add(d > 0 ? "flip-next" : "flip-prev"); };
   const onKey = (e) => { if (e.key === "Escape") close(); if (e.key === "ArrowLeft") move(-1); if (e.key === "ArrowRight") move(1); };
   document.addEventListener("keydown", onKey);
   // 옆으로 민 경우만 넘김 (위아래 스크롤과 구분)

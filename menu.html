@@ -80,10 +80,17 @@ footer{margin-top:26px;text-align:center;color:var(--muted);font-size:12px}
   .card .more{display:none}
 }
 .d .cnt{font-size:14px;font-weight:700;color:var(--ink2)}
-.d .nav{position:fixed;top:50%;transform:translateY(-50%);width:44px;height:64px;border:0;border-radius:16px;background:rgba(255,255,255,.8);box-shadow:var(--lift);font-size:32px;line-height:1;color:var(--ink);z-index:3}
+.d .nav{position:fixed;top:50%;transform:translateY(-50%);width:84px;height:200px;border:0;border-radius:28px;background:rgba(255,255,255,.55);box-shadow:var(--lift);font-size:150px;font-weight:300;line-height:1;color:var(--ink);z-index:3;display:flex;align-items:center;justify-content:center;padding-bottom:22px;animation:navHint 1.6s ease-in-out 2}
+.d .nav:active{background:rgba(255,255,255,.9)}
+@keyframes navHint{50%{opacity:.45}}
 .d .nav.prev{left:8px}.d .nav.next{right:8px}
-@media(min-width:700px){.d .in{padding-left:64px;padding-right:64px}}
-@media(max-width:699px){.d .nav{display:none}.d .cnt::before{content:'‹ ';opacity:.5}.d .cnt::after{content:' ›';opacity:.5}}
+@media(min-width:700px){.d .in{padding-left:104px;padding-right:104px}}
+@media(max-width:699px){.d .nav{width:46px;height:120px;font-size:84px;border-radius:20px;padding-bottom:12px;background:rgba(255,255,255,.6);top:calc(190px + env(safe-area-inset-top))}.d .nav.prev{left:4px}.d .nav.next{right:4px}}
+@keyframes flipNext{0%{transform:perspective(1800px) rotateY(75deg);opacity:.2;box-shadow:-40px 0 60px rgba(60,40,30,.25)}100%{transform:perspective(1800px) rotateY(0);opacity:1}}
+@keyframes flipPrev{0%{transform:perspective(1800px) rotateY(-75deg);opacity:.2;box-shadow:40px 0 60px rgba(60,40,30,.25)}100%{transform:perspective(1800px) rotateY(0);opacity:1}}
+.flip-next{animation:flipNext .55s cubic-bezier(.2,.7,.2,1);transform-origin:left center}
+.flip-prev{animation:flipPrev .55s cubic-bezier(.2,.7,.2,1);transform-origin:right center}
+@media(prefers-reduced-motion:reduce){.flip-next,.flip-prev{animation:none}}
 </style>
 </head>
 <body>
@@ -210,7 +217,9 @@ function moveDetail(dlt) {
   const i = products.findIndex((p) => p.id === id); if (i < 0) return;
   const n = products[(i + dlt + products.length) % products.length];
   location.replace("#p-" + encodeURIComponent(n.id));
+  renderDetail();
   $("#detail").scrollTop = 0;
+  const b = $("#dbody"); b.classList.remove("flip-next", "flip-prev"); void b.offsetWidth; b.classList.add(dlt > 0 ? "flip-next" : "flip-prev");
 }
 $("#detail").addEventListener("click", (e) => { const m = e.target.closest("[data-mv]"); if (m) moveDetail(+m.dataset.mv); });
 addEventListener("keydown", (e) => { if ($("#detail").hidden) return; if (e.key === "ArrowLeft") moveDetail(-1); if (e.key === "ArrowRight") moveDetail(1); });
