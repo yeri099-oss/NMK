@@ -79,6 +79,11 @@ footer{margin-top:26px;text-align:center;color:var(--muted);font-size:12px}
   .card .pr{font-size:15px;margin-top:4px}
   .card .more{display:none}
 }
+.d .cnt{font-size:14px;font-weight:700;color:var(--ink2)}
+.d .nav{position:fixed;top:50%;transform:translateY(-50%);width:44px;height:64px;border:0;border-radius:16px;background:rgba(255,255,255,.8);box-shadow:var(--lift);font-size:32px;line-height:1;color:var(--ink);z-index:3}
+.d .nav.prev{left:8px}.d .nav.next{right:8px}
+@media(min-width:700px){.d .in{padding-left:64px;padding-right:64px}}
+@media(max-width:699px){.d .nav{display:none}.d .cnt::before{content:'‹ ';opacity:.5}.d .cnt::after{content:' ›';opacity:.5}}
 </style>
 </head>
 <body>
@@ -97,8 +102,9 @@ footer{margin-top:26px;text-align:center;color:var(--muted);font-size:12px}
 </div>
 
 <section class="d" id="detail" hidden>
-  <div class="bar"><button class="back" id="back" type="button"></button><span class="sp"></span><div class="lang" id="lang2"><button data-l="ko">한국어</button><button data-l="en">English</button></div></div>
+  <div class="bar"><button class="back" id="back" type="button"></button><span class="sp"></span><span class="cnt" id="cnt"></span><span class="sp"></span><div class="lang" id="lang2"><button data-l="ko">한국어</button><button data-l="en">English</button></div></div>
   <div class="in" id="dbody"></div>
+  <button class="nav prev" data-mv="-1" type="button" aria-label="이전 상품">‹</button><button class="nav next" data-mv="1" type="button" aria-label="다음 상품">›</button>
 </section>
 
 <script type="module">
@@ -166,6 +172,7 @@ function renderDetail() {
   countView(p.id);
   d.className = "d " + tintOf(p.nameKo);
   $("#back").textContent = T[lang].back;
+  $("#cnt").textContent = `${i + 1} / ${products.length}`;
   $("#dbody").innerHTML = `
     <div class="dph">${visual(p)}</div>
     <div><h2>${esc(name(p))}</h2>${sub(p) ? `<div class="en">${esc(sub(p))}</div>` : ""}
@@ -197,6 +204,23 @@ document.addEventListener("click", (e) => {
   if (e.target.closest("#back")) { if (fromList) { fromList = false; history.back(); } else location.hash = ""; }
 });
 addEventListener("hashchange", renderDetail);
+// 상세 화면: 좌우로 밀거나 ‹ › 로 이전·다음 상품 (뒤로가기는 목록으로)
+function moveDetail(dlt) {
+  const id = decodeURIComponent((location.hash.match(/^#p-(.+)$/) || [])[1] || "");
+  const i = products.findIndex((p) => p.id === id); if (i < 0) return;
+  const n = products[(i + dlt + products.length) % products.length];
+  location.replace("#p-" + encodeURIComponent(n.id));
+  $("#detail").scrollTop = 0;
+}
+$("#detail").addEventListener("click", (e) => { const m = e.target.closest("[data-mv]"); if (m) moveDetail(+m.dataset.mv); });
+addEventListener("keydown", (e) => { if ($("#detail").hidden) return; if (e.key === "ArrowLeft") moveDetail(-1); if (e.key === "ArrowRight") moveDetail(1); });
+let sx = null, sy = 0;
+$("#detail").addEventListener("touchstart", (e) => { if (e.touches.length === 1) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; } else sx = null; }, { passive: true });
+$("#detail").addEventListener("touchend", (e) => {
+  if (sx === null) return;
+  const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy; sx = null;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) moveDetail(dx < 0 ? 1 : -1);
+});
 render();
 </script>
 </body>
