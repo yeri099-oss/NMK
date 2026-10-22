@@ -604,6 +604,16 @@ nav.tabs button.center.on i{background:var(--ink)}
 .acctbox .aholder{font-size:17px;color:var(--ink2);font-weight:600}
 .acctbox .abtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
 @media(max-width:699px){#view-info .toolbar{display:grid;grid-template-columns:1fr 1fr;gap:8px}#view-info .toolbar .lang{grid-column:1/-1;justify-self:start}#view-info .toolbar .acctbtn,#view-info .toolbar .qrbtn{margin-left:0;font-size:14px;padding:11px 6px}}
+/* 계좌이체 결제 */
+#payType button.on[data-v="transfer"]{background:var(--t3d);color:#fff}
+.tag.transfer{background:var(--t3);color:var(--brand-d)}
+.tiles.pay{grid-template-columns:repeat(4,minmax(0,1fr))}
+.tile.c-transfer{background:var(--t3);color:var(--ink)}
+.tile.c-transfer .k,.tile.c-transfer .s{color:var(--ink2)}
+.tile.c-transfer::before{content:"";position:absolute;width:150px;height:150px;border-radius:99px;right:-40px;bottom:-90px;background:rgba(255,255,255,.55)}
+.transferline{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--t3);border-radius:16px;padding:10px 12px;font-size:14px;flex-wrap:wrap}
+.transferline b{font-size:16px}
+@media(max-width:699px){.tiles.pay{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 <body>
@@ -685,8 +695,11 @@ nav.tabs button.center.on i{background:var(--ink)}
               <button data-v="card">카드</button>
               <button data-v="cash">현금</button>
               <button data-v="zeropay">QR</button>
+              <button data-v="transfer">계좌이체</button>
             </div>
           </div>
+
+          <div id="transferBox" class="hidden transferline"><span>기업은행 <b class="num">024-097321-04-031</b> 꽃밥이야기</span><button class="btn sm" id="transferShow" type="button">크게 보기</button></div>
 
           <div id="cashBox" class="hidden">
             <div class="grp-title">받은 현금</div>
@@ -814,7 +827,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v60"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v61"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -823,7 +836,7 @@ const FESTA_DAYS = [
   { key: "2026-10-24", label: "10.24 (토)" },
 ];
 const COL = { users: "festaApp_users", products: "festaApp_products", sales: "festaApp_sales", meta: "festaApp_meta", stats: "festaApp_stats" };
-const PAY = { card: "카드", cash: "현금", zeropay: "QR" }; // zeropay 키는 기존 데이터 호환용 (화면 표시는 QR)
+const PAY = { card: "카드", cash: "현금", zeropay: "QR", transfer: "계좌이체" }; // zeropay 키는 기존 데이터 호환용 (화면 표시는 QR)
 const NATION = { KR: "한국인", FG: "외국인" };
 const GENDER = { F: "여", M: "남" };
 const SEED_PRODUCTS = [
@@ -1319,6 +1332,7 @@ function renderCheckout() {
   $$("[data-cust]").forEach((b) => b.classList.toggle("on", st[b.dataset.cust] === b.dataset.val));
   $("#cashBox").classList.toggle("hidden", st.pay !== "cash");
   $("#changeBox").classList.toggle("hidden", st.pay !== "cash");
+  $("#transferBox").classList.toggle("hidden", st.pay !== "transfer");
   const box = $("#changeBox");
   if (c.change === null) { $("#changeLabel").textContent = "거스름돈"; $("#changeVal").textContent = "-"; box.classList.remove("short"); }
   else if (c.change >= 0) { $("#changeLabel").textContent = "거스름돈"; $("#changeVal").textContent = won(c.change); box.classList.remove("short"); }
@@ -1378,7 +1392,7 @@ $("#resetBtn").onclick = resetPos;
 $("#sellBtn").onclick = async () => {
   const c = calc();
   if (!c.items.length) { toast("상품을 먼저 선택해 주세요.", "err"); return; }
-  if (!st.pay) { toast("결제 방식(카드/현금/QR)을 선택해 주세요.", "err"); scrollToEl($("#payType"), 200); return; }
+  if (!st.pay) { toast("결제 방식(카드/현금/QR/계좌이체)을 선택해 주세요.", "err"); scrollToEl($("#payType"), 200); return; }
   if (st.pay === "cash" && st.cash && st.cash < c.total) { toast(`받은 현금이 ${won(c.total - st.cash)} 부족해요.`, "err"); return; }
   const memo = $("#memo").value.trim();
   // 확인 창도 판매 화면과 같은 순서: 고객 → 결제 방식 → 받은 현금 → 상품 합계·할인 → 결제 금액 → 거스름돈 → 비고
@@ -1441,7 +1455,7 @@ $("#infoLang").addEventListener("click", (e) => {
 // 고객이 휴대폰으로 찍어 상품 설명을 보는 QR (menu.html)
 // 계좌이체 안내 (고객에게 화면을 보여주거나 번호 복사)
 const BANK = { bank: "기업은행", number: "024-097321-04-031", holder: "꽃밥이야기" };
-$("#acctShow").onclick = () => {
+$("#acctShow").onclick = $("#transferShow").onclick = () => {
   const el = document.createElement("div");
   el.className = "qrfull";
   el.innerHTML = `<div class="qrbox acctbox"><div class="qrt">계좌이체 안내 <span>Bank Transfer</span></div>
@@ -1625,7 +1639,7 @@ function renderDash() {
       <div class="tile c-sage"><div class="k">객단가</div><div class="v num">${won(avg)}</div></div>
     </div>
     <div class="tiles pay">
-      ${[["card", "카드 매출", "c-card", ""], ["cash", "현금 매출", "c-coral", " · 시재 확인용"], ["zeropay", "QR 매출", "c-qr", ""]].map(([k, label, cls, note]) => {
+      ${[["card", "카드 매출", "c-card", ""], ["cash", "현금 매출", "c-coral", " · 시재 확인용"], ["zeropay", "QR 매출", "c-qr", ""], ["transfer", "계좌이체 매출", "c-transfer", ""]].map(([k, label, cls, note]) => {
         const v = r.byPay[k] || { count: 0, amount: 0 };
         return `<div class="tile ${cls}"><div class="k">${label}</div><div class="v num">${won(v.amount)}</div><div class="s num">${fmt(v.count)}건${note}</div></div>`;
       }).join("")}
