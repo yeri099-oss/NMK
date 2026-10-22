@@ -645,6 +645,11 @@ nav.tabs button.center.on i{background:var(--ink)}
 .tag.service{background:var(--t2);color:var(--mauve-d)}
 /* 버튼을 빨리 두 번 눌러도 화면이 확대되지 않게 */
 html,body,button,a,input,select,textarea,.prow,.chip,.btn{touch-action:manipulation}
+.present .pcnt{font-size:14px;color:var(--ink2);font-weight:700}
+.present .pnav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:64px;border:0;border-radius:16px;background:rgba(255,255,255,.75);box-shadow:var(--lift);font-size:32px;line-height:1;color:var(--ink);z-index:3}
+.present .pnav.prev{left:8px}.present .pnav.next{right:8px}
+.present .stage{padding-left:60px;padding-right:60px}
+@media(max-width:699px){.present .pnav{display:none}.present .stage{padding-left:20px;padding-right:20px;justify-content:flex-start}.present .pcnt::before{content:'‹ ';opacity:.5}.present .pcnt::after{content:' ›';opacity:.5}}
 </style>
 </head>
 <body>
@@ -865,7 +870,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v65"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v66"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -1621,11 +1626,13 @@ $("#qrShow").onclick = () => {
   document.body.appendChild(el);
 };
 $("#infoGrid").addEventListener("click", (e) => {
-  const c = e.target.closest(".icard"); if (c) openPresent(sellable()[+c.dataset.i]);
+  const c = e.target.closest(".icard"); if (c) openPresent(+c.dataset.i, sellable());
 });
 
-function openPresent(p) {
-  if (!p) return;
+// 상품 상세: 좌우로 밀거나 ‹ › 버튼으로 이전·다음 상품
+function openPresent(idx, list) {
+  if (!list || !list[idx]) return;
+  let p = list[idx];
   const el = document.createElement("div");
   el.className = "present";
   document.body.appendChild(el);
@@ -1635,7 +1642,7 @@ function openPresent(p) {
     el.innerHTML = `
       <div class="bar">
         <div class="lang"><button data-l="ko" class="${infoLang === "ko" ? "on" : ""}">한국어</button><button data-l="en" class="${infoLang === "en" ? "on" : ""}">English</button></div>
-        <span class="sp"></span>
+        <span class="sp"></span><span class="pcnt num">${idx + 1} / ${list.length}</span><span class="sp"></span>
         <button class="x" data-close aria-label="닫기">✕</button>
       </div>
       <div class="stage">
@@ -1646,7 +1653,8 @@ function openPresent(p) {
           <div class="pp num">${pPrice(p, infoLang)}</div>
           <div class="pd">${esc(pDesc(p, infoLang))}</div>
         </div>
-      </div>`;
+      </div>
+      <button class="pnav prev" data-mv="-1" aria-label="이전 상품">‹</button><button class="pnav next" data-mv="1" aria-label="다음 상품">›</button>`;
     fit();
   };
   // 설명이 길어도 스크롤 없이 한 화면에 보이도록 설명 글씨 크기를 줄여 맞춤
@@ -1658,10 +1666,20 @@ function openPresent(p) {
     while (st.scrollHeight > st.clientHeight + 1 && fs > min) { fs -= 1; pd.style.fontSize = fs + "px"; }
   };
   addEventListener("resize", fit);
-  const onKey = (e) => { if (e.key === "Escape") close(); };
+  const move = (d) => { idx = (idx + d + list.length) % list.length; p = list[idx]; draw(); el.querySelector(".stage").scrollTop = 0; };
+  const onKey = (e) => { if (e.key === "Escape") close(); if (e.key === "ArrowLeft") move(-1); if (e.key === "ArrowRight") move(1); };
   document.addEventListener("keydown", onKey);
+  // 옆으로 민 경우만 넘김 (위아래 스크롤과 구분)
+  let sx = null, sy = 0;
+  el.addEventListener("touchstart", (e) => { if (e.touches.length === 1) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; } else sx = null; }, { passive: true });
+  el.addEventListener("touchend", (e) => {
+    if (sx === null) return;
+    const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy; sx = null;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) move(dx < 0 ? 1 : -1);
+  });
   el.addEventListener("click", (e) => {
     if (e.target.closest("[data-close]")) return close();
+    const m = e.target.closest("[data-mv]"); if (m) return move(+m.dataset.mv);
     const l = e.target.closest("[data-l]");
     if (l) { infoLang = l.dataset.l; lsSet("festaLang", infoLang); renderInfo(); draw(); }
   });
