@@ -614,6 +614,27 @@ nav.tabs button.center.on i{background:var(--ink)}
 .transferline{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--t3);border-radius:16px;padding:10px 12px;font-size:14px;flex-wrap:wrap}
 .transferline b{font-size:16px}
 @media(max-width:699px){.tiles.pay{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* 판매 / 뽑기 경품 전환 */
+.modeseg{display:inline-flex;background:var(--soft);border-radius:18px;padding:5px;gap:2px;margin-bottom:12px;box-shadow:inset 0 2px 5px rgba(60,40,30,.07)}
+.modeseg button{border:0;background:none;padding:9px 20px;border-radius:13px;font-weight:800;font-size:15px;color:var(--muted)}
+.modeseg button.on{background:var(--surface);color:var(--ink);box-shadow:var(--lift)}
+.prizegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+@media(max-width:699px){.prizegrid{grid-template-columns:1fr 1fr;gap:8px}}
+.prize{background:var(--surface);border-radius:22px;box-shadow:var(--lift);padding:14px;display:flex;flex-direction:column;gap:6px}
+.prize.out{opacity:.6}
+.prize .ptop{display:flex;align-items:center;gap:6px}
+.prize .rank{font-weight:800;font-size:13px;border-radius:99px;padding:3px 10px;background:var(--t5)}
+.prize .rank.r1{background:var(--t0)}.prize .rank.r2{background:var(--t3)}.prize .rank.r3{background:var(--t1)}.prize .rank.r4{background:var(--t2)}
+.prize .pnote{font-size:11px;color:var(--muted)}
+.prize .pnm{font-weight:700;font-size:16px;line-height:1.3;min-height:2.6em}
+.prize .pcount{font-size:14px}.prize .pcount b{font-size:24px;font-weight:800}
+.prize .pbar{height:8px;background:var(--soft);border-radius:99px;overflow:hidden}.prize .pbar div{height:100%;background:var(--t3d);border-radius:99px}
+.prize .pleft{font-size:13px;color:var(--ink2)}
+.prize .pbtns{display:grid;grid-template-columns:52px 1fr;gap:6px;margin-top:4px}
+.prize .pbtns .btn{padding:12px 6px;font-size:16px}
+.prizelog{margin-top:14px}
+@media(max-width:699px){.prize{padding:12px 10px}.prize .pnm{font-size:14px}.prize .pcount b{font-size:20px}}
+.couponsum{background:var(--t3);border-radius:16px;padding:10px 14px;margin-bottom:12px;font-size:14px;font-weight:600}.couponsum b{font-size:20px;margin:0 2px}
 </style>
 </head>
 <body>
@@ -664,7 +685,13 @@ nav.tabs button.center.on i{background:var(--ink)}
   <main>
     <!-- 판매 -->
     <section class="view on" id="view-pos">
-      <div class="pos">
+      <div class="modeseg" id="posMode"><button data-m="sale" class="on" type="button">판매</button><button data-m="prize" type="button">뽑기 경품</button></div>
+      <div id="prizeView" class="hidden">
+        <div class="couponsum" id="couponSum"></div>
+        <div class="prizegrid" id="prizeGrid"></div>
+        <div class="card prizelog"><div class="grp-title">최근 지급 기록 <span class="muted small">(잘못 누르면 −로 취소)</span></div><div id="prizeLog"></div></div>
+      </div>
+      <div class="pos" id="saleView">
         <div class="pcol">
           <div class="plist" id="posGrid"></div>
           <div class="card" id="cartCard">
@@ -827,7 +854,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v61"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v62"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -835,7 +862,7 @@ const FESTA_DAYS = [
   { key: "2026-10-23", label: "10.23 (금)" },
   { key: "2026-10-24", label: "10.24 (토)" },
 ];
-const COL = { users: "festaApp_users", products: "festaApp_products", sales: "festaApp_sales", meta: "festaApp_meta", stats: "festaApp_stats" };
+const COL = { prizes: "festaApp_prizes", users: "festaApp_users", products: "festaApp_products", sales: "festaApp_sales", meta: "festaApp_meta", stats: "festaApp_stats" };
 const PAY = { card: "카드", cash: "현금", zeropay: "QR", transfer: "계좌이체" }; // zeropay 키는 기존 데이터 호환용 (화면 표시는 QR)
 const NATION = { KR: "한국인", FG: "외국인" };
 const GENDER = { F: "여", M: "남" };
@@ -919,6 +946,17 @@ let creatorAuth = null; // 관리자가 다른 계정을 만들 때 쓰는 보�
 let me = null;            // { uid, username, name, role }
 let products = [];
 let sales = [];
+let prizeLogs = []; // 뽑기판 경품 지급 기록 [{ id, prize, ts, day, sellerName, sellerUid }]
+// 뽑기판 경품 (총 수량 = 준비 수량)
+const PRIZES = [
+  { key: "p1", rank: "1등", name: "꽃밥에피다 인사동점 10만원 이용권", total: 2 },
+  { key: "p2", rank: "2등", name: "꽃밥에피다 인사동점 10% 할인권", total: 10 },
+  { key: "p3", rank: "3등", name: "이태리타올 + 5% 할인권", total: 50, coupon: true },
+  { key: "p4a", rank: "4등", name: "스티커 + 5% 할인권", total: 320, coupon: true },
+  { key: "p4b", rank: "4등", name: "5% 할인권", total: 118, note: "스티커 소진 후", coupon: true },
+];
+// 3등·4등은 모두 5% 할인권이 함께 나감 → 5% 할인권 지급 수 = 3등 + 4등 합계
+const couponCount = (c) => PRIZES.filter((z) => z.coupon).reduce((a, z) => a + (c[z.key] || 0), 0);
 let menuStats = {}; // 고객용 상품 소개 페이지 접속 수 { "2026-10-23": { visits, lang_ko, lang_en, view_<상품id> } }
 let users = [];
 let unsubs = [];
@@ -1131,6 +1169,11 @@ function startApp() {
     applyProductUpdates();
   }, (e) => { console.error(e); toast("상품을 불러오지 못했어요: " + e.code, "err", 4000); }));
 
+  unsubs.push(onSnapshot(collection(db, COL.prizes), { includeMetadataChanges: true }, (qs) => {
+    prizeLogs = qs.docs.map((d) => ({ id: d.id, ...d.data(), _pending: d.metadata.hasPendingWrites })).sort((a, b) => b.ts - a.ts);
+    renderPrizes(); renderDash();
+  }, (e) => { console.error(e); if (e.code === "permission-denied") $("#prizeGrid").innerHTML = `<div class="empty">경품 기록을 쓰려면 파이어베이스 규칙을 새로 게시해 주세요.</div>`; }));
+
   unsubs.push(onSnapshot(collection(db, COL.stats), (qs) => {
     menuStats = {};
     qs.docs.forEach((d) => { if (d.id.startsWith("menu-")) menuStats[d.id.slice(5)] = d.data(); });
@@ -1341,10 +1384,64 @@ function renderCheckout() {
   updateMobibar();
 }
 function updateMobibar() {
-  const on = $("#view-pos").classList.contains("on") && !$("#appView").classList.contains("hidden");
+  const on = $("#view-pos").classList.contains("on") && !$("#appView").classList.contains("hidden") && posMode === "sale";
   $("#mobibar").classList.toggle("hidden", !on);
   document.body.classList.toggle("has-mobibar", on);
 }
+// ================= 뽑기 경품 =================
+let posMode = "sale";
+$("#posMode").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-m]"); if (!b) return;
+  posMode = b.dataset.m;
+  $$("#posMode button").forEach((x) => x.classList.toggle("on", x === b));
+  $("#saleView").classList.toggle("hidden", posMode !== "sale");
+  $("#prizeView").classList.toggle("hidden", posMode !== "prize");
+  updateMobibar(); renderPrizes();
+});
+function prizeCounts(list = prizeLogs) {
+  const c = {}; for (const l of list) c[l.prize] = (c[l.prize] || 0) + 1; return c;
+}
+function renderPrizes() {
+  if (!me || posMode !== "prize") return;
+  const all = prizeCounts(), today = prizeCounts(prizeLogs.filter((l) => l.day === dayKey(Date.now())));
+  $("#couponSum").innerHTML = `5% 할인권 지급 (3등·4등 합계) <b class="num">${fmt(couponCount(all))}</b>장 <span class="muted small">· 오늘 ${fmt(couponCount(today))}</span>`;
+  $("#prizeGrid").innerHTML = PRIZES.map((z) => {
+    const n = all[z.key] || 0, left = z.total - n, pct = Math.min(100, Math.round(n / z.total * 100));
+    return `<div class="prize ${left <= 0 ? "out" : ""}" data-k="${z.key}">
+      <div class="ptop"><span class="rank r${z.rank[0]}">${z.rank}</span>${z.note ? `<span class="pnote">${z.note}</span>` : ""}</div>
+      <div class="pnm">${esc(z.name)}</div>
+      <div class="pcount num"><b>${fmt(n)}</b> / ${fmt(z.total)}개 <span class="muted small">· 오늘 ${fmt(today[z.key] || 0)}</span></div>
+      <div class="pbar"><div style="width:${pct}%"></div></div>
+      <div class="pleft num">${left > 0 ? `남은 수량 <b>${fmt(left)}</b>개` : `<b>소진</b>${z.key === "p4a" ? " → 5% 할인권으로" : ""}`}</div>
+      <div class="pbtns"><button class="btn" data-act="undo" type="button" aria-label="취소">−</button><button class="btn primary" data-act="give" type="button">+1 지급</button></div>
+    </div>`;
+  }).join("");
+  const name = (k) => { const z = PRIZES.find((x) => x.key === k); return z ? `${z.rank} ${z.name}` : k; };
+  $("#prizeLog").innerHTML = prizeLogs.length ? `<table class="itbl"><tbody>${prizeLogs.slice(0, 12).map((l) =>
+    `<tr><td class="num">${dayLabel(l.day)} ${timeStr(l.ts)}</td><td>${esc(name(l.prize))}${l._pending ? ` <span class="pending">업로드 대기</span>` : ""}</td><td class="r small muted">${esc(l.sellerName || "")}</td></tr>`).join("")}</tbody></table>`
+    : `<div class="muted small" style="padding:6px 0">아직 지급 기록이 없어요</div>`;
+}
+$("#prizeGrid").addEventListener("click", async (e) => {
+  const b = e.target.closest("[data-act]"); if (!b) return;
+  const z = PRIZES.find((x) => x.key === b.closest(".prize").dataset.k);
+  const n = prizeCounts()[z.key] || 0;
+  if (b.dataset.act === "give") {
+    if (n >= z.total && !(await confirmBox("수량 초과", `${z.rank} ${esc(z.name)}은(는) 준비한 ${z.total}개를 모두 지급했어요.<br>그래도 기록할까요?`, "기록"))) return;
+    const now = Date.now();
+    // 오프라인이어도 바로 기록되고, 연결되면 자동 업로드
+    setDoc(doc(collection(db, COL.prizes)), { prize: z.key, ts: now, day: dayKey(now), sellerUid: me.uid, sellerName: me.name, createdAt: serverTimestamp() })
+      .catch((er) => toast("경품 기록 실패: " + er.code, "err", 5000));
+    toast(`${z.rank} ${z.name} 지급 (${n + 1}/${z.total})`, "ok");
+  } else {
+    // 이 경품의 가장 최근 기록 1건 취소 (관리자 또는 본인 기록)
+    const last = prizeLogs.find((l) => l.prize === z.key && (isAdmin() || l.sellerUid === me.uid));
+    if (!last) { toast("취소할 기록이 없어요", "err"); return; }
+    if (!(await confirmBox("지급 취소", `${timeStr(last.ts)} ${z.rank} ${esc(z.name)} 기록 1건을 취소할까요?`, "취소하기", true))) return;
+    deleteDoc(doc(db, COL.prizes, last.id)).catch((er) => toast("취소 실패: " + er.code, "err", 5000));
+    toast("1건 취소했어요");
+  }
+});
+
 // 화면 위치로 스크롤 (아이폰 사파리에서도 확실히 움직이도록 직접 계산)
 function scrollToEl(el, offset = 120) {
   const y = el.getBoundingClientRect().top + window.scrollY - offset;
@@ -1582,6 +1679,12 @@ function breakdownTable(title, map, labels, total) {
     </tbody></table></div>`;
 }
 
+// 뽑기 경품 지급 현황 (날짜 선택 반영, 남은 수량은 전체 기준)
+function prizeTile() {
+  const c = prizeCounts(filterDay(prizeLogs, dashDay)), all = prizeCounts();
+  return `<div class="tile qrstat"><div class="qrhead"><div class="k">뽑기 경품 지급</div><div class="v num">${fmt(Object.values(c).reduce((a, b) => a + b, 0))}개</div><div class="s num">5% 할인권 ${fmt(couponCount(c))}장</div></div>
+    <div class="qrviews">${PRIZES.map((z) => `<span class="num"><b>${z.rank} ${esc(z.name.replace("꽃밥에피다 ", ""))}</b> ${fmt(c[z.key] || 0)} · 남음 ${fmt(Math.max(0, z.total - (all[z.key] || 0)))}</span>`).join("")}</div></div>`;
+}
 // 고객용 QR 상품 소개 접속 수 (날짜 선택에 맞춰 합산)
 function qrTile(prodRows) {
   const festaKeys = FESTA_DAYS.map((d) => d.key);
@@ -1649,6 +1752,7 @@ function renderDash() {
         <div class="ring" style="--p:${pct}"><span class="num">${pct}%</span></div>
         <div class="k">${esc(x.name)}</div><div class="v num">${fmt(x.qty)}개</div><div class="s num">${won(x.amount)}</div></div>`; }).join("")}
     </div>
+    ${prizeTile()}
     ${qrTile(prodRows)}
     ${dashDay === "all" && otherCnt ? `<div class="note">⚠️ 행사일(10/23·24) 외 판매 ${otherCnt}건이 전체 합계에 포함돼 있어요. 연습 데이터라면 [관리] 탭에서 정리할 수 있어요.</div>` : ""}
     <div class="dgrid">

@@ -352,6 +352,12 @@ service cloud.firestore {
         && request.resource.data.diff(resource.data).affectedKeys().size() <= 2;
       allow delete: if festaAdmin();
     }
+    // 뽑기판 경품 지급 기록: 직원 누구나 보기·기록(본인 이름으로), 취소는 관리자 또는 본인 기록
+    match /festaApp_prizes/{docId} {
+      allow read: if festaActive();
+      allow create: if festaActive() && request.resource.data.sellerUid == request.auth.uid;
+      allow delete: if festaAdmin() || (festaActive() && resource.data.sellerUid == request.auth.uid);
+    }
     // 앱 설정(초기 상품 등록 여부 등)
     match /festaApp_meta/{docId} {
       allow read: if festaActive();
