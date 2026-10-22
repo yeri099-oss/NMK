@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#fcfbf9">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -643,6 +643,8 @@ nav.tabs button.center.on i{background:var(--ink)}
 .svcmode #payType{opacity:.35;pointer-events:none}
 .svcmode #discToggle,.svcmode #discBox,.svcmode #discLine{display:none!important}
 .tag.service{background:var(--t2);color:var(--mauve-d)}
+/* 버튼을 빨리 두 번 눌러도 화면이 확대되지 않게 */
+html,body,button,a,input,select,textarea,.prow,.chip,.btn{touch-action:manipulation}
 </style>
 </head>
 <body>
@@ -863,7 +865,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v64"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v65"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -1405,6 +1407,18 @@ function updateMobibar() {
   $("#mobibar").classList.toggle("hidden", !on);
   document.body.classList.toggle("has-mobibar", on);
 }
+// 아이폰·아이패드 Safari: 빠르게 두 번 누를 때 확대되는 것 막기 (입력칸은 그대로)
+let lastTouchEnd = 0;
+document.addEventListener("touchend", (e) => {
+  const now = Date.now();
+  if (now - lastTouchEnd < 350 && !e.target.closest("input, textarea, select")) {
+    e.preventDefault();
+    const b = e.target.closest("button"); if (b) b.click(); // 두 번째 터치도 버튼 누름으로 처리
+  }
+  lastTouchEnd = now;
+}, { passive: false });
+document.addEventListener("dblclick", (e) => e.preventDefault(), { passive: false });
+
 // 서비스 버튼: 누르면 0원 서비스로 등록 (결제 방식 필요 없음)
 $("#svcToggle").onclick = () => { st.service = !st.service; if (!st.service) st.why = null; renderCheckout(); };
 $("#svcWhy").addEventListener("click", (e) => { const b = e.target.closest("[data-why]"); if (!b) return; st.why = st.why === b.dataset.why ? null : b.dataset.why; renderCheckout(); });
