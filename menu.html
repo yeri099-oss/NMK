@@ -139,8 +139,8 @@ function tintOf(name) {
   if (/쥬스|주스|레몬/.test(n)) return "t3";
   if (/부각/.test(n)) return "t1";
   if (/1년장/.test(n)) return "t4";
+  if (/신문지|쇼핑백|박스|포장/.test(n)) return "t5";
   if (/간장/.test(n)) return "t2";
-  if (/신문지|쇼핑백/.test(n)) return "t5";
   return "t0";
 }
 function renderList() {
