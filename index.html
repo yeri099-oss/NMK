@@ -657,6 +657,14 @@ html,body,button,a,input,select,textarea,.prow,.chip,.btn{touch-action:manipulat
 .flip-next{animation:flipNext .55s cubic-bezier(.2,.7,.2,1);transform-origin:left center}
 .flip-prev{animation:flipPrev .55s cubic-bezier(.2,.7,.2,1);transform-origin:right center}
 @media(prefers-reduced-motion:reduce){.flip-next,.flip-prev{animation:none}}
+.present .zoom{display:flex;gap:6px;margin-right:8px}
+.present .zoom button{border:0;background:var(--surface);box-shadow:var(--lift);border-radius:14px;height:42px;min-width:54px;font-size:18px;font-weight:800;color:var(--ink);padding:0 10px}
+.present .zoom button small{font-size:14px;margin-left:1px}
+.present .zoom button[data-z="1"]{font-size:22px}
+@media(max-width:699px){.present .zoom button{min-width:46px;height:38px;font-size:15px}.present .zoom button[data-z="1"]{font-size:19px}.present .pcnt{display:none}}
+/* 글씨를 키웠을 때는 위에서부터 보이고 스크롤 (가운데 정렬 시 위가 잘리는 것 방지) */
+.present .stage.zoomed{justify-content:flex-start;align-items:center}
+@media(orientation:landscape) and (min-width:700px){.present .stage.zoomed{align-items:flex-start}.present .stage.zoomed .pimg{position:sticky;top:0}}
 </style>
 </head>
 <body>
@@ -877,7 +885,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v67"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v68"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -1636,6 +1644,9 @@ $("#infoGrid").addEventListener("click", (e) => {
   const c = e.target.closest(".icard"); if (c) openPresent(+c.dataset.i, sellable());
 });
 
+// 상품 상세 글씨 크기 단계 (0 = 화면에 맞춤)
+const ZOOMS = [1, 1.2, 1.4, 1.65, 1.9];
+let zoomLv = Math.min(ZOOMS.length - 1, Math.max(0, parseInt(lsGet("festaZoom") || "0", 10) || 0));
 // 상품 상세: 좌우로 밀거나 ‹ › 버튼으로 이전·다음 상품
 function openPresent(idx, list) {
   if (!list || !list[idx]) return;
@@ -1650,6 +1661,7 @@ function openPresent(idx, list) {
       <div class="bar">
         <div class="lang"><button data-l="ko" class="${infoLang === "ko" ? "on" : ""}">한국어</button><button data-l="en" class="${infoLang === "en" ? "on" : ""}">English</button></div>
         <span class="sp"></span><span class="pcnt num">${idx + 1} / ${list.length}</span><span class="sp"></span>
+        <div class="zoom"><button data-z="-1" aria-label="글씨 작게">가<small>−</small></button><button data-z="1" aria-label="글씨 크게">가<small>+</small></button></div>
         <button class="x" data-close aria-label="닫기">✕</button>
       </div>
       <div class="stage">
@@ -1668,6 +1680,9 @@ function openPresent(idx, list) {
   const fit = () => {
     const st = el.querySelector(".stage"), pd = el.querySelector(".pd");
     if (!st || !pd) return;
+    // 글씨 크게(가+)를 누르면 줄이지 않고 그 크기로 보여줌 (길면 스크롤)
+    st.classList.toggle("zoomed", zoomLv > 0);
+    if (zoomLv > 0) { pd.style.fontSize = Math.round(23 * ZOOMS[zoomLv]) + "px"; return; }
     let fs = 23; pd.style.fontSize = fs + "px";
     const min = innerWidth < 700 ? 17 : 15;
     while (st.scrollHeight > st.clientHeight + 1 && fs > min) { fs -= 1; pd.style.fontSize = fs + "px"; }
@@ -1687,6 +1702,8 @@ function openPresent(idx, list) {
   el.addEventListener("click", (e) => {
     if (e.target.closest("[data-close]")) return close();
     const m = e.target.closest("[data-mv]"); if (m) return move(+m.dataset.mv);
+    const z = e.target.closest("[data-z]");
+    if (z) { zoomLv = Math.max(0, Math.min(ZOOMS.length - 1, zoomLv + +z.dataset.z)); lsSet("festaZoom", String(zoomLv)); fit(); return; }
     const l = e.target.closest("[data-l]");
     if (l) { infoLang = l.dataset.l; lsSet("festaLang", infoLang); renderInfo(); draw(); }
   });

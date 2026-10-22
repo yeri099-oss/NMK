@@ -91,6 +91,12 @@ footer{margin-top:26px;text-align:center;color:var(--muted);font-size:12px}
 .flip-next{animation:flipNext .55s cubic-bezier(.2,.7,.2,1);transform-origin:left center}
 .flip-prev{animation:flipPrev .55s cubic-bezier(.2,.7,.2,1);transform-origin:right center}
 @media(prefers-reduced-motion:reduce){.flip-next,.flip-prev{animation:none}}
+.d .desc{font-size:calc(18px * var(--dz, 1))}
+.d .zoom{display:flex;gap:6px}
+.d .zoom button{border:0;background:var(--surface);box-shadow:var(--lift);border-radius:14px;height:40px;min-width:50px;font-size:16px;font-weight:800;color:var(--ink);padding:0 8px}
+.d .zoom button small{font-size:13px;margin-left:1px}
+.d .zoom button[data-z="1"]{font-size:20px}
+@media(max-width:699px){.d .cnt{display:none}.d .bar .lang button{padding:8px 10px}}
 </style>
 </head>
 <body>
@@ -109,7 +115,7 @@ footer{margin-top:26px;text-align:center;color:var(--muted);font-size:12px}
 </div>
 
 <section class="d" id="detail" hidden>
-  <div class="bar"><button class="back" id="back" type="button"></button><span class="sp"></span><span class="cnt" id="cnt"></span><span class="sp"></span><div class="lang" id="lang2"><button data-l="ko">한국어</button><button data-l="en">English</button></div></div>
+  <div class="bar"><button class="back" id="back" type="button"></button><span class="sp"></span><span class="cnt" id="cnt"></span><span class="sp"></span><div class="zoom"><button data-z="-1" type="button" aria-label="글씨 작게">가<small>−</small></button><button data-z="1" type="button" aria-label="글씨 크게">가<small>+</small></button></div><div class="lang" id="lang2"><button data-l="ko">한국어</button><button data-l="en">English</button></div></div>
   <div class="in" id="dbody"></div>
   <button class="nav prev" data-mv="-1" type="button" aria-label="이전 상품">‹</button><button class="nav next" data-mv="1" type="button" aria-label="다음 상품">›</button>
 </section>
@@ -221,7 +227,15 @@ function moveDetail(dlt) {
   $("#detail").scrollTop = 0;
   const b = $("#dbody"); b.classList.remove("flip-next", "flip-prev"); void b.offsetWidth; b.classList.add(dlt > 0 ? "flip-next" : "flip-prev");
 }
-$("#detail").addEventListener("click", (e) => { const m = e.target.closest("[data-mv]"); if (m) moveDetail(+m.dataset.mv); });
+const ZOOMS = [1, 1.2, 1.4, 1.65, 1.9];
+let zoomLv = (() => { try { return Math.min(4, parseInt(localStorage.getItem("menuZoom") || "0", 10) || 0); } catch { return 0; } })();
+const applyZoom = () => document.documentElement.style.setProperty("--dz", ZOOMS[zoomLv]);
+applyZoom();
+$("#detail").addEventListener("click", (e) => {
+  const m = e.target.closest("[data-mv]"); if (m) return moveDetail(+m.dataset.mv);
+  const z = e.target.closest("[data-z]");
+  if (z) { zoomLv = Math.max(0, Math.min(ZOOMS.length - 1, zoomLv + +z.dataset.z)); try { localStorage.setItem("menuZoom", zoomLv); } catch {} applyZoom(); }
+});
 addEventListener("keydown", (e) => { if ($("#detail").hidden) return; if (e.key === "ArrowLeft") moveDetail(-1); if (e.key === "ArrowRight") moveDetail(1); });
 let sx = null, sy = 0;
 $("#detail").addEventListener("touchstart", (e) => { if (e.touches.length === 1) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; } else sx = null; }, { passive: true });
