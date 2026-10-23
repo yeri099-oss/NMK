@@ -883,7 +883,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v69"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v70"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -1429,10 +1429,9 @@ function updateMobibar() {
 let lastTouchEnd = 0;
 document.addEventListener("touchend", (e) => {
   const now = Date.now();
-  if (now - lastTouchEnd < 350 && !e.target.closest("input, textarea, select")) {
-    e.preventDefault();
-    const b = e.target.closest("button"); if (b) b.click(); // 두 번째 터치도 버튼 누름으로 처리
-  }
+  // 버튼·입력칸은 브라우저가 알아서 한 번씩 눌림 처리 (touch-action: manipulation 으로 확대 없음)
+  // 그 밖의 빈 곳을 빠르게 두 번 누를 때만 확대를 막음 → 두 번 눌러 세 번 들어가는 일 없음
+  if (now - lastTouchEnd < 350 && !e.target.closest("button, a, input, textarea, select, label, [data-act]")) e.preventDefault();
   lastTouchEnd = now;
 }, { passive: false });
 document.addEventListener("dblclick", (e) => e.preventDefault(), { passive: false });
