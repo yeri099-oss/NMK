@@ -663,6 +663,9 @@ html,body,button,a,input,select,textarea,.prow,.chip,.btn{touch-action:manipulat
 /* 글씨를 키웠을 때는 위에서부터 보이고 스크롤 (가운데 정렬 시 위가 잘리는 것 방지) */
 .present .stage.zoomed{justify-content:flex-start;align-items:center}
 @media(orientation:landscape) and (min-width:700px){.present .stage.zoomed{align-items:flex-start}.present .stage.zoomed .pimg{position:sticky;top:0}}
+.dashtop{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}.dashtop .daychips{margin-bottom:0}
+.reportbtn{margin-left:auto;background:var(--ink);color:#fff;box-shadow:var(--press)}
+pre.report{white-space:pre-wrap;word-break:keep-all;font-family:inherit;font-size:15px;line-height:1.65;background:var(--soft);border-radius:16px;padding:14px 16px;margin:0;max-height:60vh;overflow:auto}
 </style>
 </head>
 <body>
@@ -813,7 +816,7 @@ html,body,button,a,input,select,textarea,.prow,.chip,.btn{touch-action:manipulat
 
     <!-- 대시보드 -->
     <section class="view" id="view-dash">
-      <div class="daychips" id="dashDays"></div>
+      <div class="dashtop"><div class="daychips" id="dashDays"></div><button class="btn reportbtn" id="reportBtn" type="button">📋 정산 요약</button></div>
       <div id="dashBody"></div>
     </section>
 
@@ -883,7 +886,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v71"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v72"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -1865,6 +1868,48 @@ function renderDash() {
     </div>`;
 }
 $("#dashDays").addEventListener("click", (e) => { const b = e.target.closest("[data-day]"); if (b) { dashDay = b.dataset.day; renderDash(); } });
+
+// ---- 정산 요약: 선택한 날짜의 상품별 수량·매출, 결제수단, 할인, 서비스, 경품을 한 장으로 + 카톡용 텍스트 복사 ----
+function buildReport() {
+  const label = dayOptions().find((o) => o.key === dashDay)?.label || "";
+  const list = filterDay(sales, dashDay);
+  const r = stats(list);
+  const rows = products.map((p) => ({ key: p.id, name: p.nameKo, ...(r.byProd[p.id] || { qty: 0, amount: 0 }) }));
+  for (const [k, v] of Object.entries(r.byProd)) if (!rows.find((x) => x.key === k)) rows.push({ key: k, ...v });
+  const sold = rows.filter((x) => x.qty);
+  const svcRows = Object.values(r.svc.byProd);
+  const svcList = list.filter((x) => x.service);
+  const pays = Object.entries(PAY).filter(([k]) => k !== "service").map(([k, v]) => [v, r.byPay[k] || { count: 0, amount: 0 }]).filter(([, v]) => v.count);
+  const pz = prizeCounts(filterDay(prizeLogs, dashDay));
+  const prizes = PRIZES.filter((z) => pz[z.key]).map((z) => [`${z.rank} ${z.name}`, pz[z.key]]);
+  const L = [];
+  L.push(`[한식페스타 ${label === "전체 합계" ? "전체" : label} 정산]`, "");
+  L.push(`총매출 ${won(r.subtotal)}`);
+  if (r.discount) L.push(`할인 −${won(r.discount)}`, `실매출 ${won(r.total)}`);
+  L.push(`판매 ${fmt(r.count)}건 · ${fmt(r.qty)}개 · 객단가 ${won(r.count ? r.total / r.count : 0)}`, "");
+  L.push("■ 상품별 (수량 / 매출·정가)");
+  sold.forEach((x) => L.push(`- ${x.name} ${fmt(x.qty)}개 / ${won(x.amount)}`));
+  if (!sold.length) L.push("- 없음");
+  L.push("", "■ 결제수단");
+  pays.forEach(([n, v]) => L.push(`- ${n} ${fmt(v.count)}건 / ${won(v.amount)}`));
+  if (!pays.length) L.push("- 없음");
+  L.push("", `■ 서비스 (매출 제외) ${fmt(r.svc.count)}건 · ${fmt(r.svc.qty)}개 · 정가 ${won(r.svc.amount)}`);
+  svcRows.forEach((x) => L.push(`- ${x.name} ${fmt(x.qty)}개`));
+  svcList.filter((x) => x.memo).forEach((x) => L.push(`  · ${timeStr(x.ts)} ${(x.items || []).map((i) => i.nameKo + "×" + i.qty).join(", ")} (${x.memo})`));
+  if (prizes.length) { L.push("", "■ 뽑기 경품"); prizes.forEach(([n, c]) => L.push(`- ${n} ${fmt(c)}개`)); L.push(`- 5% 할인권 합계 ${fmt(couponCount(pz))}장`); }
+  return L.join("\n");
+}
+$("#reportBtn").onclick = () => {
+  const text = buildReport();
+  openModal(`<h3>정산 요약</h3><pre class="report">${esc(text)}</pre>
+    <div class="foot"><button class="btn" data-x type="button">닫기</button><button class="btn primary" data-copy type="button">텍스트 복사</button></div>`, (m, close) => {
+    m.querySelector("[data-x]").onclick = close;
+    m.querySelector("[data-copy]").onclick = async () => {
+      try { await navigator.clipboard.writeText(text); toast("복사했어요. 카톡에 붙여넣으면 돼요", "ok"); }
+      catch { const r = document.createRange(); r.selectNodeContents(m.querySelector(".report")); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); toast("글을 길게 눌러 복사해 주세요"); }
+    };
+  });
+};
 
 // ================= 판매내역 =================
 const HIST_COLS = [
