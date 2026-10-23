@@ -883,7 +883,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v70"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v71"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -1835,9 +1835,15 @@ function renderDash() {
       }).join("")}
     </div>
     <div class="tiles prod" style="--n:${Math.min(5, Math.max(1, prodRows.length))}">
-      ${prodRows.map((x, i) => { const pct = r.qty ? Math.round(x.qty / r.qty * 100) : 0; return `<div class="tile pq ${tintOf(x.name)}">
+      ${(() => {
+        // 상품별 카드 수량 = 판매 + 서비스(시식·선물) 합계, 금액은 판매 매출만
+        const sv = (k) => (r.svc.byProd[k] || {}).qty || 0;
+        const allQty = r.qty + r.svc.qty;
+        const extra = Object.entries(r.svc.byProd).filter(([k]) => !prodRows.find((x) => x.key === k)).map(([k, v]) => ({ key: k, name: v.name, qty: 0, amount: 0 }));
+        return [...prodRows, ...extra].map((x) => { const q = x.qty + sv(x.key); const pct = allQty ? Math.round(q / allQty * 100) : 0; return `<div class="tile pq ${tintOf(x.name)}">
         <div class="ring" style="--p:${pct}"><span class="num">${pct}%</span></div>
-        <div class="k">${esc(x.name)}</div><div class="v num">${fmt(x.qty)}개</div><div class="s num">${won(x.amount)}</div></div>`; }).join("")}
+        <div class="k">${esc(x.name)}</div><div class="v num">${fmt(q)}개</div><div class="s num">${won(x.amount)}${sv(x.key) ? ` · 서비스 ${fmt(sv(x.key))}` : ""}</div></div>`; }).join("");
+      })()}
     </div>
     ${serviceTile(r)}
     ${prizeTile()}
