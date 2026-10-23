@@ -886,7 +886,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v72"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v73"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -1822,10 +1822,12 @@ function renderDash() {
     <div class="tiles money">
       <div class="tile hero">${(() => {
         const pre = dashDay === "all" ? "" : dayOptions().find((o) => o.key === dashDay)?.label + " ";
-        // 할인이 있으면 위: 총매출(할인 전) / 아래: 실매출(할인 제외), 없으면 총매출만
-        return r.discount
-          ? `<div class="k">${pre}총매출</div><div class="v num">${won(r.subtotal)}</div>
-             <div class="hsplit"><div class="k">실매출 <span class="hd num">할인 −${won(r.discount)} 제외</span></div><div class="v v2 num">${won(r.total)}</div></div>`
+        // 총매출 = 판매 정가 + 서비스 정가 / 실매출 = 총매출 − 할인 − 서비스, 둘 다 없으면 총매출만
+        const gross = r.subtotal + r.svc.amount;
+        const minus = [r.discount ? `할인 −${won(r.discount)}` : "", r.svc.amount ? `서비스 −${won(r.svc.amount)}` : ""].filter(Boolean).join(" · ");
+        return minus
+          ? `<div class="k">${pre}총매출</div><div class="v num">${won(gross)}</div>
+             <div class="hsplit"><div class="k">실매출 <span class="hd num">${minus} 제외</span></div><div class="v v2 num">${won(r.total)}</div></div>`
           : `<div class="k">${pre}총매출</div><div class="v num">${won(r.total)}</div>`;
       })()}</div>
       <div class="tile c-peach"><div class="k">판매 건수</div><div class="v num">${fmt(r.count)}건</div></div>
@@ -1884,8 +1886,10 @@ function buildReport() {
   const prizes = PRIZES.filter((z) => pz[z.key]).map((z) => [`${z.rank} ${z.name}`, pz[z.key]]);
   const L = [];
   L.push(`[한식페스타 ${label === "전체 합계" ? "전체" : label} 정산]`, "");
-  L.push(`총매출 ${won(r.subtotal)}`);
-  if (r.discount) L.push(`할인 −${won(r.discount)}`, `실매출 ${won(r.total)}`);
+  L.push(`총매출 ${won(r.subtotal + r.svc.amount)} (서비스 정가 포함)`);
+  if (r.discount) L.push(`할인 −${won(r.discount)}`);
+  if (r.svc.amount) L.push(`서비스 −${won(r.svc.amount)}`);
+  L.push(`실매출 ${won(r.total)}`);
   L.push(`판매 ${fmt(r.count)}건 · ${fmt(r.qty)}개 · 객단가 ${won(r.count ? r.total / r.count : 0)}`, "");
   L.push("■ 상품별 (수량 / 매출·정가)");
   sold.forEach((x) => L.push(`- ${x.name} ${fmt(x.qty)}개 / ${won(x.amount)}`));
