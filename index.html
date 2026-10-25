@@ -886,7 +886,7 @@ const firebaseConfig = {
 };
 
 // ---- 설정 ----
-const APP_VERSION = "v73"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
+const APP_VERSION = "v74"; // 고칠 때마다 올려주세요. 화면 상단에 표시되고, 새 버전이 올라오면 업데이트 버튼이 떠요
 const EMAIL_DOMAIN = "festa.goodbab.app";             // 아이디 → 아이디@festa.goodbab.app
 const MASTER_ID = "goodbab";                            // 최초 관리자 아이디
 const MASTER_PW_SHA256 = "6966e36df5a3aaa60d5a0de83ba2a02c15b9819cb4dd694cc2d7508dc38d8efc"; // 최초 관리자 비밀번호 해시
@@ -1728,6 +1728,24 @@ function renderDayChips(el, cur) {
 }
 
 // ================= 대시보드 =================
+// 판매 1건의 할인을 상품별로 나눔: 세트 할인은 그 세트 상품끼리, 직접 할인은 남은 금액 비율대로
+function itemNet(s) {
+  const items = (s.items || []).map((i) => ({ key: i.productId || i.nameKo, amount: i.amount || 0, net: i.amount || 0 }));
+  const split = (targets, amt) => {
+    const base = targets.reduce((a, t) => a + t.net, 0); if (!base || !amt) return;
+    let left = amt;
+    targets.forEach((t, idx) => { const d = idx === targets.length - 1 ? left : Math.round(amt * t.net / base); t.net -= d; left -= d; });
+  };
+  const sets = s.setDiscounts || [];
+  for (const x of sets) {
+    const rule = SET_RULES.find((r) => r.label === x.label);
+    const names = rule ? rule.products : [];
+    split(items.filter((t, i) => names.includes((s.items[i] || {}).nameKo)), x.amount);
+  }
+  const manual = s.manualDiscount ?? (sets.length ? 0 : s.discount || 0);
+  split(items.filter((t) => t.net > 0), manual);
+  return items;
+}
 function stats(list) {
   const svc = { count: 0, qty: 0, amount: 0, byProd: {} };
   for (const s of list) if (s.service) {
@@ -1740,9 +1758,10 @@ function stats(list) {
     r.total += s.total || 0; r.subtotal += s.subtotal || 0; r.discount += s.discount || 0; r.qty += s.qty || 0;
     for (const it of s.items || []) {
       const k = it.productId || it.nameKo;
-      const o = r.byProd[k] || (r.byProd[k] = { name: it.nameKo, qty: 0, amount: 0, orders: 0 });
+      const o = r.byProd[k] || (r.byProd[k] = { name: it.nameKo, qty: 0, amount: 0, net: 0, orders: 0 });
       o.qty += it.qty; o.amount += it.amount; o.orders += 1;
     }
+    for (const t of itemNet(s)) { const o = r.byProd[t.key]; if (o) o.net += t.net; }
     const p = r.byPay[s.payment] || (r.byPay[s.payment] = { count: 0, amount: 0 }); p.count++; p.amount += s.total || 0;
     const n = (s.customer && s.customer.nation) || "-"; const nn = r.byNation[n] || (r.byNation[n] = { count: 0, amount: 0 }); nn.count++; nn.amount += s.total || 0;
     const g = (s.customer && s.customer.gender) || "-"; const gg = r.byGender[g] || (r.byGender[g] = { count: 0, amount: 0 }); gg.count++; gg.amount += s.total || 0;
@@ -1891,8 +1910,8 @@ function buildReport() {
   if (r.svc.amount) L.push(`서비스 −${won(r.svc.amount)}`);
   L.push(`실매출 ${won(r.total)}`);
   L.push(`판매 ${fmt(r.count)}건 · ${fmt(r.qty)}개 · 객단가 ${won(r.count ? r.total / r.count : 0)}`, "");
-  L.push("■ 상품별 (수량 / 매출·정가)");
-  sold.forEach((x) => L.push(`- ${x.name} ${fmt(x.qty)}개 / ${won(x.amount)}`));
+  L.push("■ 상품별 (수량 / 총매출 / 실매출)");
+  sold.forEach((x) => L.push(`- ${x.name} ${fmt(x.qty)}개 / ${won(x.amount)} / ${won(x.net)}`));
   if (!sold.length) L.push("- 없음");
   L.push("", "■ 결제수단");
   pays.forEach(([n, v]) => L.push(`- ${n} ${fmt(v.count)}건 / ${won(v.amount)}`));
@@ -1903,11 +1922,46 @@ function buildReport() {
   if (prizes.length) { L.push("", "■ 뽑기 경품"); prizes.forEach(([n, c]) => L.push(`- ${n} ${fmt(c)}개`)); L.push(`- 5% 할인권 합계 ${fmt(couponCount(pz))}장`); }
   return L.join("\n");
 }
+function downloadCsv(name, rows) {
+  const csv = "\ufeff" + rows.map((r) => r.map((v) => `"${String(v ?? "").replace(/"/g, '""')}"`).join(",")).join("\r\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+  a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+// 결산표: 상품별 일자별 판매량·서비스·총매출·실매출 + 결제수단별 매출·건수
+function settlementRows() {
+  const days = FESTA_DAYS;
+  const st = days.map((d) => stats(filterDay(sales, d.key)));
+  const keys = products.map((p) => [p.id, p.nameKo]);
+  st.forEach((r) => { for (const [k, v] of Object.entries(r.byProd)) if (!keys.find(([x]) => x === k)) keys.push([k, v.name]); for (const [k, v] of Object.entries(r.svc.byProd)) if (!keys.find(([x]) => x === k)) keys.push([k, v.name]); });
+  const g = (r, k, f) => (r.byProd[k] || {})[f] || 0, sv = (r, k) => (r.svc.byProd[k] || {}).qty || 0;
+  const L = days.map((d) => d.label);
+  const rows = [["상품명", ...L.map((l) => "판매량 " + l), "판매량 합", ...L.map((l) => "증정·시식 " + l), "증정·시식 합", ...L.map((l) => "총매출 " + l), "총매출 합", ...L.map((l) => "실매출 " + l), "실매출 합"]];
+  const tot = Array(rows[0].length - 1).fill(0);
+  for (const [k, name] of keys) {
+    const q = st.map((r) => g(r, k, "qty")), s2 = st.map((r) => sv(r, k)), a = st.map((r) => g(r, k, "amount")), n = st.map((r) => g(r, k, "net"));
+    const sum = (x) => x.reduce((p, c) => p + c, 0);
+    const line = [...q, sum(q), ...s2, sum(s2), ...a, sum(a), ...n, sum(n)];
+    line.forEach((v, i) => (tot[i] += v));
+    rows.push([name, ...line]);
+  }
+  rows.push(["합계", ...tot]);
+  rows.push([], ["", ...L.map((l) => "객수 " + l)], ["객수", ...st.map((r) => r.count)], ["객단가", ...st.map((r) => Math.round(r.count ? r.total / r.count : 0))]);
+  rows.push([], ["결제수단", ...L.map((l) => "매출 " + l), "매출 합", ...L.map((l) => "건수 " + l), "건수 합"]);
+  for (const [k, v] of Object.entries(PAY)) {
+    if (k === "service") continue;
+    const a = st.map((r) => (r.byPay[k] || {}).amount || 0), c = st.map((r) => (r.byPay[k] || {}).count || 0);
+    rows.push([v, ...a, a.reduce((p, x) => p + x, 0), ...c, c.reduce((p, x) => p + x, 0)]);
+  }
+  rows.push(["계", ...st.map((r) => r.total), st.reduce((p, r) => p + r.total, 0), ...st.map((r) => r.count), st.reduce((p, r) => p + r.count, 0)]);
+  return rows;
+}
 $("#reportBtn").onclick = () => {
   const text = buildReport();
   openModal(`<h3>정산 요약</h3><pre class="report">${esc(text)}</pre>
-    <div class="foot"><button class="btn" data-x type="button">닫기</button><button class="btn primary" data-copy type="button">텍스트 복사</button></div>`, (m, close) => {
+    <div class="foot"><button class="btn" data-csv type="button">결산표 엑셀(CSV)</button><span style="flex:1"></span><button class="btn" data-x type="button">닫기</button><button class="btn primary" data-copy type="button">텍스트 복사</button></div>`, (m, close) => {
     m.querySelector("[data-x]").onclick = close;
+    m.querySelector("[data-csv]").onclick = () => downloadCsv(`한식페스타_결산표_${dayKey(Date.now())}.csv`, settlementRows());
     m.querySelector("[data-copy]").onclick = async () => {
       try { await navigator.clipboard.writeText(text); toast("복사했어요. 카톡에 붙여넣으면 돼요", "ok"); }
       catch { const r = document.createRange(); r.selectNodeContents(m.querySelector(".report")); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); toast("글을 길게 눌러 복사해 주세요"); }
